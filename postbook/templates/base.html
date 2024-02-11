@@ -7,9 +7,14 @@
     <title>Postbook</title>
 </head>
 <body>
-    {% include 'snippets/header.html' %}
-    {% block content %}
+    {% if request.user.is_authenticated %}
+        {% include 'snippets/header.html' %}
 
-    {% endblock %}
+        {% block content %}
+
+        {% endblock %}
+        
+    {% endif %}
+    
 </body>
 </html>
