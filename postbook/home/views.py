@@ -5,3 +5,8 @@ from django.http import HttpResponse
 def index(request):
     
     return HttpResponse('Hello World!!')
+
+# all funcs will be camel cases
+def homePage(request):
+
+    return render(request, 'home/home.html')
