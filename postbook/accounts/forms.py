@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import Account
 
@@ -25,9 +26,10 @@ class LoginModelForm(forms.ModelForm):
             )
         }
 
-class RegisterModelForm(forms.ModelForm):
+class RegisterModelForm(UserCreationForm):
     
-    password2           = forms.CharField(widget=forms.PasswordInput(
+    
+    password1           = forms.CharField(widget=forms.PasswordInput(
         attrs={
             "class": "border border-solid w-full h-[40px] rounded-lg",
             "placeholder": "Confirm Password",
@@ -35,10 +37,18 @@ class RegisterModelForm(forms.ModelForm):
         label="Confirm Password",
         required=True
     )
+    password           = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+                "class": "border border-solid w-full h-[40px] rounded-lg",
+                "placeholder": "Enter Password",
+            }),
+        label="Password",
+        required=True
+    )
     
     class Meta:
         model = Account
-        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password2']
+        fields = ['email', 'username', 'first_name', 'last_name', 'password', 'password1']
         
         widgets ={
             "email": forms.TextInput(
@@ -47,7 +57,6 @@ class RegisterModelForm(forms.ModelForm):
                     "placeholder": "Enter email",
                     
                 }
-            
             ),
             "first_name": forms.TextInput(
                 attrs={
@@ -66,12 +75,10 @@ class RegisterModelForm(forms.ModelForm):
                     "class": "border border-solid w-full h-[40px] rounded-lg",
                     "placeholder": "Enter Last Name",
                 }
-            ),
-            "password": forms.PasswordInput(
-                attrs={
-                    "class": "border border-solid w-full h-[40px] rounded-lg",
-                    "placeholder": "Enter Password",
-                }
-            ),
+            )
+            
                 
         }
+    def __init__(self, *args, **kwargs):
+        super(RegisterModelForm, self).__init__(*args, **kwargs)
+        del self.fields['password2']
