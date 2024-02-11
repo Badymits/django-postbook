@@ -21,13 +21,17 @@
                         </div>
                         
                     {% endfor %}
-                    <button type="submit" class="bg-blue-400 p-2 my-4 w-[9em] text-white rounded-lg uppercase">Login</button>
+                    <button type="submit" class="bg-blue-400 p-2 my-4 w-[9em] text-white rounded-lg uppercase">Register</button>
                     <p class="mx-8 text-center mt-2">
                         Already have an account? <br>
                         <a href="{% url 'login' %}" class="decoration-sky-500 underline hover:decoration-2 duration-500">Click here </a>
                         to log in!
                     </p>
-                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p>{{message}}</p>
+                        {% endfor %}
+                    {% endif %}
                 </form>
             </div>  
         </div>
