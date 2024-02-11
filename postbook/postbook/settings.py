@@ -73,7 +73,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'postbook.wsgi.application'
 
 AUTH_USER_MODEL = 'accounts.Account'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
+#Authentication backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
