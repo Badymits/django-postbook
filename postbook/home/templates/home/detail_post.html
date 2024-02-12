@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <section class="grid grid-cols-5 gap-2">
+        <div class="col-start-2 col-end-4">
+
+            <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  "> 
+                    <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted }}</p>
+
+                    <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
+                    <p class="my-[20px]">{{ post.body }}</p>
+
+                    <hr class="border-[1px] border-gray-300">
+                    <div class="h-[50px] relative">
+                        <button class="absolute top-5 left-5">Like Btn</button>
+                        <button class="absolute top-5 left-[105px]">Dislike Btn</button>
+                    </div>
+            </div>
+            <div class="p-4 bg-gray-200 rounded-xl">
+                <p>Comment as <span class="text-blue-600 hover:underline cursor-pointer">{{ post.user.username }}</span></p>
+                <form action="" method="post">
+                    <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
+                    class="w-full my-4 text-lg p-4 resize-none border-2 border-gray-200"
+                    ></textarea>
+                </form>
+                <div id="comment-section">
+                    <div class="p-2 mb-5">
+                        <div class="flex items-center gap-2 relative">
+                            <p class="w-10 h-10 rounded-full bg-blue-300">
+                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
+                            <p class="pl-2 text-gray-500">date of comment</p>
+                            <span class="absolute right-0 text-2xl top-0">...</span>
+                        </div>
+                        
+                        <div class="pl-[45px] py-2">
+                            <p>placeholder comment right here</p>
+                        </div>
+
+                        <div class="h-[40px] relative pl-[45px]">
+                            <button class="absolute top-5 left-[45px]">Like Btn</button>
+                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
+                            <button class="absolute top-5 left-[230px]">Reply</button>
+                        </div>
+                    </div>
+                    <div class="p-2 mb-5">
+                        <div class="flex items-center gap-2 relative">
+                            <p class="w-10 h-10 rounded-full bg-blue-300">
+                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
+                            <p class="pl-2 text-gray-500">date of comment</p>
+                            <span class="absolute right-0 text-2xl top-0 cursor-pointer hover:bg-gray-500 rounded-full">...</span>
+                        </div>
+                        
+                        <div class="pl-[45px] py-2">
+                            <p>I agree...</p>
+                        </div>
+
+                        <div class="h-[40px] relative pl-[45px]">
+                            <button class="absolute top-5 left-[45px]">Like Btn</button>
+                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
+                            <button class="absolute top-5 left-[230px]">Reply</button>
+                        </div>
+                    </div>
+                    <div class="p-2 mb-5">
+                        <div class="flex items-center gap-2 relative">
+                            <p class="w-10 h-10 rounded-full bg-blue-300">
+                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
+                            <p class="pl-2 text-gray-500">date of comment</p>
+                            <span class="absolute right-0 text-2xl top-0">...</span>
+                        </div>
+                        
+                        <div class="pl-[45px] py-2">
+                            <p>I really agree with you my friend...</p>
+                        </div>
+
+                        <div class="h-[40px] relative pl-[45px]">
+                            <button class="absolute top-5 left-[45px]">Like Btn</button>
+                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
+                            <button class="absolute top-5 left-[230px]">Reply</button>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            
+        </div>
+        <div class="">
+            <div class="bg-blue-200 rounded-xl p-4 fixed h-[500px] w-[400px]">
+                aaaa
+            </div>
+        </div>
+    </section>
+    
+
+{% endblock %}
