@@ -1,17 +1,43 @@
-<header class="bg-gray-300 h-[100px] flex justify-between items-center px-10">
+<header class="bg-gray-300 h-[60px] flex justify-between items-center px-10 fixed w-full z-50">
     <h1 class="text-4xl font-thin">PostBook</h1>
     <div>
         Searchbar
     </div>
-    <ul class="list-none flex gap-5 items-center justify-center w-[18em] ">
-        <li class="cursor-pointer">Home</li>
-        <li class="cursor-pointer">Profile</li>
-        <li >
-            <a href="{% url 'logout' %}" class="border-blue-400 border-2 py-2 px-6 cursor-pointer hover:bg-blue-400 duration-150">
-                Log Out
-            </a>
-        </li>
+    <div class="relative">
+        <!-- add hover effect here -->
+        <div class="text-2xl cursor-pointer" id="profile">
+            Welcome {{ request.user.first_name }}!
+            <div id="profile-menu" class="hidden absolute top-10 right-0 bg-gray-500 h-[250px]">
+                <ul class="list-none flex flex-col gap-[2em] items-center justify-center w-[15em] h-full">
+            
+                    <li class="cursor-pointer">Home</li>
+                    <li class="cursor-pointer">Profile</li>
+                    <li >
+                        <a href="{% url 'logout' %}" class="border-blue-400 border-2 py-2 px-6 cursor-pointer hover:bg-blue-400 duration-150">
+                            Log Out
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
         
-    </ul>
+    </div>
+    
     
 </header>
+
+<script type="text/javascript">
+    let profile_div = document.getElementById('profile')
+
+    profile_div.addEventListener('click', function(e) {
+        console.log('clicked!')
+        let profile_menu = document.getElementById('profile-menu')
+        if (profile_menu.classList.contains('hidden')){
+            profile_menu.classList.remove('hidden')
+        } else {
+            profile_menu.classList.add('hidden')
+        }
+    })
+    
+</script>
