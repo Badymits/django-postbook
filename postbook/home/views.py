@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from django.contrib import messages 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 from accounts.models import Account
@@ -16,7 +16,7 @@ def index(request):
 @login_required(login_url='login')
 def homePage(request):
     
-    posts = Post.objects.all()
+    posts = Post.objects.all().order_by('-date_posted')
     context = {'user': request.user, 'posts': posts}
     return render(request, 'home/home.html', context)
 
@@ -44,3 +44,21 @@ def createPost(request):
     context = {'form': form}
     
     return render(request, 'home/create_post.html', context)
+
+def detailPost(request, id):
+    
+    try:
+        post = get_object_or_404(Post, id=id)
+        print('MAY POST PARE' )
+        
+        
+    except:
+        print('ERROR BOSSING')
+        messages.error(request, 'Post does not exist')
+        return redirect('home')
+    context = {'post': post}
+    
+    
+    
+    
+    return render(request, 'home/detail_post.html', context)
