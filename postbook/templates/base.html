@@ -9,10 +9,12 @@
 <body>
     {% if request.user.is_authenticated %}
         {% include 'snippets/header.html' %}
+        <div class="h-screen w-full pt-[5em] overflow">
+            {% block content %}
 
-        {% block content %}
-
-        {% endblock %}
+            {% endblock %}
+        </div>
+        
         
     {% endif %}
     
