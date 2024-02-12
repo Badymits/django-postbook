@@ -13,7 +13,7 @@
 
         {% endif %}
         <div class=" col-start-2 col-end-4">
-            <div class="w-full bg-gray-400 h-[60px] flex items-center justify-center w-full gap-[5px] px-4 rounded-xl">
+            <div class="w-full bg-gray-300 h-[60px] flex items-center justify-center w-full gap-[5px] px-4 rounded-xl">
                 Profile Image
                 
                 <input type="text" class="w-full h-[40px] rounded-lg" placeholder="Create Post" onclick='createPostUrl()'>
@@ -28,7 +28,11 @@
                 {% if posts %}
                     {% for post in posts %}
 
-                        <div class=" w-full bg-gray-200 mb-6 relative p-4 rounded-xl">
+                        <div class=" w-full bg-gray-200 mb-6 relative p-4 rounded-xl hover:border-black border-[1px] cursor-pointer" 
+                            id="post-div"
+                            
+                        >
+                            <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
                             <p class="text-4xl pb-2">{{ post.title }}</p>
                             <p class="text-sm font-thin">Posted by: <a href="" class="hover:underline"> {{ post.user }} </a> {{ post.date_posted }}</p>
                             <p class="pt-3">{{ post.body }}</p>
@@ -55,7 +59,23 @@
         </div>
         <div class="">
             <div class="fixed bg-gray-300 h-[500px] w-[400px] rounded-lg p-4">
-                About PostBook...
+                <p class="text-2xl font-thin">About PostBook...</p>
+                <br>
+                <p class="text-justify">
+                    This is a website that is inspired heavily by Reddit. I enjoy building websites
+                    particularly social media types since it has the basic CRUD functionalities which 
+                    is essential to know in most if not all programming apps. Yes I know there are many better 
+                    examples of social media apps like Facebook and X (formerly Twitter). Even the name of this app
+                    is derived from Facebook. But, this is a starting point for me so bear with it :P.
+                </p>
+                <p class="mt-10 text-lg w-full">
+                    Anyway...Enjoy
+                    <br>
+                    
+                </p>
+                <a href="{% url 'create-post' %}" class="bg-blue-200 hover:bg-blue-100 duration-100 block w-full text-center h-[40px]
+                    my-auto leading-10 rounded-full mt-2 text-lg">Create Post
+                </a>
             </div>
         </div>
         
@@ -65,10 +85,21 @@
     py-3 rounded-full text-center text-lg text-gray-100 hover:text-gray-600 opacity-0 translate-y-[100px] duration-200 ease-in-out" id="resetBtn">Back to Top</a>
     <script type="text/javascript">
         let reset_btn = document.getElementById('resetBtn');
-        function createPostUrl(){
-            window.location.href = "{% url 'create-post' %}";
-        }
+        let post_div = document.querySelectorAll('#post-div');
 
+        
+        for (let i = 0; i < post_div.length; i++){
+
+            post_div[i].addEventListener('click', function(e){
+                var post_id = post_div[i].querySelector("input").value
+                console.log(post_id)
+                window.location.href = `http://127.0.0.1:8000/detail-post/${post_id}/`         
+            })
+        }        
+        function createPostUrl(){
+            window.location.href = "{% url 'create-post' %}"; // resetting back at top of feed
+        }
+        // when user scrolls down, a button to reset to top of page will appear
         window.addEventListener('scroll', function(){
             if(window.scrollY > 300){
 
