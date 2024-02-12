@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <section class="grid grid-cols-5 gap-6 h-[50vh] w-full">
+        <div class="col-start-2 col-end-4">
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <p>{{ message }}</p>
+
+                {% endfor %}
+
+            {% endif %}
+            <h1 class="text-xl">Create a post</h1>
+
+            <hr class="border-solid border-black my-2">
+
+            <form action="{% url 'create-post' %}" method="post" class="w-full  h-full px-4 border-[1px] border-gray-400 rounded-xl">
+                {% csrf_token %}
+
+                <input type="hidden" name="user" value="{{ request.user.id }}">
+
+                <input type="text" name="title" placeholder="Title" class="w-full my-4 h-[40px] text-2xl pl-4 border-2 border-gray-200">
+                <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
+                class="w-full my-4 text-2xl pl-4 resize-none border-2 border-gray-200"
+                ></textarea>
+                <button type="submit" class="float-right bg-gray-300 w-[100px] rounded-full py-2 text-xl
+                hover:bg-gray-200">Post</button>
+            </form>
+        </div>
+
+        <div class="bg-gray-200 border-[1px] border-gray-400 rounded-lg p-4">
+            <h1>Rules for posting to PostBook</h1>
+            <ul>
+                <li>1. Don't be an asshole</li>
+                <li>2. Remeber no.1</li>
+                <li>3. Remeber no.2</li>
+                <li>4. Remeber no.3</li>
+            </ul>
+            <h1>That's all, happy posting</h1>
+        </div>
+    </section>
+
+{% endblock %}
