@@ -10,7 +10,14 @@
                     <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted }}</p>
 
                     <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
-                    <p class="my-[20px]">{{ post.body }}</p>
+
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[550px] max-w-[550px] mx-auto my-6">
+                    {% endif %}
+
+                    {% if post.body %}
+                        <p class="my-[20px]">{{ post.body }}</p>
+                    {% endif %}
 
                     <hr class="border-[1px] border-gray-300">
                     <div class="h-[50px] relative">
