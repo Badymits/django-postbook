@@ -4,7 +4,17 @@
 {% block content %}
 
     <section class="grid grid-cols-5 gap-2">
-        <div class="col-start-2 col-end-4">
+        <div class="col-start-2 col-end-4 pb-[20em]">
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <p class="text-red-400 text-xl" id="success_msg">{{ message }}</p>
+                    <p id="success_msg"></p>
+
+                {% endfor %}
+
+            {% endif %}
 
             <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  "> 
                     <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted }}</p>
@@ -27,67 +37,46 @@
             </div>
             <div class="p-4 bg-gray-200 rounded-xl">
                 <p>Comment as <span class="text-blue-600 hover:underline cursor-pointer">{{ post.user.username }}</span></p>
-                <form action="" method="post">
-                    <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
+                <form action="" method="post" id="comment_form">
+                    {% csrf_token %}
+                    <input type="hidden" name="user" id="user" value="{{ request.user }}">
+                    <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}">
+                    <textarea name="body" id="body" cols="30" rows="6" placeholder="Text here..." 
                     class="w-full my-4 text-lg p-4 resize-none border-2 border-gray-200"
                     ></textarea>
                     <button type="submit" class="float-right bg-white w-[150px] rounded-full py-1">Comment</button>
                 </form>
+
                 <div id="comment-section" class="pt-[50px]">
-                    <div class="p-2 mb-5">
-                        <div class="flex items-center gap-2 relative">
-                            <p class="w-10 h-10 rounded-full bg-blue-300">
-                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
-                            <p class="pl-2 text-gray-500">date of comment</p>
-                            <span class="absolute right-0 text-2xl top-0">...</span>
-                        </div>
-                        
-                        <div class="pl-[45px] py-2">
-                            <p>placeholder comment right here</p>
-                        </div>
+                    
+                    {% if comments %}
+                        {%for comment in comments%}
+                            <div class="p-2 mb-5" id="comment_container">
+                                <div class="flex items-center gap-2 relative">
+                                    <p class="w-10 h-10 rounded-full bg-blue-300">
+                                    <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
+                                    
+                                    <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
+                                    <span class="absolute right-0 text-2xl top-0">...</span>
+                                </div>
+                                
+                                <div class="pl-[45px] py-2">
+                                    <p id="comment_body">{{ comment.body }}</p>
+                                </div>
 
-                        <div class="h-[40px] relative pl-[45px]">
-                            <button class="absolute top-5 left-[45px]">Like Btn</button>
-                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
-                            <button class="absolute top-5 left-[230px]">Reply</button>
+                                <div class="h-[40px] relative pl-[45px]">
+                                    <button class="absolute top-5 left-[45px]">Like Btn</button>
+                                    <button class="absolute top-5 left-[125px]">Dislike Btn</button>
+                                    <button class="absolute top-5 left-[230px]" id="comment_reply">Reply</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-2 mb-5" id="comment_container"> 
+                            
                         </div>
-                    </div>
-                    <div class="p-2 mb-5">
-                        <div class="flex items-center gap-2 relative">
-                            <p class="w-10 h-10 rounded-full bg-blue-300">
-                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
-                            <p class="pl-2 text-gray-500">date of comment</p>
-                            <span class="absolute right-0 text-2xl top-0 cursor-pointer hover:bg-gray-500 rounded-full">...</span>
-                        </div>
-                        
-                        <div class="pl-[45px] py-2">
-                            <p>I agree...</p>
-                        </div>
-
-                        <div class="h-[40px] relative pl-[45px]">
-                            <button class="absolute top-5 left-[45px]">Like Btn</button>
-                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
-                            <button class="absolute top-5 left-[230px]">Reply</button>
-                        </div>
-                    </div>
-                    <div class="p-2 mb-5">
-                        <div class="flex items-center gap-2 relative">
-                            <p class="w-10 h-10 rounded-full bg-blue-300">
-                            <p class="text-lg hover:underline cursor-pointer">{{ post.user.username }}</p> <br>
-                            <p class="pl-2 text-gray-500">date of comment</p>
-                            <span class="absolute right-0 text-2xl top-0">...</span>
-                        </div>
-                        
-                        <div class="pl-[45px] py-2">
-                            <p>I really agree with you my friend...</p>
-                        </div>
-
-                        <div class="h-[40px] relative pl-[45px]">
-                            <button class="absolute top-5 left-[45px]">Like Btn</button>
-                            <button class="absolute top-5 left-[125px]">Dislike Btn</button>
-                            <button class="absolute top-5 left-[230px]">Reply</button>
-                        </div>
-                    </div>
+                    {% endif %}
+                    
                     
                 </div>
             </div>
@@ -100,6 +89,102 @@
             </div>
         </div>
     </section>
+
+    <script type="text/javascript">
+        let comment_form = document.getElementById('comment_form')
+        let post_id = document.getElementById('post_id').value
+        
+        let comment_container = document.getElementById('comment_container');
+        let comment_user = document.getElementById('comment_user');
+        let comment_body = document.getElementById('comment_body');
+
+        $(document).on('submit', comment_form, function(e){
+            e.preventDefault();
+            console.log($('#body').val())
+            
+            $.ajax({
+                type: 'POST',
+                url: `http://127.0.0.1:8000/create-comment/${post_id}/`,
+                data: {
+                    body: $('#body').val(),
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                dataType: "json",
+                success:function(res){
+                    $('#body').val('')
+                    $('#success_msg').html(res);
+                    console.log(res.comment_body, ' ', res.comment_user)
+                    createComment(res.comment_body, res.comment_user, res.comment_date);
+                }
+            })
+        })
+        // its repetitive I know pero wala na tayong no choice
+        // creating the element manually was the only solution (that I know) for this problem
+        // this creates the comment element on 
+        function createComment(body, users_name, date){
+            let custom_container = document.createElement('div')
+            let user_details = document.createElement('div')
+            let profile_pic = document.createElement('p')
+            let username = document.createElement('p')
+            let comment_date = document.createElement('p')
+            let comment_options = document.createElement('span')
+
+        
+            user_details.setAttribute('class', 'flex items-center gap-2 relative')
+            profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
+            username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
+            comment_date.setAttribute('class', 'pl-2 text-gray-500')
+            comment_options.setAttribute('class', 'absolute right-0 text-2xl top-0')
+
+            username.innerHTML = users_name
+            comment_date.innerHTML = date
+
+            user_details.appendChild(profile_pic)
+            user_details.appendChild(username)
+            user_details.appendChild(comment_date)
+            user_details.appendChild(comment_options)
+
+
+            let body_details = document.createElement('div')
+            let body_text = document.createElement('p')
+
+            body_details.setAttribute('class', 'pl-[45px] py-2')
+
+            body_text.innerHTML = body
+
+            body_details.appendChild(body_text)
+
+
+
+            let comment_actions = document.createElement('div')
+            let like_btn = document.createElement('button')
+            let dislike_btn = document.createElement('button')
+            let reply = document.createElement('button')
+
+            comment_actions.setAttribute('class', 'h-[40px] relative pl-[45px]')
+            like_btn.setAttribute('class', 'absolute top-5 left-[45px]')
+            dislike_btn.setAttribute('class', 'absolute top-5 left-[125px]')
+            reply.setAttribute('class', 'absolute top-5 left-[230px]')
+
+            like_btn.innerHTML = 'Like Btn'
+            dislike_btn.innerHTML = 'Dislike Btn'
+            reply.innerHTML = 'Reply'
+
+            comment_actions.appendChild(like_btn)
+            comment_actions.appendChild(dislike_btn)
+            comment_actions.appendChild(reply)
+
+            custom_container.setAttribute('class', 'mb-5')
+            custom_container.appendChild(user_details)
+            custom_container.appendChild(body_details)
+            custom_container.appendChild(comment_actions)
+
+            comment_container.prepend(custom_container)
+            
+            
+
+        }
+    </script>
     
 
 {% endblock %}
