@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -34,9 +35,17 @@
                         >
                             <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
                             <p class="text-4xl pb-2">{{ post.title }}</p>
-                            <p class="text-sm font-thin">Posted by: <a href="" class="hover:underline"> {{ post.user }} </a> {{ post.date_posted }}</p>
-                            <p class="pt-3">{{ post.body }}</p>
+                            <p class="text-sm font-thin">Posted by: <a href="" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted }}</p>
                             
+                            {% if post.image %}
+
+                                <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[350px] max-w-[350px] mx-auto my-4">
+
+                            {% endif %}
+
+                            {% if post.body %}
+                                <p class="pt-3">{{ post.body }}</p>
+                            {% endif %}
                         </div>
                         
 
