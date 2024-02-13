@@ -27,7 +27,7 @@ def createPost(request):
     req_user = Account.objects.get(email=request.user.email)
     
     if request.method == 'POST':
-        form = CreatePostForm(request.POST)
+        form = CreatePostForm(request.POST, request.FILES)
         
         if form.is_valid():
             post = form.save(commit=False)
@@ -45,6 +45,7 @@ def createPost(request):
     
     return render(request, 'home/create_post.html', context)
 
+@login_required(login_url='login')
 def detailPost(request, id):
     
     try:
@@ -58,7 +59,10 @@ def detailPost(request, id):
         return redirect('home')
     context = {'post': post}
     
-    
-    
-    
     return render(request, 'home/detail_post.html', context)
+
+
+@login_required(login_url='login')
+def editPost(request, id):
+    
+    pass
