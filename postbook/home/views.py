@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
+import json
 
 from accounts.models import Account
-from .models import Post
-from .forms import CreatePostForm
+from .models import Post, Comment
+from .forms import CreatePostForm, CreateCommentForm
 
 # Create your views here.
 def index(request):
@@ -50,14 +52,19 @@ def detailPost(request, id):
     
     try:
         post = get_object_or_404(Post, id=id)
-        print('MAY POST PARE' )
-        
-        
+ 
     except:
         print('ERROR BOSSING')
         messages.error(request, 'Post does not exist')
         return redirect('home')
     context = {'post': post}
+    try:
+        comments = Comment.objects.filter(main_post=post.id).order_by('-date_posted')
+        context['comments'] = comments
+    except:
+        messages.error(request, 'No Comments')    
+        
+    
     
     return render(request, 'home/detail_post.html', context)
 
@@ -66,3 +73,44 @@ def detailPost(request, id):
 def editPost(request, id):
     
     pass
+
+@login_required(login_url='login')
+def createComment(request, id):
+    
+    form = CreateCommentForm()
+    context = {}
+    try:
+        main_post = get_object_or_404(Post, id=id)
+        print(main_post.id)
+    except:
+        messages.error(request, 'Post does not exist')
+    
+    if request.method == 'POST':
+        form = CreateCommentForm(request.POST or None, request.FILES or None)
+        
+        if form.is_valid():
+            comment = form.save(commit=False)
+            
+            comment.main_post = main_post
+            comment.user = request.user
+            
+            # if request.POST['main_comment']:
+            #     comment.main_comment = request.POST['main_comment']
+            
+            comment.save()
+            context['message'] = 'Comment Successful'
+            messages.success(request, 'Comment Success')
+            
+            return JsonResponse({
+                'comment_user': comment.user.username,
+                'comment_body': comment.body,
+                'comment_date': comment.date_posted
+            })
+        else:
+            messages.error(request, 'There was an error')
+            
+    
+    
+    return JsonResponse(context)
+    
+    
