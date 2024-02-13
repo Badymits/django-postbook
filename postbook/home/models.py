@@ -30,6 +30,7 @@ class Comment(models.Model):
     image               = models.ImageField(default='images', blank=True, null=True)
     likes               = models.PositiveIntegerField(blank=True, default=0, null=True)
     dislikes            = models.PositiveIntegerField(blank=True, default=0, null=True)
+    date_posted         = models.DateTimeField(auto_now_add=True, null=True)
     
     def __str__(self):
         return f'{self.user.first_name} replying to {self.main_post.title}'
