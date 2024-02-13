@@ -18,17 +18,56 @@
 
             <hr class="border-solid border-black my-2">
 
-            <form action="{% url 'create-post' %}" method="post" class="w-full  h-full px-4 border-[1px] border-gray-400 rounded-xl">
+            <form action="{% url 'create-post' %}" method="post" class="w-full  h-full px-4 border-[1px] border-gray-400 rounded-xl" 
+                enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <input type="hidden" name="user" value="{{ request.user.id }}">
+                
+                <div class="pt-4">
+                    <ul class="flex items-center justify-between  w-full bg-gray-200 h-[50px]  text-center rounded-xl leading-12">
+                        <li class="w-[250px] flex justify-center items-center text-xl cursor-pointer hover:bg-gray-400 hover:rounded-lg h-full border-r-[1px] border-gray-500"
+                            onclick="openForm(event, 'post')"
+                        >
+                            <p >Post</p>
+                        </li>
+                        <li class="w-[250px] flex justify-center items-center  text-xl cursor-pointer hover:bg-gray-400 h-full border-r-[1px] border-gray-500"
+                            onclick="openForm(event, 'image')"
+                        >
+                            <p >Image</p>
+                        </li>
+                        <li class="w-[250px] flex justify-center items-center  text-xl cursor-pointer hover:bg-gray-400 h-full"
+                            onclick="openForm(event, 'url')"
+                        >
+                            <p >Link</p>
+                        </li>
+                    </ul>
+                    <input type="text" name="title" placeholder="Title" class="w-full my-4 h-[40px] text-2xl pl-4 border-2 border-gray-200" required>
+                    
+                    <div id="post" class="tabcontent">
+                        <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
+                            class="w-full my-4 text-2xl p-4 resize-none border-2 border-gray-200"
+                        ></textarea>
+                        
+                    </div>
 
-                <input type="text" name="title" placeholder="Title" class="w-full my-4 h-[40px] text-2xl pl-4 border-2 border-gray-200">
-                <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
-                class="w-full my-4 text-2xl pl-4 resize-none border-2 border-gray-200"
-                ></textarea>
+                    <div id="image" class="tabcontent hidden">
+                        <input type="file" src="" alt="" name="image">
+                        
+                    </div>
+                    
+                    <div id="url" class="tabcontent hidden">
+                        <input type="url" name="" id="">
+                    </div>
+                    
+                    
+                    
+                </div>
+                
+                
                 <button type="submit" class="float-right bg-gray-300 w-[100px] rounded-full py-2 text-xl
                 hover:bg-gray-200">Post</button>
+
             </form>
         </div>
 
@@ -43,5 +82,30 @@
             <h1>That's all, happy posting</h1>
         </div>
     </section>
+
+    <script type="text/javascript">
+        var i, tab_id, tab_content, tab_link;
+        
+        function openForm(event, formType){
+            console.log(formType)
+            tab_id = document.getElementById(formType)
+            tab_content = document.getElementsByClassName('tabcontent')
+
+            // by default, the post tab is already present so user won't have to click on it to display the post tab
+            // the rest of the tabs' display will be set to hidden
+            for (i = 0 ; i < tab_content.length; i++){
+                if (tab_content[i].classList.contains('hidden')){
+                    continue;
+                }
+                tab_content[i].classList.add('hidden')
+            }
+
+            // the selected div with the respective id will display 
+            document.getElementById(formType).classList.remove('hidden')
+            document.getElementById(formType).classList.add('block');
+            
+                    
+        }
+    </script>
 
 {% endblock %}
