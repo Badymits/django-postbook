@@ -9,6 +9,13 @@ class CreatePostForm(forms.ModelForm):
         fields = ['title', 'body', 'image']
         
         
+class UpdatePostForm(forms.ModelForm):
+    
+    class Meta:
+        model = Post
+        fields = ['title', 'body', 'image']
+        
+        
 class CreateCommentForm(forms.ModelForm):
     
     class Meta:
