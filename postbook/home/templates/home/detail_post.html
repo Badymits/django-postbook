@@ -16,7 +16,22 @@
 
             {% endif %}
 
-            <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  "> 
+            <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  relative"> 
+                    {% if request.user == post.user %}
+                        <button class="absolute right-4 text-lg hover:bg-gray-400 px-1 rounded-lg">
+                            <a href="{% url 'edit-post' post.id %}">
+                                <i data-tooltip-target="tooltip-edit" data-tooltip-placement="bottom" class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            </a>
+                        </button>
+
+                        <div id="tooltip-edit" role="tooltip" class="absolute z-10 
+                            invisible px-3 py-2 text-xs font-medium text-white 
+                            transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                            opacity-0 tooltip dark:bg-gray-700">
+                                Edit Post
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                    {% endif %}
                     <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted }}</p>
 
                     <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
@@ -36,7 +51,7 @@
                     </div>
             </div>
             <div class="p-4 bg-gray-200 rounded-xl">
-                <p>Comment as <span class="text-blue-600 hover:underline cursor-pointer">{{ post.user.username }}</span></p>
+                <p>Comment as <span class="text-blue-600 hover:underline cursor-pointer">{{ request.user.username }}</span></p>
                 <form action="" method="post" id="comment_form">
                     {% csrf_token %}
                     <input type="hidden" name="user" id="user" value="{{ request.user }}">
@@ -57,22 +72,35 @@
                                     <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
                                     
                                     <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
-                                    <span class="absolute right-0 text-2xl top-0">...</span>
+                                    <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
+                                        <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
+
+                                        <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] h-[2em] flex flex-col justify-center divide-y divide-gray-600"
+                                            id="comment_options">
+                                            <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
+                                            <button class="text-xs  px-2 py-1 hover:bg-gray-500 rounded-t-md" id="edit_btn" value="{{ comment.id }}" >Edit comment</button>
+                                            
+                                            <button class="text-xs px-2 py-1 hover:bg-gray-500 rounded-b-md">Report</button>
+                                        </div>
+                                    </div>
                                 </div>
                                 
-                                <div class="pl-[45px] py-2">
+                                <div class="pl-[45px] py-2 " id="comment_body_div">
                                     <p id="comment_body">{{ comment.body }}</p>
                                 </div>
 
-                                <div class="h-[40px] relative pl-[45px]">
+                                <div class="mb-[40px] relative pl-[45px] ">
                                     <button class="absolute top-5 left-[45px]">Like Btn</button>
                                     <button class="absolute top-5 left-[125px]">Dislike Btn</button>
                                     <button class="absolute top-5 left-[230px]" id="comment_reply">Reply</button>
+                                    
                                 </div>
+                                <br>
+                                
                             </div>
                         {% endfor %}
                     {% else %}
-                        <div class="p-2 mb-5" id="comment_container"> 
+                        <div class="p-2 mb-5 hidden" id="comment_container"> 
                             
                         </div>
                     {% endif %}
@@ -97,6 +125,11 @@
         let comment_container = document.getElementById('comment_container');
         let comment_user = document.getElementById('comment_user');
         let comment_body = document.getElementById('comment_body');
+        let comment_menu = document.getElementById('comment_menu');
+        let comment_options = document.getElementById('comment_options');
+
+        let edit_btn = document.getElementById('edit_btn');
+        var comment_id;
 
         $(document).on('submit', comment_form, function(e){
             e.preventDefault();
@@ -114,41 +147,72 @@
                     $('#body').val('')
                     $('#success_msg').html(res);
                     console.log(res.comment_body, ' ', res.comment_user)
-                    createComment(res.comment_body, res.comment_user, res.comment_date);
+                    createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id);
                 }
             })
         })
         // its repetitive I know pero wala na tayong no choice
         // creating the element manually was the only solution (that I know) for this problem
         // this creates the comment element on 
-        function createComment(body, users_name, date){
+        function createComment(body, users_name, date, comment_id){
+            if (comment_container.classList.contains('hidden')){
+                comment_container.classList.remove('hidden')
+            }
             let custom_container = document.createElement('div')
             let user_details = document.createElement('div')
             let profile_pic = document.createElement('p')
             let username = document.createElement('p')
             let comment_date = document.createElement('p')
-            let comment_options = document.createElement('span')
-
         
+
+            let comment_options_div = document.createElement('div')
+            let comment_button = document.createElement('p')
+            let comment_options = document.createElement('div')
+            let comment_edit = document.createElement('button')
+            let comment_report = document.createElement('button')
+
             user_details.setAttribute('class', 'flex items-center gap-2 relative')
             profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
             username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
             comment_date.setAttribute('class', 'pl-2 text-gray-500')
-            comment_options.setAttribute('class', 'absolute right-0 text-2xl top-0')
+
+            comment_options_div.setAttribute('class', 'absolute right-0 w-7 text-center text-2xl top-0')
+
+            comment_button.setAttribute('class', 'hover:bg-gray-400 cursor-pointer rounded-md')
+            comment_button.setAttribute('id', 'comment_menu')
+
+            comment_options.setAttribute('class', 'hidden absolute right-2 bg-gray-400 rounded-md w-[4em] h-[2em] flex flex-col justify-center divide-y divide-gray-600')
+            comment_options.setAttribute('id', 'comment_options')
+
+            comment_edit.setAttribute('class', 'text-xs  px-2 py-1 hover:bg-gray-500 rounded-t-md')
+            comment_report.setAttribute('class', 'text-xs px-2 py-1 hover:bg-gray-500 rounded-b-md')
+            comment_edit.setAttribute('id', 'edit_btn')
+            comment_edit.setAttribute('value', comment_id)
 
             username.innerHTML = users_name
             comment_date.innerHTML = date
+            comment_button.innerHTML = '...'
+            comment_edit.innerHTML = 'Edit comment'
+            comment_report.innerHTML = 'Report'
+
+            comment_options.appendChild(comment_edit)
+            comment_options.appendChild(comment_report)
+
+            comment_options_div.appendChild(comment_button)
+            comment_options_div.appendChild(comment_options)
+
 
             user_details.appendChild(profile_pic)
             user_details.appendChild(username)
             user_details.appendChild(comment_date)
-            user_details.appendChild(comment_options)
+            user_details.appendChild(comment_options_div)
 
 
             let body_details = document.createElement('div')
             let body_text = document.createElement('p')
 
             body_details.setAttribute('class', 'pl-[45px] py-2')
+            body_text.setAttribute('id', 'comment_body')
 
             body_text.innerHTML = body
 
@@ -160,6 +224,7 @@
             let like_btn = document.createElement('button')
             let dislike_btn = document.createElement('button')
             let reply = document.createElement('button')
+            let space = document.createElement('br')
 
             comment_actions.setAttribute('class', 'h-[40px] relative pl-[45px]')
             like_btn.setAttribute('class', 'absolute top-5 left-[45px]')
@@ -174,16 +239,85 @@
             comment_actions.appendChild(dislike_btn)
             comment_actions.appendChild(reply)
 
-            custom_container.setAttribute('class', 'mb-5')
+            custom_container.setAttribute('class', 'mb-8')
             custom_container.appendChild(user_details)
             custom_container.appendChild(body_details)
             custom_container.appendChild(comment_actions)
+            custom_container.appendChild(space)
 
             comment_container.prepend(custom_container)
+        }
+
+        // i tried event delegation for other elements clicked, but both of those ran simultaneously so I just made
+        // if conditions for each id click event
+        $(document).on('click', comment_options, function(e){
             
+            if (e.target.id === 'comment_menu'){
+                let thisBeIt = e.target.nextElementSibling
+                if (thisBeIt.classList.contains('hidden')){
+                    thisBeIt.classList.remove('hidden')
+                } else{
+                    thisBeIt.classList.add('hidden')
+                }
+            }
+
+            if (e.target.id === 'edit_btn'){
+
+                // dont do this at home VERY BAD PRACTICE
+                // VERY DANGEROUS IK
+                // since our current location in the DOM is on the comment options, we need to get to the parent first
+
+                let first_div = e.target.closest('div') // this div holds the comment options (the edit and report btns)
+
+                let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
+                
+                let third_div = second_div.parentElement // going back one more div where it includes the name, profile pic, and date of comment
+                
+                let comment_div = third_div.nextElementSibling // from the third div, it's next sibling is the comment text area div, so we go there
+
+                let comment_target = comment_div.querySelector('#comment_body') // lastly we target the textarea
+
+                editComment(e.target.value, comment_target) // then we pass the comment target along with the id
+            }
+            console.log('fireflies ',e.target)
+        })
+
+        function editComment(id, trgt){
+            console.log(trgt.innerHTML)
+            const comment_input = document.createElement('textarea')
+            comment_input.name = 'body'
+            comment_input.type = 'text'
+            comment_input.cols = "20"
+            comment_input.rows = "2"
+            comment_input.setAttribute('class', 'w-full my-2 text-md p-4 resize-none border-2 border-gray-200')
+            comment_input.value = trgt.innerHTML
+
+            const save_comment_btn = document.createElement('button')
+            save_comment_btn.type = "submit"
+            save_comment_btn.name = "save_btn"
+            save_comment_btn.value = "Save"
+            save_comment_btn.innerHTML = "Save edit"
+            save_comment_btn.setAttribute('class', 
+                'float-right float-top bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
+            )
             
+            trgt.innerHTML = ""
+            trgt.appendChild(comment_input)
+            trgt.appendChild(save_comment_btn)
+            
+            // gagawing post req toh bukas hahahahahahahahahahahahahahahahahahahahahahah
+            $.ajax({
+                url: `/edit-comment/${id}/`,
+                type: 'GET',
+                success: function(res){
+
+                    
+
+                }
+            })
 
         }
+        
     </script>
     
 
