@@ -1,5 +1,7 @@
 <header class="bg-gray-300 h-[60px] flex justify-between items-center px-10 fixed w-full z-50">
-    <h1 class="text-4xl font-thin">PostBook</h1>
+    <h1 class="text-4xl font-thin">
+        <a href="{% url 'home' %}">PostBook</a>
+    </h1>
     <div>
         Searchbar
     </div>
@@ -31,7 +33,7 @@
     let profile_div = document.getElementById('profile')
 
     profile_div.addEventListener('click', function(e) {
-        console.log('clicked!')
+        
         let profile_menu = document.getElementById('profile-menu')
         if (profile_menu.classList.contains('hidden')){
             profile_menu.classList.remove('hidden')
