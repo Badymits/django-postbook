@@ -7,7 +7,7 @@ import json
 
 from accounts.models import Account
 from .models import Post, Comment
-from .forms import CreatePostForm, CreateCommentForm
+from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm
 
 # Create your views here.
 def index(request):
@@ -72,7 +72,53 @@ def detailPost(request, id):
 @login_required(login_url='login')
 def editPost(request, id):
     
-    pass
+    context = {}
+    
+    try:
+        post = get_object_or_404(Post, id=id)
+        form = UpdatePostForm(instance=post)
+    except:
+        messages.error(request, 'Post does not exist')
+        return redirect('home')
+    
+    if request.method == 'POST':
+        
+        form = UpdatePostForm(request.POST or None, request.FILES or None, instance=post)
+        
+        if form.is_valid():
+            post = form.save(commit=False)
+            
+            # cleaned data meaning the new data that has been sent thru POST request 
+            # and can only be accessed once is_valid has been called
+            post.title = form.cleaned_data['title']
+            post.body = form.cleaned_data['body']
+            
+            # check if image has been passed thru
+            if form.cleaned_data['image']:
+                post.image = form.cleaned_data['image']
+            post.save()
+            
+            messages.success(request, 'Edit Successful!')
+            return redirect('detail-post', id)
+        else:
+            messages.error(request, 'Something went wrong...')
+    
+    # setting the initial values to be rendered in the form
+    form = UpdatePostForm(
+        initial={
+            'user': post.user,
+            'title': post.title,
+            'body': post.body,
+            'image': post.image
+        }
+    )
+    context['post'] = post
+    context['form'] = form
+    
+    
+    return render(request, 'home/edit_post.html', context)
+
+
 
 @login_required(login_url='login')
 def createComment(request, id):
@@ -101,7 +147,10 @@ def createComment(request, id):
             context['message'] = 'Comment Successful'
             messages.success(request, 'Comment Success')
             
+            # too lazy but same result (yes, these values can be passed in like the example on line 147). Then pass the context var
+            # all together
             return JsonResponse({
+                'comment_id': comment.id,
                 'comment_user': comment.user.username,
                 'comment_body': comment.body,
                 'comment_date': comment.date_posted
@@ -112,5 +161,20 @@ def createComment(request, id):
     
     
     return JsonResponse(context)
+
+@login_required(login_url='login')
+def editComment(request, id):
     
+    context = {}
+    
+    try:
+        comment = get_object_or_404(Comment, id=id)
+    except:
+        context['message'] = 'Comment has been deleted'
+        messages.error(request, 'Comment has been deleted')
+        
+    context['message'] = 'lods may comment lods'
+    context['comment'] = comment.body
+    
+    return JsonResponse(context)
     
