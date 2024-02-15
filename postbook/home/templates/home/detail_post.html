@@ -78,15 +78,17 @@
                                         <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] h-[2em] flex flex-col justify-center divide-y divide-gray-600"
                                             id="comment_options">
                                             <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
+                                            {% if request.user == comment.user %}
                                             <button class="text-xs  px-2 py-1 hover:bg-gray-500 rounded-t-md" id="edit_btn" value="{{ comment.id }}" >Edit comment</button>
-                                            
+                                            {% endif %}
                                             <button class="text-xs px-2 py-1 hover:bg-gray-500 rounded-b-md">Report</button>
                                         </div>
                                     </div>
                                 </div>
                                 
                                 <div class="pl-[45px] py-2 " id="comment_body_div">
-                                    <p id="comment_body">{{ comment.body }}</p>
+                                    <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
+                                    <p id="comment_body" >{{ comment.body }}</p>
                                 </div>
 
                                 <div class="mb-[40px] relative pl-[45px] ">
@@ -209,13 +211,18 @@
 
 
             let body_details = document.createElement('div')
+            let body_text_hidden = document.createElement('input')
             let body_text = document.createElement('p')
 
             body_details.setAttribute('class', 'pl-[45px] py-2')
+            body_text_hidden.setAttribute('hidden', 'hidden')
+            body_text_hidden.setAttribute('id', 'comment_text_prev')
             body_text.setAttribute('id', 'comment_body')
-
+            
+            body_text_hidden.value = body
             body_text.innerHTML = body
 
+            body_details.appendChild(body_text_hidden)
             body_details.appendChild(body_text)
 
 
@@ -249,73 +256,157 @@
         }
 
         // i tried event delegation for other elements clicked, but both of those ran simultaneously so I just made
-        // if conditions for each id click event
+        // if conditions for each id click event in this one event delegation
         $(document).on('click', comment_options, function(e){
             
+            // this will only target the selected comment's menu to display
             if (e.target.id === 'comment_menu'){
-                let thisBeIt = e.target.nextElementSibling
-                if (thisBeIt.classList.contains('hidden')){
-                    thisBeIt.classList.remove('hidden')
+                let target_comment = e.target.nextElementSibling
+                if (target_comment.classList.contains('hidden')){
+                    target_comment.classList.remove('hidden')
                 } else{
-                    thisBeIt.classList.add('hidden')
+                    target_comment.classList.add('hidden')
                 }
             }
 
             if (e.target.id === 'edit_btn'){
 
-                // dont do this at home VERY BAD PRACTICE
-                // VERY DANGEROUS IK
+                // dont do this at home VERY BAD PRACTICE (idk you be the judge/s)
+                // VERY DANGEROUS IK. And yes it is based on how I structured the HTML but the one I made got me the results that I need so yeah...
                 // since our current location in the DOM is on the comment options, we need to get to the parent first
 
                 let first_div = e.target.closest('div') // this div holds the comment options (the edit and report btns)
 
                 let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
                 
-                let third_div = second_div.parentElement // going back one more div where it includes the name, profile pic, and date of comment
+                let third_div = second_div.parentElement // going back one more div where it displays the name, profile pic, and date of comment
                 
                 let comment_div = third_div.nextElementSibling // from the third div, it's next sibling is the comment text area div, so we go there
 
                 let comment_target = comment_div.querySelector('#comment_body') // lastly we target the textarea
+                console.log(comment_target.childNodes[0].nodeName)
+                console.log('comment_target: ', comment_target)
 
-                editComment(e.target.value, comment_target) // then we pass the comment target along with the id
+                // when in editing mode, this needs to be present so that the old value will still be preserved in the DOM (hidden input in comment body)
+                let prev_comment = comment_div.querySelector('#comment_text_prev')
+                console.log(prev_comment.value)
+                 
+                // as long as it is not in edit mode, we can call the editcomment func to push thru editing the target comment
+                if (comment_target.childNodes[0].nodeName === '#text'){
+                    editCommentTemplate(e.target.value, comment_target, prev_comment.value) // then we pass the comment target along with the id
+                } 
+                
             }
-            console.log('fireflies ',e.target)
+            console.log('value', e.target)
+
+            if (e.target.id === 'cancel_btn'){
+                // traversing the dom to go to its parent element
+                const parent = e.target.parentElement
+                console.log('current parent of comment: ', parent)
+                // the queryselectorAll returns a list, the textarea is the first index always
+                // being a textarea input, we can just access it's value
+                let initial_comment = parent.querySelector('#comment_text_prev')
+                
+                console.log('LETS SEEEEE', initial_comment.value)
+                
+                // just revert back to its previous state
+                parent.innerHTML = initial_comment.value
+                
+            }
+
+            if (e.target.id === 'save_btn'){
+                // traversing the dom to go to its parent element
+                const parent = e.target.parentElement
+
+                // pass in the event along with the hidden input with the comment's ID
+                saveComment(e, parent.querySelector('#comment_id').value)
+            }
+
         })
 
-        function editComment(id, trgt){
-            console.log(trgt.innerHTML)
+    
+        function editCommentTemplate(id, trgt, prev_comment){
+            let str = trgt.innerHTML
+            
             const comment_input = document.createElement('textarea')
             comment_input.name = 'body'
             comment_input.type = 'text'
+            comment_input.id = 'body'
             comment_input.cols = "20"
             comment_input.rows = "2"
             comment_input.setAttribute('class', 'w-full my-2 text-md p-4 resize-none border-2 border-gray-200')
             comment_input.value = trgt.innerHTML
+            
+            // the hidden input id will be used for the save comment view
+            const hidden_input_id = document.createElement('input')
+            hidden_input_id.setAttribute('hidden', 'hidden')
+            hidden_input_id.id = "comment_id"
+            hidden_input_id.name = "comment_id"
+            hidden_input_id.value = id
+
+            // the hidden input will
+            const hidden_input_text = document.createElement('input')
+            hidden_input_text.type = "hidden"
+            hidden_input_text.id = "comment_text_prev"
+            hidden_input_text.value = trgt.innerHTML
 
             const save_comment_btn = document.createElement('button')
             save_comment_btn.type = "submit"
             save_comment_btn.name = "save_btn"
             save_comment_btn.value = "Save"
             save_comment_btn.innerHTML = "Save edit"
+            save_comment_btn.id = "save_btn"
             save_comment_btn.setAttribute('class', 
-                'float-right float-top bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
+                'float-right bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
+            )
+
+            const cancel_btn = document.createElement('button')
+            cancel_btn.type = "button"
+            cancel_btn.name = "cancel_btn"
+            cancel_btn.value = "Cancel"
+            cancel_btn.innerHTML = "Cancel"
+            cancel_btn.id = "cancel_btn"
+            cancel_btn.setAttribute('class',
+                'float-right mr-5 bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
             )
             
             trgt.innerHTML = ""
+            trgt.appendChild(hidden_input_id)
+            trgt.appendChild(hidden_input_text)
             trgt.appendChild(comment_input)
             trgt.appendChild(save_comment_btn)
+            trgt.appendChild(cancel_btn)
             
-            // gagawing post req toh bukas hahahahahahahahahahahahahahahahahahahahahahah
+        }
+
+        function saveComment(e, id){
+            // just like the cancel btn, we traverse the DOM and get the parent of event target
+            let parent = e.target.parentElement
+            let new_comment = parent.querySelectorAll('#body')[0] // we get the textarea
+            let hidden_comment = parent.querySelector('#comment_text_prev')
+            console.log('hidden comment: ', hidden_comment)
+            
+            // making a post request to edit the target comment
             $.ajax({
+                type: 'POST',
                 url: `/edit-comment/${id}/`,
-                type: 'GET',
+                data:{
+                    body: new_comment.value, // pass in textarea value
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
                 success: function(res){
-
-                    
-
+                    console.log(res)
+                    // after successful edit, set the 
+                    parent.innerHTML = res.comment
+                    hidden_comment.value = res.comment
+                    console.log(hidden_comment)
+                }, 
+                error: function(err){
+                    console.error(err)
+                    alert('Edit comment unsuccessful')
                 }
+                
             })
-
         }
         
     </script>
