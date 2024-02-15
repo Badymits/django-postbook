@@ -22,3 +22,9 @@ class CreateCommentForm(forms.ModelForm):
         model = Comment
         fields = ['body', 'image']
 
+
+class EditCommentForm(forms.ModelForm):
+    
+    class Meta:
+        model = Comment
+        fields = ['body']
