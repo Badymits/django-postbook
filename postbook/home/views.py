@@ -7,7 +7,7 @@ import json
 
 from accounts.models import Account
 from .models import Post, Comment
-from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm
+from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
 
 # Create your views here.
 def index(request):
@@ -172,6 +172,22 @@ def editComment(request, id):
     except:
         context['message'] = 'Comment has been deleted'
         messages.error(request, 'Comment has been deleted')
+        
+    if request.method == 'POST':
+        print(request.POST)
+        form = EditCommentForm(request.POST or None, instance=comment)
+        
+        if form.is_valid():
+            
+            comment = form.save(commit=False)
+            comment.body = form.cleaned_data['body']
+            
+            comment.save()
+            
+            messages.success(request, 'comment edited')
+            context['message'] = 'success'
+            context['comment'] = comment.body
+            return JsonResponse(context)
         
     context['message'] = 'lods may comment lods'
     context['comment'] = comment.body
