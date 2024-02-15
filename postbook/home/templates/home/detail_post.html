@@ -75,13 +75,14 @@
                                     <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
                                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
 
-                                        <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] h-[2em] flex flex-col justify-center divide-y divide-gray-600"
+                                        <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
                                             id="comment_options">
                                             <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
                                             {% if request.user == comment.user %}
-                                            <button class="text-xs  px-2 py-1 hover:bg-gray-500 rounded-t-md" id="edit_btn" value="{{ comment.id }}" >Edit comment</button>
+                                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ comment.id }}" >Edit</button>
+                                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ comment.id }}" >Delete</button>
                                             {% endif %}
-                                            <button class="text-xs px-2 py-1 hover:bg-gray-500 rounded-b-md">Report</button>
+                                            <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
                                         </div>
                                     </div>
                                 </div>
@@ -171,6 +172,7 @@
             let comment_button = document.createElement('p')
             let comment_options = document.createElement('div')
             let comment_edit = document.createElement('button')
+            let comment_delete = document.createElement('button')
             let comment_report = document.createElement('button')
 
             user_details.setAttribute('class', 'flex items-center gap-2 relative')
@@ -183,21 +185,26 @@
             comment_button.setAttribute('class', 'hover:bg-gray-400 cursor-pointer rounded-md')
             comment_button.setAttribute('id', 'comment_menu')
 
-            comment_options.setAttribute('class', 'hidden absolute right-2 bg-gray-400 rounded-md w-[4em] h-[2em] flex flex-col justify-center divide-y divide-gray-600')
+            comment_options.setAttribute('class', 'hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600')
             comment_options.setAttribute('id', 'comment_options')
 
-            comment_edit.setAttribute('class', 'text-xs  px-2 py-1 hover:bg-gray-500 rounded-t-md')
-            comment_report.setAttribute('class', 'text-xs px-2 py-1 hover:bg-gray-500 rounded-b-md')
+            comment_edit.setAttribute('class', 'text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600')
+            comment_delete.setAttribute('class', 'text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600')
+            comment_report.setAttribute('class', 'text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md')
             comment_edit.setAttribute('id', 'edit_btn')
             comment_edit.setAttribute('value', comment_id)
+            comment_delete.setAttribute('id', 'delete_btn')
+            comment_delete.setAttribute('value', comment_id)
 
             username.innerHTML = users_name
             comment_date.innerHTML = date
             comment_button.innerHTML = '...'
-            comment_edit.innerHTML = 'Edit comment'
+            comment_edit.innerHTML = 'Edit'
+            comment_delete.innerHTML = 'Delete'
             comment_report.innerHTML = 'Report'
 
             comment_options.appendChild(comment_edit)
+            comment_options.appendChild(comment_delete)
             comment_options.appendChild(comment_report)
 
             comment_options_div.appendChild(comment_button)
@@ -320,6 +327,12 @@
 
                 // pass in the event along with the hidden input with the comment's ID
                 saveComment(e, parent.querySelector('#comment_id').value)
+            }
+
+            if (e.target.id === 'delete_btn'){
+                const parent = e.target.parentElement
+
+                console.log(parent.querySelector('#delete_btn').value)
             }
 
         })
