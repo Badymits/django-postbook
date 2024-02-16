@@ -18,17 +18,31 @@
 
             <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  relative"> 
                     {% if request.user == post.user %}
-                        <button class="absolute right-4 text-lg hover:bg-gray-400 px-1 rounded-lg">
+                        <button class="absolute right-2 text-lg hover:bg-gray-400 px-1 rounded-lg mr-[2em] text-center">
                             <a href="{% url 'edit-post' post.id %}">
                                 <i data-tooltip-target="tooltip-edit" data-tooltip-placement="bottom" class="fa fa-pencil-square-o" aria-hidden="true"></i>
                             </a>
                         </button>
+                        <button class="absolute -right-1 top-[14px] text-xl hover:bg-gray-400 px-1 rounded-lg mr-[1em] text-center">
+                            <a href="{% url 'delete-post' post.id %}">
+                                <i data-tooltip-target="tooltip-delete" data-tooltip-placement="bottom" class="fa fa-trash" aria-hidden="true"></i>
+                            </a>
+                        </button>
+                        
+                        
 
                         <div id="tooltip-edit" role="tooltip" class="absolute z-10 
                             invisible px-3 py-2 text-xs font-medium text-white 
                             transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
                             opacity-0 tooltip dark:bg-gray-700">
                                 Edit Post
+                            <div class="tooltip-arrow" data-popper-arrow></div>
+                        </div>
+                        <div id="tooltip-delete" role="tooltip" class="absolute z-10 
+                            invisible px-3 py-2 text-xs font-medium text-white 
+                            transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                            opacity-0 tooltip dark:bg-red-700">
+                                Delete Post
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     {% endif %}
@@ -92,10 +106,10 @@
                                     <p id="comment_body" >{{ comment.body }}</p>
                                 </div>
 
-                                <div class="mb-[40px] relative pl-[45px] ">
-                                    <button class="absolute top-5 left-[45px]">Like Btn</button>
-                                    <button class="absolute top-5 left-[125px]">Dislike Btn</button>
-                                    <button class="absolute top-5 left-[230px]" id="comment_reply">Reply</button>
+                                <div class="mb-[40px] relative pl-[45px] " id="comment_actions">
+                                    <button class="absolute top-5 left-[45px]" id="like_btn">Like Btn</button>
+                                    <button class="absolute top-5 left-[125px]" id="dislike_btn">Dislike Btn</button>
+                                    <button class="absolute top-5 left-[230px]" id="comment_reply" value="{{ comment.id }}">Reply</button>
                                     
                                 </div>
                                 <br>
@@ -143,6 +157,7 @@
                 url: `http://127.0.0.1:8000/create-comment/${post_id}/`,
                 data: {
                     body: $('#body').val(),
+                    main_comment: true,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: "json",
@@ -156,7 +171,7 @@
         })
         // its repetitive I know pero wala na tayong no choice
         // creating the element manually was the only solution (that I know) for this problem
-        // this creates the comment element on 
+        // this creates the comment element dynamically, without the need to refresh the page to render the comment
         function createComment(body, users_name, date, comment_id){
             if (comment_container.classList.contains('hidden')){
                 comment_container.classList.remove('hidden')
@@ -241,9 +256,14 @@
             let space = document.createElement('br')
 
             comment_actions.setAttribute('class', 'h-[40px] relative pl-[45px]')
+            comment_actions.setAttribute('id', 'comment_actions')
             like_btn.setAttribute('class', 'absolute top-5 left-[45px]')
+            like_btn.setAttribute('id', 'like_btn')
             dislike_btn.setAttribute('class', 'absolute top-5 left-[125px]')
+            dislike_btn.setAttribute('id', 'dislike_btn')
             reply.setAttribute('class', 'absolute top-5 left-[230px]')
+            reply.setAttribute('id', 'comment_reply')
+            reply.value = comment_id
 
             like_btn.innerHTML = 'Like Btn'
             dislike_btn.innerHTML = 'Dislike Btn'
@@ -331,15 +351,38 @@
 
             if (e.target.id === 'delete_btn'){
                 const parent = e.target.parentElement
-
+                
                 console.log(parent.querySelector('#delete_btn').value)
+                deleteComment(e, parent.querySelector('#delete_btn').value)
+            }
+
+            if (e.target.id === 'comment_reply'){
+                console.log(e.target.value)
+                const parent = e.target.parentElement;
+                replyInputCommentTemplate(parent, e.target.value)
             }
 
         })
 
+        // to be used for the delete functio where we place the csrf token to the request headers
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
     
         function editCommentTemplate(id, trgt, prev_comment){
-            let str = trgt.innerHTML
             
             const comment_input = document.createElement('textarea')
             comment_input.name = 'body'
@@ -357,7 +400,9 @@
             hidden_input_id.name = "comment_id"
             hidden_input_id.value = id
 
-            // the hidden input will
+            // adding hidden input to store data for extra data integrity(?) 
+            // idk my initial plan was to store the body's old input so text value will remain if editing mode is canceled
+            // but this work's just fine
             const hidden_input_text = document.createElement('input')
             hidden_input_text.type = "hidden"
             hidden_input_text.id = "comment_text_prev"
@@ -395,9 +440,9 @@
         function saveComment(e, id){
             // just like the cancel btn, we traverse the DOM and get the parent of event target
             let parent = e.target.parentElement
+
             let new_comment = parent.querySelectorAll('#body')[0] // we get the textarea
-            let hidden_comment = parent.querySelector('#comment_text_prev')
-            console.log('hidden comment: ', hidden_comment)
+            let hidden_comment = parent.querySelector('#comment_text_prev') // get the hidden input to change its value on success
             
             // making a post request to edit the target comment
             $.ajax({
@@ -409,7 +454,7 @@
                 },
                 success: function(res){
                     console.log(res)
-                    // after successful edit, set the 
+                    // after successful edit, set the parent and hidden input values to the new comment
                     parent.innerHTML = res.comment
                     hidden_comment.value = res.comment
                     console.log(hidden_comment)
@@ -420,6 +465,105 @@
                 }
                 
             })
+        }
+
+        function deleteComment(e, id){
+
+            // the comment_options div
+            let parent = e.target.parentElement
+
+            // grandparent div that holds the comment menu button and comment options block
+            let grandparent = parent.parentElement
+
+            // getting the ids to add pointer-event-none css classes kinda like removeEventListener()
+            let comment_menu = grandparent.querySelector('#comment_menu')
+            let comment_options = grandparent.querySelector('#comment_options')
+
+            // starting point to traverse to the next div sibling: the comment body div
+            let great_grandparent = grandparent.parentElement
+
+            // getting comment area to change it's text
+            let comment_div = great_grandparent.nextElementSibling
+            let comment_target = comment_div.querySelector('#comment_body')
+
+            // getting the div of comment actions 
+            let comment_actions = comment_div.nextElementSibling
+
+            // getting the id's of respective comment actions
+            let comment_like = comment_actions.querySelector('#like_btn')
+            let comment_dislike = comment_actions.querySelector('#dislike_btn')
+            let comment_reply = comment_actions.querySelector('#comment_reply')
+
+            $.ajax({
+                url: `/delete-comment/${id}`,
+                type: 'delete',
+                // when it coems to delete request, django will look for the csrf token in THE HEADER, rather than the input csrf token
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                },
+                success: function(res){
+                    // set message html element text
+                    
+                    // for user not to open the options of a deleted comment
+                    comment_menu.classList.add('pointer-events-none')
+
+                    // just to make sure that no one gets to edit or delete an already deleted comment
+                    comment_options.classList.add('hidden')
+                    comment_options.classList.add('pointer-events-none')
+
+                    // setting the inner html to deleted to let users know its status
+                    comment_target.innerHTML = "[Deleted]"
+
+                    // deleted comments cannot be liked/disliked or replied to
+                    comment_like.disabled = true
+                    comment_dislike.disabled = true
+                    comment_reply.disabled = true
+                    alert(res.message)
+                },
+                error: function(err){
+                    alert(err)
+                }
+            }) 
+        }
+
+        // whenever users click to comment on another comment, this will be the template 
+        function replyInputCommentTemplate(e, id){
+            
+            // the comment_body_div
+            let prev_div = e.previousElementSibling
+            console.log(prev_div)
+
+            const reply_section_div = document.createElement('div')
+            reply_section_div.id = 'reply_section_div'
+            reply_section_div.setAttribute('class', 'pl-[45px] py-2 ')
+
+            const reply_input = document.createElement('textarea')
+            reply_input.name = 'body'
+            reply_input.type = 'text'
+            reply_input.id = 'body'
+            reply_input.cols = "20"
+            reply_input.rows = "2"
+            reply_input.setAttribute('class', `w-full my-2 text-md p-4 resize-none border-2 border-gray-200 replying_to_${id}`)
+
+            const reply_input_save = document.createElement('button')
+            reply_input_save.name = 'reply_comment_btn'
+            reply_input_save.id = 'reply_comment_btn'
+            reply_input_save.value = 'Reply'
+            reply_input_save.setAttribute('class', 'float-right bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100')
+
+            const reply_input_cancel = document.createElement('button')
+            reply_input_cancel.name = "cancel_reply_btn"
+            reply_input_cancel.id = "cancel_reply_btn"
+            reply_input_cancel.value = "Cancel"
+            reply_input_cancel.setAttribute('class', 'float-right mr-5 bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100')
+
+            
+            reply_section_div.append(reply_input)
+            reply_section_div.append(reply_input_save)
+            reply_section_div.append(reply_input_cancel)
+
+
+            prev_div.appendChild()
         }
         
     </script>
