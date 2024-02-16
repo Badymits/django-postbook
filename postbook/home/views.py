@@ -54,7 +54,7 @@ def detailPost(request, id):
         post = get_object_or_404(Post, id=id)
  
     except:
-        print('ERROR BOSSING')
+        print('ERROR')
         messages.error(request, 'Post does not exist')
         return redirect('home')
     context = {'post': post}
@@ -119,6 +119,20 @@ def editPost(request, id):
     return render(request, 'home/edit_post.html', context)
 
 
+@login_required(login_url='login')
+def deletePost(request, id):
+    context = {}
+    try:
+        post = get_object_or_404(Post, id=id)
+        post.delete()
+        context['message'] = 'Post has been deleted!'
+        messages.success(request, 'Post has been deleted')
+        return redirect('home')
+        
+    except:
+        context['message'] = 'post not found'
+        return JsonResponse(context)
+
 
 @login_required(login_url='login')
 def createComment(request, id):
@@ -135,19 +149,25 @@ def createComment(request, id):
         form = CreateCommentForm(request.POST or None, request.FILES or None)
         
         if form.is_valid():
+            print(request.POST)
             comment = form.save(commit=False)
             
             comment.main_post = main_post
             comment.user = request.user
             
-            # if request.POST['main_comment']:
-            #     comment.main_comment = request.POST['main_comment']
+            if request.POST['main_comment'] == False:
+                # put in request data the main comment for this line pota
+                try:
+                    comment.main_comment = comment
+                except:
+                    print('wtf')
+                    messages.error(request, 'cant do that')
             
             comment.save()
             context['message'] = 'Comment Successful'
             messages.success(request, 'Comment Success')
             
-            # too lazy but same result (yes, these values can be passed in like the example on line 147). Then pass the context var
+            # too lazy but same result (yes, these values can be passed in like the example on line 161). Then pass the context var
             # all together
             return JsonResponse({
                 'comment_id': comment.id,
@@ -174,7 +194,7 @@ def editComment(request, id):
         messages.error(request, 'Comment has been deleted')
         
     if request.method == 'POST':
-        print(request.POST)
+       
         form = EditCommentForm(request.POST or None, instance=comment)
         
         if form.is_valid():
@@ -193,4 +213,18 @@ def editComment(request, id):
     context['comment'] = comment.body
     
     return JsonResponse(context)
+
+@login_required(login_url='login')
+def deleteComment(request, id):
+    
+    context = {}
+    try:
+        comment = get_object_or_404(Comment, id=id)
+        
+        comment.delete()
+        context['message'] = 'Comment Successfully deleted'
+        return JsonResponse(context)
+    except:
+        context['message'] = 'Comment does not exist'
+        return JsonResponse(context)
     
