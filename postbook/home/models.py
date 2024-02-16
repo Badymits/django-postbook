@@ -35,3 +35,11 @@ class Comment(models.Model):
     def __str__(self):
         return f'{self.user.first_name} replying to {self.main_post.title}'
     
+# class LikeModel(models.Model):
+    
+#     pass
+
+# class DislikeModel(models.Model):
+    
+#     pass
+    
