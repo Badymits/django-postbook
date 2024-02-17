@@ -71,56 +71,62 @@
                     <input type="hidden" name="user" id="user" value="{{ request.user }}">
                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}">
                     <textarea name="body" id="body" cols="30" rows="6" placeholder="Text here..." 
-                    class="w-full my-4 text-lg p-4 resize-none border-2 border-gray-200"
+                    class="w-full my-4 text-lg p-4 resize-none border-2 border-gray-200" required
                     ></textarea>
-                    <button type="submit" class="float-right bg-white w-[150px] rounded-full py-1">Comment</button>
+                    <button type="submit" class="float-right bg-white w-[150px] rounded-full py-1 hover:bg-gray-100">Comment</button>
                 </form>
 
                 <div id="comment-section" class="pt-[50px]">
                     
                     {% if comments %}
                         {%for comment in comments%}
-                            <div class="p-2 mb-5" id="comment_container">
-                                <div class="border-l-[1px] border-gray-400 ">
-                                    <div class="flex items-center gap-2 relative pl-2">
-                                    
-                                        <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                            {% if comment.comment_level == 1 %}
+                                <div class="p-2 mb-5" id="comment_container">
+                                    <div class="border-l-[2px] border-gray-400 pb-4">
+                                        <div class="flex items-center gap-2 relative pl-2">
                                         
-                                        <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
-                                        
-                                        <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
-                                        <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
-                                            <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
-    
-                                            <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
-                                                id="comment_options">
-                                                <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
-                                                {% if request.user == comment.user %}
-                                                    <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ comment.id }}" >Edit</button>
-                                                    <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ comment.id }}" >Delete</button>
-                                                {% endif %}
-                                                <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
+                                            <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                                            
+                                            <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
+                                            
+                                            <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
+                                            <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
+                                                <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
+        
+                                                <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
+                                                    id="comment_options">
+                                                    <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
+                                                    {% if request.user == comment.user %}
+                                                        <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ comment.id }}" >Edit</button>
+                                                        <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ comment.id }}" >Delete</button>
+                                                    {% endif %}
+                                                    <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <div class="pl-[45px] py-2 " id="comment_body_div">
-                                        <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
-                                        <p id="comment_body" >{{ comment.body }}</p>
+                                        <div class="pl-[3.5em] py-2 " id="comment_body_div">
+                                            <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
+                                            <p id="comment_body" >{{ comment.body }}</p>
+                                        </div>
+        
+                                        <div class="mb-[40px] relative pl-[3px] " id="comment_actions">
+                                            <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
+                                            <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
+                                            <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}">Reply</button>
+                                            
+                                        </div>
+                                        <br>
                                     </div>
-    
-                                    <div class="mb-[40px] relative pl-[45px] " id="comment_actions">
-                                        <button class="absolute top-5 left-[45px]" id="like_btn">Like Btn</button>
-                                        <button class="absolute top-5 left-[125px]" id="dislike_btn">Dislike Btn</button>
-                                        <button class="absolute top-5 left-[230px]" id="comment_reply" value="{{ comment.id }}">Reply</button>
-                                        
+                                    <!-- this is an idea.... -->
+                                    <div class="h-[100px] w-[100px] " id="comment_replies">
+                                        {% if comment.comment_level > 1 %}
+                                            <p> {{ comment.body }} </p>
+                                        {% endif %}
                                     </div>
-                                    <br>
+                                                    
                                 </div>
-                                    
-                                    
-                                                 
-                            </div>
+                            {% endif %}
                             
                         {% endfor %}
                     {% else %}
@@ -165,6 +171,7 @@
                 data: {
                     body: $('#body').val(),
                     main_comment: true,
+                    comment_level: 1,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: "json",
@@ -172,18 +179,18 @@
                     $('#body').val('')
                     $('#success_msg').html(res);
                     console.log(res.comment_body, ' ', res.comment_user)
-                    createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id);
+                    createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level);
                 }
             })
         })
         // its repetitive I know pero wala na tayong no choice
         // creating the element manually was the only solution (that I know) for this problem
         // this creates the comment element dynamically, without the need to refresh the page to render the comment
-        function createComment(body, users_name, date, comment_id){
+        function createComment(body, users_name, date, comment_id, level){
             if (comment_container.classList.contains('hidden')){
                 comment_container.classList.remove('hidden')
             }
-            let custom_container = document.createElement('div')
+            const custom_container = document.createElement('div')
             let border_container = document.createElement('div')
             let user_details = document.createElement('div')
             let profile_pic = document.createElement('p')
@@ -198,7 +205,7 @@
             let comment_delete = document.createElement('button')
             let comment_report = document.createElement('button')
 
-            border_container.setAttribute('class', 'border-l-[1px] border-gray-400')
+            border_container.setAttribute('class', 'border-l-[2px] border-gray-400 pb-4')
             user_details.setAttribute('class', 'flex items-center gap-2 relative pl-2')
             profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
             username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
@@ -245,7 +252,7 @@
             let body_text_hidden = document.createElement('input')
             let body_text = document.createElement('p')
 
-            body_details.setAttribute('class', 'pl-[45px] py-2')
+            body_details.setAttribute('class', 'pl-[3.5em] py-2')
             body_text_hidden.setAttribute('hidden', 'hidden')
             body_text_hidden.setAttribute('id', 'comment_text_prev')
             body_text.setAttribute('id', 'comment_body')
@@ -264,13 +271,13 @@
             let reply = document.createElement('button')
             let space = document.createElement('br')
 
-            comment_actions.setAttribute('class', 'h-[40px] relative pl-[45px]')
+            comment_actions.setAttribute('class', 'mb-[40px] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
-            like_btn.setAttribute('class', 'absolute top-5 left-[45px]')
+            like_btn.setAttribute('class', 'absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md')
             like_btn.setAttribute('id', 'like_btn')
-            dislike_btn.setAttribute('class', 'absolute top-5 left-[125px]')
+            dislike_btn.setAttribute('class', 'absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md')
             dislike_btn.setAttribute('id', 'dislike_btn')
-            reply.setAttribute('class', 'absolute top-5 left-[230px]')
+            reply.setAttribute('class', 'absolute top-5 left-[230px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
             reply.value = comment_id
 
@@ -282,15 +289,33 @@
             comment_actions.appendChild(dislike_btn)
             comment_actions.appendChild(reply)
 
-            custom_container.setAttribute('class', 'mb-8 border-none')
-            border_container.appendChild(user_details)
-            border_container.appendChild(body_details)
-            border_container.appendChild(comment_actions)
-            border_container.appendChild(space)
+            console.log('IF CONDITION LEVELS')
+            if (level === 1){
+                console.log('LEVEL 1')
+                custom_container.setAttribute('class', 'mb-8 border-none')
 
-            custom_container.append(border_container)
-            comment_container.prepend(custom_container)
-        }
+                border_container.appendChild(user_details)
+                border_container.appendChild(body_details)
+                border_container.appendChild(comment_actions)
+                border_container.appendChild(space)
+
+                custom_container.append(border_container)
+                comment_container.prepend(custom_container)
+            } else if (level === 2) {
+                console.log('LEVEL 2 NA BOI')
+                custom_container.setAttribute('class', 'mb-8 border-none')
+
+                border_container.appendChild(user_details)
+                border_container.appendChild(body_details)
+                border_container.appendChild(comment_actions)
+                border_container.appendChild(space)
+
+                custom_container.append(border_container)
+                return custom_container
+            }
+           
+            
+        }  
 
         // i tried event delegation for other elements clicked, but both of those ran simultaneously so I just made
         // if conditions for each id click event in this one event delegation
@@ -390,15 +415,65 @@
                 let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
                 
                 let third_div = second_div.parentElement // going back one more div where it displays the name, profile pic, and date of comment
+                
+                let reply_section_div = third_div.querySelector('#reply_section_div')
+                let indiv_reply = reply_section_div.querySelector('#reply_div')
 
-                cancelReplyComment(second_div, e.target.value)
+                cancelReplyComment(reply_section_div)
             }
 
             if (e.target.id === 'reply_comment_btn'){
-                console.log('reply to comment biatch')
+                const parent  = e.target.parentElement;
+                console.log(parent)
+                const reply_section = parent.parentElement
+                const main_comment = parent.querySelector('#hidden_input_reply').value
+                
+                saveReplyComment(parent, main_comment, reply_section)
             }
 
         })
+
+        // first param refers to the individual reply
+        // second param refers to the comment that is being replied to
+        // third param will be the section of all the replies related to the main comment
+        function saveReplyComment(trgt, id, reply_section){
+            console.log(trgt, id)
+
+            let body = trgt.querySelector('#body').value
+            if (body === ''){
+                alert('Required input')
+            } else {
+                
+                $.ajax({
+                    url: `/create-comment/${post_id}/`,
+                    type: 'POST',
+                    data: {
+                        body: body,
+                        main_comment: false,
+                        main_comment_id: id,
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function(res){
+                        console.log(res)
+                        let result = createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level)
+                        createNestedComment(result, reply_section)
+                    },
+                    error: function(err){
+                        alert(err)
+                    }
+                })
+
+            }
+
+        } 
+
+        function createNestedComment(comment, reply_section){
+            const child = reply_section.querySelector('#reply_div')
+            reply_section.removeChild(child)
+            reply_section.append(comment)
+            const container = comment_container.querySelector('#comment_replies')
+            container.appendChild(reply_section)
+        }
 
         // to be used for the delete functio where we place the csrf token to the request headers
         function getCookie(name) {
@@ -429,7 +504,7 @@
             comment_input.setAttribute('class', 'w-full my-2 text-md p-4 resize-none border-2 border-gray-200')
             comment_input.value = trgt.innerHTML
             
-            // the hidden input id will be used for the save comment view
+            // the hidden input id will be used for the save comment function
             const hidden_input_id = document.createElement('input')
             hidden_input_id.setAttribute('hidden', 'hidden')
             hidden_input_id.id = "comment_id"
@@ -503,6 +578,7 @@
             })
         }
 
+        // if comment has been deleted and the reply div is present, include that to disable replies
         function deleteComment(e, id){
 
             // the comment_options div
@@ -554,6 +630,9 @@
                     comment_like.disabled = true
                     comment_dislike.disabled = true
                     comment_reply.disabled = true
+
+                    // set the hover effect to none
+                    // comment_like.classList.remove('hover:bg-gray-400')
                     alert(res.message)
                 },
                 error: function(err){
@@ -567,24 +646,30 @@
             
             // the comment_container
             let comment_div_target = e
+
+            const reply_div = document.createElement('div')
+            reply_div.id = "reply_div"
             
-            const reply_section_div = document.createElement('div')
-            reply_section_div.id = 'reply_section_div'
-            reply_section_div.setAttribute('class', 'pl-[5em] py-2 px-5 bg-red-200')
+            const hidden_input = document.createElement('input')
+            hidden_input.type = 'hidden'
+            hidden_input.value = id // the comment that this is replying to
+            hidden_input.id = 'hidden_input_reply'
 
             const reply_input = document.createElement('textarea')
             reply_input.name = 'body'
             reply_input.type = 'text'
             reply_input.id = 'body'
             reply_input.cols = "20"
-            reply_input.rows = "2"
-            reply_input.setAttribute('class', `w-full my-2 text-md p-4 resize-none border-2 border-gray-200 replying_to_${id}`)
+            reply_input.rows = "4"
+            reply_input.setAttribute('class', `w-full my-1 text-md p-3 resize-none border-2 border-gray-200 replying_to_${id}`)
+            reply_input.required = true
 
             const reply_input_save = document.createElement('button')
             reply_input_save.name = 'reply_comment_btn'
             reply_input_save.id = 'reply_comment_btn'
             reply_input_save.value = 'Reply'
             reply_input_save.innerHTML = 'Reply'
+            reply_input_save.type = 'submit'
             reply_input_save.setAttribute('class', 'float-right bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100')
 
             const reply_input_cancel = document.createElement('button')
@@ -593,19 +678,33 @@
             reply_input_cancel.value = "Cancel"
             reply_input_cancel.innerHTML = "Cancel"
             reply_input_cancel.setAttribute('class', 'float-right mr-5 bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100')
-
             
-            reply_section_div.append(reply_input)
-            reply_section_div.append(reply_input_save)
-            reply_section_div.append(reply_input_cancel)
+            reply_div.appendChild(hidden_input)
+            reply_div.appendChild(reply_input)
+            reply_div.appendChild(reply_input_save)
+            reply_div.appendChild(reply_input_cancel)
 
+            if (e.querySelector('#reply_section_div') === null || e.querySelector('#reply_section_div') === undefined) { 
+                //create reply section div
+                const reply_section_div = document.createElement('div')
+                reply_section_div.id = 'reply_section_div'
+                reply_section_div.setAttribute('class', 'pl-[1.4em] py-2 px-3 ml-[3em] border-l-[2px] border-gray-400 h-full')
 
-            comment_div_target.appendChild(reply_section_div)
+                reply_section_div.append(reply_div)
+
+                comment_div_target.appendChild(reply_section_div)
+            } else {
+                e.append(reply_div)
+
+                comment_div_target.appendChild(e)
+            }
+            
+            
         }
 
-        function cancelReplyComment(e, id){
-            let reply_div = e.querySelector('#reply_section_div')
-            console.log(e.removeChild(reply_div))
+        function cancelReplyComment(e){
+            let parent = e.parentElement
+            parent.removeChild(e)
         }
         
     </script>
