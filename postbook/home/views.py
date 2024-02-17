@@ -154,15 +154,23 @@ def createComment(request, id):
             
             comment.main_post = main_post
             comment.user = request.user
-            comment.comment_level = request.POST['comment_level']
             
-            if request.POST['main_comment'] == False:
+            
+            
+            if request.POST['main_comment'] == 'false':
                 # put in request data the main comment for this line pota
                 try:
-                    comment.main_comment = comment
+                    main_comment = get_object_or_404(Comment, id=request.POST['main_comment_id'])
+                    comment.main_comment = main_comment
+                    if comment.comment_level is None:
+                        comment.comment_level = main_comment.comment_level + 1
+                        
                 except:
                     print('wtf')
                     messages.error(request, 'cant do that')
+            else:
+                
+                comment.comment_level = 1
             
             comment.save()
             context['message'] = 'Comment Successful'
@@ -174,7 +182,8 @@ def createComment(request, id):
                 'comment_id': comment.id,
                 'comment_user': comment.user.username,
                 'comment_body': comment.body,
-                'comment_date': comment.date_posted
+                'comment_date': comment.date_posted,
+                'comment_level': comment.comment_level
             })
         else:
             messages.error(request, 'There was an error')
