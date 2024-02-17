@@ -34,7 +34,7 @@ class Comment(models.Model):
     comment_level       = models.IntegerField(null=True, blank=True)
     
     def __str__(self):
-        return f'{self.user.first_name} replying to {self.main_post.title}'
+        return f'{self.user.first_name} replying to {self.main_post.title} content: {self.body}'
     
 # class LikeModel(models.Model):
     
