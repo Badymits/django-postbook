@@ -154,6 +154,7 @@ def createComment(request, id):
             
             comment.main_post = main_post
             comment.user = request.user
+            comment.comment_level = request.POST['comment_level']
             
             if request.POST['main_comment'] == False:
                 # put in request data the main comment for this line pota
