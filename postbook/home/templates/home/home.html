@@ -46,6 +46,17 @@
                             {% if post.body %}
                                 <p class="pt-3">{{ post.body }}</p>
                             {% endif %}
+                            
+                            <div class="h-[40px] flex items-center justify-start gap-2  mt-2  px-2 text-md relative" id="post_actions">
+                               
+                                <button class="hover:bg-gray-400 p-2  rounded-md">Like Btn</button>
+                                <button class=" hover:bg-gray-400 p-2  rounded-md">Dislike Btn</button>
+                                <div class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 p-2">
+                                    <i class="fa fa-comments-o" aria-hidden="true"></i>
+                                    <p>{{ post.comment_set.all|length }} {{ post.comment_set.count|pluralize:"comment,comments" }}</p>
+                                </div>
+                                
+                            </div>
                         </div>
                         
 
@@ -53,15 +64,6 @@
                 {% else %}
                     <p>No posts...</p>
                 {% endif %}
-                <div class="h-[400px] w-full bg-gray-200 mb-6 relative p-4">
-                    aaaa
-                </div>
-                <div class="h-[400px] w-full bg-gray-200 mb-6 relative p-4">
-                    aaaa
-                </div>
-                <div class="h-[400px] w-full bg-gray-200 mb-6 relative p-4">
-                    aaaa
-                </div>
 
                 
             </div>
