@@ -1,0 +1,55 @@
+
+{% for reply in replies %}
+    
+        <div class="px-2 my-4 pl-[2em]">
+            <div class="border-l-[2px] border-gray-400">
+                <div class="flex items-center gap-2 relative pl-2">
+                
+                    <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                    
+                    <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ reply.user.username }}</p> 
+                    
+                    <p class="pl-2 text-gray-500" id="comment_date">{{ reply.date_posted }}</p>
+                    <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
+                        <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
+
+                        <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
+                            id="comment_options">
+                            <input type="hidden" name="" id="comment_id" value="{{ reply.id }}">
+                            {% if request.user == reply.user %}
+                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ reply.id }}" >Edit</button>
+                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ reply.id }}" >Delete</button>
+                            {% endif %}
+                            <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-[3.5em] py-2 " id="comment_body_div">
+                    <input type="hidden" id="comment_text_prev" value="{{ reply.body }}">
+                    <p id="comment_body" >{{ reply.body }}</p>
+                </div>
+
+                <div class="mb-[40px] relative pl-[3px] " id="comment_actions">
+                    <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
+                    <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
+                    <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ reply.id }}">Reply</button>
+                    
+                </div>
+                <br>
+                {% if reply.has_replies %}
+                    {% include 'home/nested_template.html' with replies=reply.get_replies %} 
+                {% else %}
+                    <div class="pl-[3em]" id="comment_replies">
+
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    
+{% endfor %}
+
+    
+
+        
