@@ -24,7 +24,7 @@ class Post(models.Model):
 class Comment(models.Model):
     
     main_post           = models.ForeignKey(Post, on_delete=models.CASCADE)
-    main_comment        = models.ForeignKey('Comment', on_delete=models.DO_NOTHING, null=True) # to be used in a nested reply feed
+    reply               = models.ForeignKey('Comment', on_delete=models.DO_NOTHING, null=True, related_name='replies') # to be used in a nested comment thread
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body                = models.CharField(max_length=955)
     image               = models.ImageField(default='images', blank=True, null=True)
@@ -35,6 +35,21 @@ class Comment(models.Model):
     
     def __str__(self):
         return f'{self.user.first_name} replying to {self.main_post.title} content: {self.body}'
+    
+    # By making use of reply_id, we avoid loading the reply model object if it exists, which can lead to an N+1 problem
+    @property
+    def is_reply(self):
+        return self.reply_id is not None
+    
+    # if true, then we can identify if it is a nested comment or not.
+    @property
+    def has_replies(self):
+        return self.replies.exists()
+    
+    # gets all replies related to the object that called it
+    @property
+    def get_replies(self):
+        return self.replies.all()
     
 # class LikeModel(models.Model):
     
