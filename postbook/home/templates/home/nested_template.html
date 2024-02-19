@@ -1,8 +1,8 @@
 
 {% for reply in replies %}
     
-        <div class="px-2 my-4 pl-[2em]">
-            <div class="border-l-[2px] border-gray-400">
+        <div class="mb-6 pl-[2em]">
+            <div class="border-l-[2px] border-gray-400" id="comment_thread">
                 <div class="flex items-center gap-2 relative pl-2">
                 
                     <p class="w-10 h-10 rounded-full bg-blue-300 ">
@@ -30,7 +30,7 @@
                     <p id="comment_body" >{{ reply.body }}</p>
                 </div>
 
-                <div class="mb-[40px] relative pl-[3px] " id="comment_actions">
+                <div class="mb-[4em] relative pl-[3px] " id="comment_actions">
                     <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
                     <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
                     <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ reply.id }}">Reply</button>
