@@ -59,12 +59,12 @@ def detailPost(request, id):
         return redirect('home')
     context = {'post': post}
     try:
-        comments = Comment.objects.filter(main_post=post.id).order_by('-date_posted')
+        comments = Comment.objects.filter(main_post=post.id, comment_level=1).order_by('-date_posted')
+        replies = Comment.objects.filter(replies__isnull=False).order_by("-date_posted")
+        context['replies'] = replies
         context['comments'] = comments
     except:
         messages.error(request, 'No Comments')    
-        
-    
     
     return render(request, 'home/detail_post.html', context)
 
@@ -156,17 +156,15 @@ def createComment(request, id):
             comment.user = request.user
             
             
-            
-            if request.POST['main_comment'] == 'false':
+            if request.POST['is_reply'] == 'true':
                 # put in request data the main comment for this line pota
                 try:
                     main_comment = get_object_or_404(Comment, id=request.POST['main_comment_id'])
-                    comment.main_comment = main_comment
+                    comment.reply = main_comment
                     if comment.comment_level is None:
                         comment.comment_level = main_comment.comment_level + 1
                         
                 except:
-                    print('wtf')
                     messages.error(request, 'cant do that')
             else:
                 
