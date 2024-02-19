@@ -77,65 +77,59 @@
                 </form>
 
                 <div id="comment-section" class="pt-[50px]">
-                    
                     {% if comments %}
-                        {%for comment in comments%}
-                            {% if comment.comment_level == 1 %}
-                                <div class="p-2 mb-5" id="comment_container">
-                                    <div class="border-l-[2px] border-gray-400 pb-4">
-                                        <div class="flex items-center gap-2 relative pl-2">
-                                        
-                                            <p class="w-10 h-10 rounded-full bg-blue-300 ">
-                                            
-                                            <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
-                                            
-                                            <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
-                                            <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
-                                                <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
-        
-                                                <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
-                                                    id="comment_options">
-                                                    <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
-                                                    {% if request.user == comment.user %}
-                                                        <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ comment.id }}" >Edit</button>
-                                                        <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ comment.id }}" >Delete</button>
-                                                    {% endif %}
-                                                    <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
-                                                </div>
-                                            </div>
+                        {% for comment in comments %}
+                        <div class="p-2 mb-5" id="comment_container">
+                            <div class="border-l-[2px] border-gray-400" id="comment_thread">
+                                <div class="flex items-center gap-2 relative pl-2">
+                                
+                                    <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                                    
+                                    <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
+                                    
+                                    <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
+                                    <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
+                                        <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
+                        
+                                        <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
+                                            id="comment_options">
+                                            <input type="hidden" name="" id="comment_id" value="{{ comment.id }}">
+                                            {% if request.user == comment.user %}
+                                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 hover:rounded-t-md border-b-[1px] border-gray-600" id="edit_btn" value="{{ comment.id }}" >Edit</button>
+                                                <button class="text-xs  px-2 py-1 hover:bg-gray-500 border-b-[1px] border-gray-600" id="delete_btn" value="{{ comment.id }}" >Delete</button>
+                                            {% endif %}
+                                            <button class="text-xs px-2 py-1 hover:bg-gray-500 hover:rounded-b-md">Report</button>
                                         </div>
-
-                                        <div class="pl-[3.5em] py-2 " id="comment_body_div">
-                                            <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
-                                            <p id="comment_body" >{{ comment.body }}</p>
-                                        </div>
-        
-                                        <div class="mb-[40px] relative pl-[3px] " id="comment_actions">
-                                            <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
-                                            <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
-                                            <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}">Reply</button>
-                                            
-                                        </div>
-                                        <br>
                                     </div>
-                                    <!-- this is an idea.... -->
-                                    <div class="h-[100px] w-[100px] " id="comment_replies">
-                                        {% if comment.comment_level > 1 %}
-                                            <p> {{ comment.body }} </p>
-                                        {% endif %}
-                                    </div>
-                                                    
                                 </div>
-                            {% endif %}
-                            
-                        {% endfor %}
-                    {% else %}
-                        <div class="p-2 mb-5 hidden" id="comment_container"> 
-                            
+                        
+                                <div class="pl-[3.5em] py-2 " id="comment_body_div">
+                                    <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
+                                    <p id="comment_body" >{{ comment.body }}</p>
+                                </div>
+                        
+                                <div class="mb-[40px] relative pl-[3px] " id="comment_actions">
+                                    <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
+                                    <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
+                                    <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}">Reply</button>
+                                    
+                                </div>
+                                <br>
+
+                                <div class="pl-[8px]" id="comment_replies">
+                                    {% include 'home/nested_template.html' with replies=comment.get_replies %}                                
+                                </div>
+                            </div>                
                         </div>
+
+                        {% endfor %}
+
+                    {% else %}
+                    <div class="p-2 mb-5 hidden" id="comment_container"> 
+        
+                    </div>
                     {% endif %}
-                    
-                    
+                                
                 </div>
             </div>
 
@@ -170,8 +164,8 @@
                 url: `http://127.0.0.1:8000/create-comment/${post_id}/`,
                 data: {
                     body: $('#body').val(),
-                    main_comment: true,
                     comment_level: 1,
+                    is_reply: false,
                     csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                 },
                 dataType: "json",
@@ -289,6 +283,10 @@
             comment_actions.appendChild(dislike_btn)
             comment_actions.appendChild(reply)
 
+            let comment_replies = document.createElement('div')
+            comment_replies.setAttribute('class', 'pl-[3em]')
+            comment_replies.id ='comment_replies'
+
             console.log('IF CONDITION LEVELS')
             if (level === 1){
                 console.log('LEVEL 1')
@@ -298,19 +296,22 @@
                 border_container.appendChild(body_details)
                 border_container.appendChild(comment_actions)
                 border_container.appendChild(space)
+                border_container.appendChild(comment_replies)
 
                 custom_container.append(border_container)
                 comment_container.prepend(custom_container)
-            } else if (level === 2) {
+            } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
-                custom_container.setAttribute('class', 'mb-8 border-none')
+                custom_container.setAttribute('class', 'pl-[6px] py-2 px-3 ml-[2px]')
 
                 border_container.appendChild(user_details)
                 border_container.appendChild(body_details)
                 border_container.appendChild(comment_actions)
                 border_container.appendChild(space)
+                border_container.appendChild(comment_replies)
 
                 custom_container.append(border_container)
+                
                 return custom_container
             }
            
@@ -391,6 +392,7 @@
                 deleteComment(e, parent.querySelector('#delete_btn').value)
             }
 
+            //creating a template/ textarea for the reply
             if (e.target.id === 'comment_reply'){
                 
                 const parent = e.target.parentElement;
@@ -403,9 +405,10 @@
                 
                 console.log('THE second DIV', second_div)
 
-                replyInputCommentTemplate(second_div, e.target.value)
+                replyCommentTemplate(second_div, e.target.value)
             }
 
+            // removing the template/ textarea
             if (e.target.id === 'cancel_reply_btn'){
 
                 const parent = e.target.parentElement;
@@ -422,13 +425,24 @@
                 cancelReplyComment(reply_section_div)
             }
 
+            // saving the reply comment to the db
             if (e.target.id === 'reply_comment_btn'){
                 const parent  = e.target.parentElement;
                 console.log(parent)
                 const reply_section = parent.parentElement
+                console.log('reply section: ',reply_section)
+
+                // refers to the comment thread so when user replies, the comment actually replies to its respective parent 
+                // (unlike where the comment just replies to a random parent thread)
+                const parent_thread =  reply_section.parentElement
+
                 const main_comment = parent.querySelector('#hidden_input_reply').value
                 
-                saveReplyComment(parent, main_comment, reply_section)
+                saveReplyComment(parent, main_comment, reply_section, parent_thread)
+            }
+
+            if (e.target.id === 'template_body'){
+                console.log('HA!?!?!?!?!?!?!?!?!?!?!?!?!?!')
             }
 
         })
@@ -436,9 +450,8 @@
         // first param refers to the individual reply
         // second param refers to the comment that is being replied to
         // third param will be the section of all the replies related to the main comment
-        function saveReplyComment(trgt, id, reply_section){
-            console.log(trgt, id)
-
+        function saveReplyComment(trgt, id, reply_section, parent_thread){
+            
             let body = trgt.querySelector('#body').value
             if (body === ''){
                 alert('Required input')
@@ -449,14 +462,14 @@
                     type: 'POST',
                     data: {
                         body: body,
-                        main_comment: false,
+                        is_reply: true,
                         main_comment_id: id,
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                     },
                     success: function(res){
                         console.log(res)
                         let result = createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level)
-                        createNestedComment(result, reply_section)
+                        createNestedComment(result, reply_section, parent_thread)
                     },
                     error: function(err){
                         alert(err)
@@ -467,12 +480,13 @@
 
         } 
 
-        function createNestedComment(comment, reply_section){
+        function createNestedComment(comment, reply_section, parent_thread){
             const child = reply_section.querySelector('#reply_div')
             reply_section.removeChild(child)
-            reply_section.append(comment)
-            const container = comment_container.querySelector('#comment_replies')
-            container.appendChild(reply_section)
+
+            parent_thread.removeChild(reply_section)
+            parent_thread.prepend(comment)
+        
         }
 
         // to be used for the delete functio where we place the csrf token to the request headers
@@ -642,10 +656,12 @@
         }
 
         // whenever users click to comment on another comment, this will be the template 
-        function replyInputCommentTemplate(e, id){
+        function replyCommentTemplate(e, id){
             
             // the comment_container
             let comment_div_target = e
+            const reply_area =  e.querySelector('#comment_replies')
+            console.log('reply area: ', reply_area)
 
             const reply_div = document.createElement('div')
             reply_div.id = "reply_div"
@@ -683,16 +699,16 @@
             reply_div.appendChild(reply_input)
             reply_div.appendChild(reply_input_save)
             reply_div.appendChild(reply_input_cancel)
-
+            
             if (e.querySelector('#reply_section_div') === null || e.querySelector('#reply_section_div') === undefined) { 
                 //create reply section div
                 const reply_section_div = document.createElement('div')
                 reply_section_div.id = 'reply_section_div'
-                reply_section_div.setAttribute('class', 'pl-[1.4em] py-2 px-3 ml-[3em] border-l-[2px] border-gray-400 h-full')
+                reply_section_div.setAttribute('class', 'pl-[1em] py-2 px-3 ml-[8px] border-l-[2px] border-gray-400 h-full')
 
                 reply_section_div.append(reply_div)
-
-                comment_div_target.appendChild(reply_section_div)
+                
+                comment_div_target.append(reply_section_div)
             } else {
                 e.append(reply_div)
 
