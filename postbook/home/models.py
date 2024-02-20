@@ -11,8 +11,7 @@ class Post(models.Model):
     date_posted         = models.DateTimeField(auto_now_add=True)
     image               = models.ImageField(upload_to='images', blank=True, null=True)
     slug                = models.SlugField(default="", max_length=255, blank=True, null=True)
-    likes               = models.PositiveIntegerField(blank=True, default=0, null=True)
-    dislikes            = models.PositiveIntegerField(blank=True, default=0, null=True)
+    votes               = models.IntegerField(blank=True, null=True)
     
     def __str__(self):
         return self.title
@@ -21,6 +20,14 @@ class Post(models.Model):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
     
+    def get_likes(self):
+        
+        return self.post_likes.count()
+    
+    def get_dislikes(self):
+        
+        return self.post_dislikes.count()
+    
 class Comment(models.Model):
     
     main_post           = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -28,8 +35,6 @@ class Comment(models.Model):
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body                = models.CharField(max_length=955)
     image               = models.ImageField(default='images', blank=True, null=True)
-    likes               = models.PositiveIntegerField(blank=True, default=0, null=True)
-    dislikes            = models.PositiveIntegerField(blank=True, default=0, null=True)
     date_posted         = models.DateTimeField(auto_now_add=True, null=True)
     comment_level       = models.IntegerField(null=True, blank=True)
     
@@ -51,11 +56,24 @@ class Comment(models.Model):
     def get_replies(self):
         return self.replies.all()
     
-# class LikeModel(models.Model):
+    def get_likes(self):
+        
+        return self.comment_likes.count()
     
-#     pass
-
-# class DislikeModel(models.Model):
+    def get_dislikes(self):
+        
+        return self.comment_dislikes.count()
     
-#     pass
+class LikeModel(models.Model):
+    
+    users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    post                = models.ForeignKey(Post, related_name='post_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
+    comment             = models.ForeignKey(Comment, related_name='comment_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
+    
+    
+class DislikeModel(models.Model):
+    
+    users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    post                = models.ForeignKey(Post, related_name='post_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
+    comment             = models.ForeignKey(Comment, related_name='comment_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
     
