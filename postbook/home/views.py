@@ -6,7 +6,7 @@ from django.core import serializers
 import json
 
 from accounts.models import Account
-from .models import Post, Comment
+from .models import Post, Comment, LikeModel, DislikeModel
 from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
 
 # Create your views here.
@@ -132,6 +132,50 @@ def deletePost(request, id):
     except:
         context['message'] = 'post not found'
         return JsonResponse(context)
+    
+@login_required(login_url='login')
+def likePost(request, id):
+    
+    context = {}
+    
+    try:
+        post = get_object_or_404(Post, id=id)
+        print('THE POST', post)
+        
+        try:
+            like_obj = get_object_or_404(LikeModel, id=post.id)
+        except:
+            
+            like_obj = LikeModel.objects.create(
+                post=post,
+            )
+            print('CREATED!!!!')
+            context['message'] = 'Liked Post!'
+        print('WHAT IFIFIFIFIF: ', like_obj.users.all())
+            
+        if request.user in like_obj.users.exists():
+            print('TANGGAL!!!')
+            like_obj.users.remove(request.user)
+            print('NAG RUN DITO TANGINA!!!!')
+        else:
+            print('DAGDAG!!!!!!')
+            like_obj.users.add(request.user)
+            
+            print('NAG RUN DITO TANGINA')
+            
+        
+        return JsonResponse(context)
+        
+    except:
+        
+        context['message'] = 'Post does not exist'
+        return JsonResponse(context)
+
+
+@login_required(login_url='login')
+def dislikePost(request, id):
+    
+    pass
 
 
 @login_required(login_url='login')
@@ -235,4 +279,15 @@ def deleteComment(request, id):
     except:
         context['message'] = 'Comment does not exist'
         return JsonResponse(context)
+    
+@login_required(login_url='login')
+def likeComment(request, id):
+    
+    pass
+
+
+@login_required(login_url='login')
+def dislikeComment(request, id):
+    
+    pass
     
