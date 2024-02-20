@@ -59,9 +59,21 @@
                     {% endif %}
 
                     <hr class="border-[1px] border-gray-300">
-                    <div class="h-[50px] relative">
-                        <button class="absolute top-3 left-5 hover:bg-gray-400 p-2  rounded-md">Like Btn</button>
-                        <button class="absolute top-3 left-[105px] hover:bg-gray-400 p-2  rounded-md">Dislike Btn</button>
+                    <div class="h-[50px] relative flex items-center gap-4">
+                        <button class="absolute top-3 left-3 p-2 flex items-center gap-2 text-xl hover:bg-gray-300 rounded-md fill-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="hover:text-red-400" id="like_post_btn" data-post="{{ post.id }}">
+                                <path fill="currentColor" id="like_btn" data-post="{{ post.id }}" 
+                                d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
+                            </svg>    
+                            {{ post.get_likes }}
+                        </button>
+                        <button class="absolute top-3 left-[75px] flex items-center gap-2  p-2 text-xl hover:bg-gray-300  rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="hover:text-red-400" id="dislike_btn" data-post="{{ post.id }}">
+                                <path fill="currentColor"  id="dislike_btn" data-post="{{ post.id }}"
+                                d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
+                            </svg>
+                            0
+                        </button>
                     </div>
             </div>
             <div class="p-4 bg-gray-200 rounded-xl">
@@ -111,7 +123,7 @@
                                 <div class="mb-[3.5em] relative pl-[3px] " id="comment_actions">
                                     <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
                                     <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
-                                    <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}">Reply</button>
+                                    <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}" data-level="{{ comment.comment_level }}">Reply</button>
                                     
                                 </div>
                                 <br>
@@ -265,7 +277,7 @@
             let reply = document.createElement('button')
             let space = document.createElement('br')
 
-            comment_actions.setAttribute('class', 'mb-[40px] relative pl-[3px]')
+            comment_actions.setAttribute('class', 'mb-[3.5em] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
             like_btn.setAttribute('class', 'absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md')
             like_btn.setAttribute('id', 'like_btn')
@@ -273,6 +285,7 @@
             dislike_btn.setAttribute('id', 'dislike_btn')
             reply.setAttribute('class', 'absolute top-5 left-[230px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
+            reply.setAttribute('data-level', level )
             reply.value = comment_id
 
             like_btn.innerHTML = 'Like Btn'
@@ -302,7 +315,7 @@
                 comment_container.prepend(custom_container)
             } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
-                custom_container.setAttribute('class', 'px-2 mb-6 pl-[2.5em]')
+                custom_container.setAttribute('class', 'px-2 mb-6 pl-[2em]')
 
                 border_container.appendChild(user_details)
                 border_container.appendChild(body_details)
@@ -402,10 +415,9 @@
                 let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
                 
                 let third_div = second_div.parentElement // going back one more div where it displays the name, profile pic, and date of comment
-                
-                console.log('THE second DIV', second_div)
+                let comment_level = first_div.querySelector('#comment_reply').getAttribute('data-level')
 
-                replyCommentTemplate(second_div, e.target.value)
+                replyCommentTemplate(second_div, e.target.value, comment_level)
             }
 
             // removing the template/ textarea
@@ -441,11 +453,26 @@
                 saveReplyComment(parent, main_comment, reply_section, parent_thread)
             }
 
-            if (e.target.id === 'template_body'){
-                console.log('HA!?!?!?!?!?!?!?!?!?!?!?!?!?!')
+            if (e.target.id === 'like_post_btn'){
+                const post_id = e.target.getAttribute('data-post')
+                const svg = e.target.querySelector('#like_post_btn')
+                $.ajax({
+                    url: `/like-post/${post_id}/`,
+                    type: 'GET',
+                    success: function(res){
+                        alert(res.message)
+                        svg.classList.add('bg-red-400')
+                        console.log('LIKEDDD')
+                    },
+                    error: function(err){
+                        alert(err)
+                    }
+                })
             }
 
+
         })
+        
 
         // first param refers to the individual reply
         // second param refers to the comment that is being replied to
@@ -485,7 +512,7 @@
             reply_section.removeChild(child)
 
             parent_thread.removeChild(reply_section)
-            parent_thread.appendChild(comment)
+            parent_thread.append(comment)
         
         }
 
@@ -656,7 +683,7 @@
         }
 
         // whenever users click to comment on another comment, this will be the template 
-        function replyCommentTemplate(e, id){
+        function replyCommentTemplate(e, id, level){
             
             // the comment_container
             let comment_div_target = e
@@ -703,8 +730,14 @@
                 //create reply section div
                 const reply_section_div = document.createElement('div')
                 reply_section_div.id = 'reply_section_div'
-                reply_section_div.setAttribute('class', 'pl-[1.5em] pb-4 px-3 ml-[2.5em] border-l-[2px] border-gray-400')
-
+                
+                if (level == 1){
+                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 ml-[2.5em] border-l-[2px] border-gray-400')
+                } else if (level > 1) {
+                    
+                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 ml-[2em] border-l-[2px] border-gray-400')
+                }
+                
                 reply_section_div.append(reply_div)
                 
                 $(reply_section_div).insertAfter(comment_div_target.querySelector('#comment_actions'))
