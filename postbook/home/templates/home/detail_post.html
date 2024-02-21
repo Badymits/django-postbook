@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load custom_tags %}
 
 {% block content %}
 
@@ -60,19 +60,39 @@
 
                     <hr class="border-[1px] border-gray-300">
                     <div class="h-[50px] relative flex items-center gap-4">
-                        <button class="absolute top-3 left-3 p-2 flex items-center gap-2 text-xl hover:bg-gray-300 rounded-md fill-red-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="hover:text-red-400" id="like_post_btn" data-post="{{ post.id }}">
-                                <path fill="currentColor" id="like_btn" data-post="{{ post.id }}" 
-                                d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
-                            </svg>    
-                            {{ post.get_likes }}
+                        <button class="absolute top-3 left-3 p-2 flex items-center gap-2 text-xl hover:bg-gray-300 rounded-md " id="like_btn_parent">
+                            {% is_liked post.id request.user as liked %}
+                            {% if liked %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"  data-option="like"
+                                    class="text-red-400" id="like_post_btn" data-post="{{ post.id }}">
+                                    <path fill="currentColor" id="like_btn" data-post="{{ post.id }}"  data-option="like"
+                                    d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
+                                </svg>    
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" 
+                                    class="hover:text-red-400" id="like_post_btn" data-post="{{ post.id }}" data-option="like">
+                                    <path fill="currentColor" id="like_btn" data-post="{{ post.id }}"  data-option="like"
+                                    d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
+                                </svg>  
+                            {% endif %}
+                            <p id="like_count"> {{ post.get_likes }} </p>
                         </button>
-                        <button class="absolute top-3 left-[75px] flex items-center gap-2  p-2 text-xl hover:bg-gray-300  rounded-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" class="hover:text-red-400" id="dislike_btn" data-post="{{ post.id }}">
-                                <path fill="currentColor"  id="dislike_btn" data-post="{{ post.id }}"
+                        <button class="absolute top-3 left-[75px] flex items-center gap-2  p-2 text-xl hover:bg-gray-300  rounded-md" id="dislike_btn_parent">
+                            {% is_disliked post.id request.user as disliked %}
+                            {% if disliked %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
+                                class="text-blue-400" id="dislike_btn" data-post="{{ post.id }}">
+                                <path fill="currentColor"  id="dislike_btn" data-post="{{ post.id }}" data-option="dislike"
                                 d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
                             </svg>
-                            0
+                            {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
+                                class="hover:text-blue-400" id="dislike_btn" data-post="{{ post.id }}">
+                                <path fill="currentColor"  id="dislike_btn" data-post="{{ post.id }}" data-option="dislike"
+                                d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
+                            </svg>
+                            {% endif %}
+                            <p id="dislike_count"> {{ post.get_dislikes }} </p>
                         </button>
                     </div>
             </div>
@@ -453,25 +473,62 @@
                 saveReplyComment(parent, main_comment, reply_section, parent_thread)
             }
 
-            if (e.target.id === 'like_post_btn'){
+            if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
+                const parent = e.target.closest('#like_btn_parent')
+
+                const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
-                const svg = e.target.querySelector('#like_post_btn')
-                $.ajax({
-                    url: `/like-post/${post_id}/`,
-                    type: 'GET',
-                    success: function(res){
-                        alert(res.message)
-                        svg.classList.add('bg-red-400')
-                        console.log('LIKEDDD')
-                    },
-                    error: function(err){
-                        alert(err)
-                    }
-                })
+                const svg = parent.querySelector('#like_post_btn')
+                const like_count = parent.querySelector('#like_count')
+
+                updateVote(option, post_id, svg, like_count)
+
+            }
+
+            if (e.target.id === 'dislike_btn') {
+                const parent = e.target.closest('#dislike_btn_parent')
+                console.log(parent)
+
+                const option = e.target.getAttribute('data-option')
+                const post_id = e.target.getAttribute('data-post')
+                const svg = parent.querySelector('#dislike_btn')
+                const like_count = parent.querySelector('#dislike_count')
+                
+                updateVote(option, post_id, svg, like_count)
             }
 
 
         })
+
+        function updateVote(option, post_id, svg, like_count){
+            $.ajax({
+                url: `/update-vote-post/${post_id}/`,
+                data:{
+                    option: option
+                },
+                type: 'GET',
+                success: function(res){
+                    if (option === 'like'){
+                        if (res.option === 'removed like'){
+                            svg.classList.remove('text-red-400')
+                        } else  {
+                            svg.classList.add('text-red-400')
+                        }
+                    } else {
+                        if (res.option === 'removed dislike'){
+                            svg.classList.remove('text-blue-400')
+                        } else {
+                            svg.classList.add('text-blue-400')
+                        }
+                    }
+                            
+                    like_count.innerHTML = res.like_count
+                },
+                error: function(err){
+                    alert(err)
+                }
+            })
+        }
         
 
         // first param refers to the individual reply
