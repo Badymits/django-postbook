@@ -8,8 +8,7 @@ urlpatterns = [
     path('detail-post/<int:id>/', views.detailPost, name='detail-post'),
     path('edit-post/<int:id>/', views.editPost, name='edit-post'),
     path('delete-post/<int:id>/', views.deletePost, name='delete-post'),
-    path('like-post/<int:id>/', views.likePost, name='like-post'),
-    path('dislike-post/<int:id>/', views.dislikePost, name='dislike-post'),
+    path('update-vote-post/<int:id>/', views.updateVotePost, name='update-vote-post'),
     
     path('create-comment/<int:id>/', views.createComment, name='create-comment'),
     path('edit-comment/<int:id>/', views.editComment, name='edit-comment'),
