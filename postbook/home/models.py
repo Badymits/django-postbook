@@ -19,14 +19,36 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
-    
+          
     def get_likes(self):
-        
-        return self.post_likes.count()
+        try:
+            post = self.post_likes.get(post=self.id)
+            if self.user.user_likes.filter(users=self.user).exists():
+                return post.users.all().count()
+            
+            # when users unliked an already liked post, 
+            # this will just return the number of users (without loggedin user) that have liked the post
+            else:
+                return post.users.all().count()
+        except:
+            print('cant do that chief')
+            return 0 
+       
     
     def get_dislikes(self):
         
-        return self.post_dislikes.count()
+        try:
+            post = self.post_dislikes.get(post=self.id)
+            if self.user.user_likes.filter(users=self.user).exists():
+                return post.users.all().count()
+            
+            # when users unliked an already liked post, 
+            # this will just return the number of users (without loggedin user) that have liked the post
+            else:
+                return post.users.all().count()
+        except:
+            print('cant do that chief')
+            return 0 
     
 class Comment(models.Model):
     
@@ -66,7 +88,7 @@ class Comment(models.Model):
     
 class LikeModel(models.Model):
     
-    users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    users               = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_likes')
     post                = models.ForeignKey(Post, related_name='post_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
     comment             = models.ForeignKey(Comment, related_name='comment_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
     
