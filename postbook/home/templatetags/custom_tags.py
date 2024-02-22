@@ -17,7 +17,7 @@ def is_liked(post, user):
             return True
         
     except:
-        print('User has not liked the post')
+        
         return False 
 
 @register.simple_tag
@@ -31,5 +31,10 @@ def is_disliked(post, user):
             return True
         
     except:
-        print('User has not liked the post')
+        
         return False 
+
+@register.simple_tag
+def postVotes(*args):
+    print(*args)
+    pass
