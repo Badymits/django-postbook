@@ -157,15 +157,35 @@ def updateVotePost(request, id):
             )
         context['message'] = 'Liked Post!'
         
+        try:
+            dislike_obj = get_object_or_404(DislikeModel, post=post)
+        except:
+            dislike_obj = None
+        
+        
         if like_obj.users.filter(id=request.user.id).exists():
             like_obj.users.remove(request.user)
+            
             context['option'] = 'removed like'
         else:
+            if dislike_obj is not None:
+                dislike_obj.users.remove(request.user)
+                context['dislike_count'] = dislike_obj.users.all().count()
+            else:
+                context['dislike_count'] = 0
             like_obj.users.add(request.user)
+            
+            
             context['option'] = 'added'
         context['like_count'] = like_obj.users.all().count()
+        
             
     elif request.GET.get('option') == 'dislike':
+        print(request.GET.get('option'))
+        try:
+            like_obj = get_object_or_404(LikeModel, post=post)
+        except:
+            like_obj = None
         
         try:
             dislike_obj = get_object_or_404(DislikeModel, post=post)
@@ -178,11 +198,18 @@ def updateVotePost(request, id):
         if dislike_obj.users.filter(id=request.user.id).exists():
             dislike_obj.users.remove(request.user)
             context['option'] = 'removed dislike'
-        else:
-            dislike_obj.users.add(request.user)
-            context['option'] = 'added'
             
-        context['like_count'] = dislike_obj.users.all().count()
+        else:
+            if like_obj is not None:
+                like_obj.users.remove(request.user)
+                context['like_count'] = like_obj.users.all().count()
+            else:
+                context['like_count'] = 0
+            dislike_obj.users.add(request.user)
+            
+            context['option'] = 'added'
+        
+        context['dislike_count'] = dislike_obj.users.all().count()
     
     return JsonResponse(context)
 
