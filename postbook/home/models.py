@@ -31,7 +31,7 @@ class Post(models.Model):
             else:
                 return post.users.all().count()
         except:
-            print('cant do that chief')
+            
             return 0 
        
     
@@ -47,7 +47,7 @@ class Post(models.Model):
             else:
                 return post.users.all().count()
         except:
-            print('cant do that chief')
+            
             return 0 
     
 class Comment(models.Model):
