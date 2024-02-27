@@ -78,13 +78,33 @@ class Comment(models.Model):
     def get_replies(self):
         return self.replies.all()
     
+    
     def get_likes(self):
         
-        return self.comment_likes.count()
+        try:
+            comment = self.comment_likes.get(comment=self.id)
+            if self.user.user_likes.filter(user=self.user).exists():
+                
+                return comment.users.all().count()
+            
+            else:
+                return comment.users.all().count()
+        except:
+            return 0
+        
     
     def get_dislikes(self):
         
-        return self.comment_dislikes.count()
+        try:
+            comment = self.comment_dislikes.get(comment=self.id)
+            if self.user.user_likes.filter(user=self.user).exists():
+                
+                return comment.users.all().count()
+            
+            else:
+                return comment.users.all().count()
+        except:
+            return 0
     
 class LikeModel(models.Model):
     
@@ -93,9 +113,20 @@ class LikeModel(models.Model):
     comment             = models.ForeignKey(Comment, related_name='comment_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
     
     
+    def __str__(self):
+        if self.post:
+            return f'liking post: {self.post.title}'
+        elif self.comment:
+            return f'liking comment: {self.comment.body}'
+    
 class DislikeModel(models.Model):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
     post                = models.ForeignKey(Post, related_name='post_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
     comment             = models.ForeignKey(Comment, related_name='comment_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
     
+    def __str__(self):
+        if self.post:
+            return f'disliking post: {self.post.title}'
+        elif self.comment:
+            return f'disliking comment: {self.comment.body}'
