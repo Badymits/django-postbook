@@ -140,10 +140,48 @@
                                     <p id="comment_body" >{{ comment.body }}</p>
                                 </div>
                         
-                                <div class="mb-[3.5em] relative pl-[3px] " id="comment_actions">
-                                    <button class="absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md" id="like_btn">Like Btn</button>
-                                    <button class="absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md" id="dislike_btn">Dislike Btn</button>
-                                    <button class="absolute top-5 left-[230px] hover:bg-gray-400 px-2 py-2 rounded-md" id="comment_reply" value="{{ comment.id }}" data-level="{{ comment.comment_level }}">Reply</button>
+                                <div class="mb-[3.3em] relative pl-[3px] " id="comment_actions">                          
+                                    <button class="flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
+                                        {% commentLike comment.id request.user as liked %}
+                                        {% if liked %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"  data-option="like"
+                                            class="text-red-400" id="comment_like_btn" data-comment="{{ comment.id }}">
+                                            <path fill="currentColor" id="comment_like_btn" data-comment="{{ comment.id }}"  data-option="like"
+                                            d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
+                                        </svg> 
+                                        {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"  data-option="like"
+                                            class="hover:text-red-400" id="comment_like_btn" data-comment="{{ comment.id }}">
+                                            <path fill="currentColor" id="comment_like_btn" data-comment="{{ comment.id }}"  data-option="like"
+                                            d="M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z"/>
+                                        </svg> 
+                                        {% endif %}
+                                        <p id="comment_like_count">{% getCommentVoteCount comment request.user 'like' %}</p>
+                                    </button>
+                                    <button class="flex items-center gap-2 absolute top-5 left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_dislike_btn_parent">
+                                        {% commentDislike comment.id request.user as disliked %}
+                                        {% if disliked %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
+                                            class="text-blue-400" id="comment_dislike_btn" data-comment="{{ comment.id }}">
+                                            <path fill="currentColor"  id="comment_dislike_btn" data-comment="{{ comment.id }}" data-option="dislike"
+                                            d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
+                                        </svg>
+                                        {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
+                                            class="hover:text-blue-400" id="comment_dislike_btn" data-comment="{{ comment.id }}">
+                                            <path fill="currentColor"  id="comment_dislike_btn" data-comment="{{ comment.id }}" data-option="dislike"
+                                            d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
+                                        </svg>
+                                        {% endif %}
+                                        <p id="comment_dislike_count">{% getCommentVoteCount comment request.user 'dislike'  %}</p>
+                                    </button>
+
+                                    <button class="absolute top-5 left-[210px] hover:bg-gray-400 px-2 py-2 rounded-md" 
+                                        id="comment_reply" 
+                                        value="{{ comment.id }}" 
+                                        data-level="{{ comment.comment_level }}">
+                                        Reply
+                                    </button>
                                     
                                 </div>
                                 <br>
@@ -183,6 +221,7 @@
         let comment_body = document.getElementById('comment_body');
         let comment_menu = document.getElementById('comment_menu');
         let comment_options = document.getElementById('comment_options');
+        let comment_actions = document.getElementById('comment_actions');
 
         let edit_btn = document.getElementById('edit_btn');
         let vote_div = document.getElementById('vote_div')
@@ -300,9 +339,9 @@
 
             comment_actions.setAttribute('class', 'mb-[3.5em] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
-            like_btn.setAttribute('class', 'absolute top-5 left-[45px] hover:bg-gray-400  px-2 py-2 rounded-md')
+            like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
             like_btn.setAttribute('id', 'like_btn')
-            dislike_btn.setAttribute('class', 'absolute top-5 left-[125px] hover:bg-gray-400  px-2 py-2 rounded-md')
+            dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
             dislike_btn.setAttribute('id', 'dislike_btn')
             reply.setAttribute('class', 'absolute top-5 left-[230px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
@@ -474,6 +513,7 @@
                 saveReplyComment(parent, main_comment, reply_section, parent_thread)
             }
 
+            // post votes handling
             if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
                 const parent = e.target.closest('#like_btn_parent')
 
@@ -498,7 +538,95 @@
                 updateVote(option, post_id, svg_dislike)
             }
 
+            // comment votes handling
+            if (e.target.id === 'comment_like_btn'){
+                const parent = e.target.closest('#comment_like_btn_parent')
+
+                const option = e.target.getAttribute('data-option')
+                const comment_id = e.target.getAttribute('data-comment')
+                const svg_like = parent.querySelector('#comment_like_btn')
+
+                updateCommentVote(option, comment_id, svg_like, parent)
+            }
+
+            if (e.target.id === 'comment_dislike_btn'){
+                const parent = e.target.closest('#comment_dislike_btn_parent')
+
+                const option = e.target.getAttribute('data-option')
+                const comment_id = e.target.getAttribute('data-comment')
+                const svg_dislike = parent.querySelector('#comment_dislike_btn')
+
+                updateCommentVote(option, comment_id, svg_dislike, parent)
+            }
+
         })
+
+        function updateCommentVote(option, comment_id, svg, parent){
+            console.log(parent)
+            $.ajax({
+                url: `/update-vote-comment/${comment_id}/`,
+                data:{
+                    option: option
+                },
+                type: 'GET',
+                success: function(res){
+                    let dislike_count = parent.querySelector('#comment_dislike_count')
+                    let like_count = parent.querySelector('#comment_like_count')
+
+                    if (option === 'like'){
+                        // user clicks on a comment that they already liked
+                        if (res.option === 'removed like'){
+                            svg.classList.remove('text-red-400')
+                            like_count.innerHTML = res.like_count
+                        
+                        // liking the comment
+                        } else  {                            
+                            
+                            let div_parent = parent.parentElement // this is the comment actions div
+
+                            const dislike_counter = div_parent.querySelector('#comment_dislike_count')
+                            const dislike_svg = div_parent.querySelector('#comment_dislike_btn') // for the svg
+
+                            like_count.innerHTML = res.like_count
+                            dislike_counter.innerHTML = res.dislike_count
+
+                            dislike_svg.classList.remove('text-blue-400')
+                            dislike_svg.classList.add('hover:text-blue-400')
+                            svg.classList.add('text-red-400')
+                            
+                        }
+
+
+                    // dislike option logic
+                    } else {
+                        // when user clicks on an already disliked comment
+                        if (res.option === 'removed dislike'){
+                            
+                            svg.classList.remove('text-blue-400')
+                            dislike_count.innerHTML = res.dislike_count
+
+                        // first time clicking on the dislike btn
+                        } else {
+                            let div_parent = parent.parentElement // this is the comment actions div
+
+                            const dislike_counter = div_parent.querySelector('#comment_dislike_count')
+                            const like_svg = div_parent.querySelector('#comment_like_btn')
+                            const like_count = div_parent.querySelector('#comment_like_count')
+
+                            like_count.innerHTML = res.like_count
+                            dislike_count.innerHTML = res.dislike_count
+
+                            like_svg.classList.remove('text-red-400')
+                            like_svg.classList.add('hover:text-red-400')
+                            svg.classList.add('text-blue-400')
+                        }
+                    }
+                },
+                error: function(err){
+                    alert('There was an error, do something about it')
+                }
+            })
+        }
 
         function updateVote(option, post_id, svg){
             $.ajax({
