@@ -318,13 +318,82 @@ def deleteComment(request, id):
         return JsonResponse(context)
     
 @login_required(login_url='login')
-def likeComment(request, id):
+def updateVoteComment(request, id):
     
-    pass
-
-
-@login_required(login_url='login')
-def dislikeComment(request, id):
+    context = {}
     
-    pass
+    try:
+        comment = get_object_or_404(Comment, id=id)
+    except:
+        context['message'] = 'No comment exists'
+        return JsonResponse(context)
+    
+    if request.GET.get('option') == 'like':
+        
+        try:
+            like_obj = get_object_or_404(LikeModel, comment=comment)
+        except:
+            like_obj = LikeModel.objects.create(
+                comment=comment,
+            )
+        context['message'] = 'Liked Post!'
+        
+        try:
+            dislike_obj = get_object_or_404(DislikeModel, comment=comment)
+        except:
+            dislike_obj = None
+        
+        
+        if like_obj.users.filter(id=request.user.id).exists():
+            like_obj.users.remove(request.user)
+            
+            context['option'] = 'removed like'
+        else:
+            if dislike_obj is not None:
+                dislike_obj.users.remove(request.user)
+                context['dislike_count'] = dislike_obj.users.all().count()
+            else:
+                context['dislike_count'] = 0
+            like_obj.users.add(request.user)
+            
+            
+            context['option'] = 'added'
+        context['like_count'] = like_obj.users.all().count()
+        
+        return JsonResponse(context)
+        
+            
+    elif request.GET.get('option') == 'dislike':
+        print(request.GET.get('option'))
+        try:
+            like_obj = get_object_or_404(LikeModel, comment=comment)
+        except:
+            like_obj = None
+        
+        try:
+            dislike_obj = get_object_or_404(DislikeModel, comment=comment)
+        except:
+            dislike_obj = DislikeModel.objects.create(
+                comment=comment
+            )
+        context['message'] = 'Disliked Post!'
+        
+        if dislike_obj.users.filter(id=request.user.id).exists():
+            dislike_obj.users.remove(request.user)
+            context['option'] = 'removed dislike'
+            
+        else:
+            if like_obj is not None:
+                like_obj.users.remove(request.user)
+                context['like_count'] = like_obj.users.all().count()
+            else:
+                context['like_count'] = 0
+            dislike_obj.users.add(request.user)
+            
+            context['option'] = 'added'
+        
+        context['dislike_count'] = dislike_obj.users.all().count()
+    
+        return JsonResponse(context)
+
     
