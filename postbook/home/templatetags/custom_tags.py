@@ -34,7 +34,59 @@ def is_disliked(post, user):
         
         return False 
 
+# the comment like and dislike will handle the highlited buttons.
+# if user likes the comment, then the like button will be red, otherwise, the default color: black.
+# same with dislike, if its disliked by the user, the button will be blue
+@register.simple_tag
+def commentLike(comment, user):
+    
+    try:
+        comment_liked = get_object_or_404(LikeModel, comment=comment)
+        if comment_liked.users.filter(id=user.id).exists():
+            return True
+    except:
+        return False
+    
+@register.simple_tag
+def commentDislike(comment, user):
+    
+    try:
+        comment_disliked = get_object_or_404(DislikeModel, comment=comment)
+        if comment_disliked.users.filter(id=user.id).exists():
+            return True
+    except:
+        return False
+    
+# this will return the number of users that have liked and/or disliked the comment
+@register.simple_tag
+def getCommentVoteCount(comment, user, option):
+    
+    if option == 'like':
+        try:
+            comment = get_object_or_404(LikeModel, comment=comment)
+            if comment.users.filter(id=user.id).exists():
+                return comment.users.all().count()
+            # without the else return, the value will display 'None' instead of 0, 
+            # if there are users however, it will just exclude the current user if they liked the comment
+            else:
+                return comment.users.all().count()
+        except: 
+            return 0
+        
+    elif option == 'dislike':
+        try:
+            comment = get_object_or_404(DislikeModel, comment=comment)
+            if comment.users.filter(id=user.id).exists():
+                return comment.users.all().count()
+            # without the else return, the value will display 'None' instead of 0, 
+            # if there are users however, it will just exclude the current user if they liked the comment
+            else:
+                return comment.users.all().count()
+        except: 
+            return 0
+
+
 @register.simple_tag
 def postVotes(*args):
-    print(*args)
+    
     pass
