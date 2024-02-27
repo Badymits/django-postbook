@@ -191,7 +191,7 @@
                 const svg_like = parent.querySelector('#like_btn')
                 const like_count = parent.querySelector('#like_count')
     
-                updateVote(option, post_id, svg_like)
+                updateVote(option, post_id, svg_like, parent)
     
             }
     
@@ -204,11 +204,12 @@
                 const svg_dislike = parent.querySelector('#dislike_btn')
                 const like_count = parent.querySelector('#dislike_count')
                 
-                updateVote(option, post_id, svg_dislike)
+                updateVote(option, post_id, svg_dislike, parent)
             }
         })
 
-        function updateVote(option, post_id, svg){
+        function updateVote(option, post_id, svg, parent){
+            console.log('THE FUCKING PARENT: ', parent)
             $.ajax({
                 url: `/update-vote-post/${post_id}/`,
                 data:{
@@ -216,20 +217,22 @@
                 },
                 type: 'GET',
                 success: function(res){
-                    let dislike_count = vote_div.querySelector('#dislike_count')
-                    let like_count = vote_div.querySelector('#like_count')
+                    const div_parent = parent.parentElement
+                    let dislike_count = div_parent.querySelector('#dislike_count')
+                    let like_count = div_parent.querySelector('#like_count')
                     if (option === 'like'){
                         if (res.option === 'removed like'){
                             svg.classList.remove('text-red-400')
                             like_count.innerHTML = res.like_count
                             
                         } else  {                            
-                            let dislike = vote_div.querySelector('#dislike_btn')
-
+                            let dislike = div_parent.querySelector('#dislike_btn')
+                            
                             like_count.innerHTML = res.like_count
                             dislike_count.innerHTML = res.dislike_count
 
                             dislike.classList.remove('text-blue-400')
+                            dislike.classList.add('hover:text-blue-400')
                             svg.classList.add('text-red-400')
                             
                         }
@@ -238,12 +241,13 @@
                             svg.classList.remove('text-blue-400')
                             dislike_count.innerHTML = res.dislike_count
                         } else {
-                            let like = vote_div.querySelector('#like_btn')
+                            let like = div_parent.querySelector('#like_btn')
                             
                             like_count.innerHTML = res.like_count
                             dislike_count.innerHTML = res.dislike_count
 
                             like.classList.remove('text-red-400')
+                            like.classList.add('hover:text-red-400')
                             svg.classList.add('text-blue-400')
                         }
                     }
