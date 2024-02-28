@@ -10,6 +10,13 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" /> <!-- for tooltips -->
     <title>Postbook</title>
+    <style type="text/tailwindcss">
+        @layer utilities{
+            .active-tab{
+                @apply bg-gray-300 rounded-full
+            }
+        }
+    </style>
 </head>
 <body>
     {% if request.user.is_authenticated %}
@@ -20,9 +27,12 @@
             {% endblock %}
         </div>
         
-        
+        <div class="absolute bottom-3 left-5 h-[110px] w-[110px] bg-sky-200" id="message_notif">
+            <p>Message here</p>
+        </div>
     {% endif %}
     
 </body>
+<!-- for tooltip css -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 </html>
