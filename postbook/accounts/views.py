@@ -1,8 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from .models import Account
+from home.models import Post
 from .forms import RegisterModelForm, LoginModelForm
 
 # Create your views here.
@@ -62,3 +65,23 @@ def logoutView(request):
     logout(request)
     
     return redirect('login')
+
+
+@login_required(login_url='login')
+def userView(request, id):
+    
+    context = {}
+    try:
+        user = get_object_or_404(Account, id=id)
+        context['user'] = user
+        
+        user_posts = Post.objects.filter(user=user)
+        context['user_posts'] = user_posts
+        
+        return render(request, 'accounts/profile_page.html', context)
+    except:
+        context['message'] = 'Account does not exist'
+        return render(request, 'home/home.html',context)
+    
+    
+    
