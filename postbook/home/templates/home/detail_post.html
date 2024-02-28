@@ -333,23 +333,79 @@
 
             let comment_actions = document.createElement('div')
             let like_btn = document.createElement('button')
+            let like_count = document.createElement('p')
+
             let dislike_btn = document.createElement('button')
+            let dislike_count = document.createElement('p')
+
             let reply = document.createElement('button')
             let space = document.createElement('br')
 
             comment_actions.setAttribute('class', 'mb-[3.5em] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
+
             like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
-            like_btn.setAttribute('id', 'like_btn')
+            like_btn.setAttribute('id', 'comment_like_btn_parent')
+
+            let like_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
+            like_svg.setAttributeNS(null, 'width', '1em')
+            like_svg.setAttributeNS(null,'heigth', '1em')
+            like_svg.setAttributeNS(null,'viewBox', "0 0 24 24")
+            like_svg.setAttributeNS(null,'data-option', 'like')
+            like_svg.setAttributeNS(null,'class', 'hover:text-red-400')
+            like_svg.setAttributeNS(null,'id', 'comment_like_btn')
+            like_svg.setAttributeNS(null,'data-comment', comment_id)
+
+            let like_path = document.createElementNS('http://www.w3.org/2000/svg','path')
+            like_path.setAttributeNS(null, 'd', 'M12.781 2.375c-.381-.475-1.181-.475-1.562 0l-8 10A1.001 1.001 0 0 0 4 14h4v7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7h4a1.001 1.001 0 0 0 .781-1.625zM15 12h-1v8h-4v-8H6.081L12 4.601L17.919 12z')
+            like_path.setAttributeNS(null,'fill', 'currentColor')
+            like_path.setAttributeNS(null,'id', 'comment_like_btn')
+            like_path.setAttributeNS(null,'data-comment', comment_id)
+            like_path.setAttributeNS(null,'data-option', 'like')
+            
+            
+            like_svg.appendChild(like_path)
+            
+            like_count.setAttribute('id', 'comment_like_count')            
+            like_btn.appendChild(like_svg)
+            like_btn.appendChild(like_count)
+            
+            console.log('like svg: ', like_svg)
+
             dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
-            dislike_btn.setAttribute('id', 'dislike_btn')
+            dislike_btn.setAttribute('id', 'comment_dislike_btn_parent')
+
+            let dislike_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
+            dislike_svg.setAttributeNS(null,'width', '1em')
+            dislike_svg.setAttributeNS(null,'heigth', '1em')
+            dislike_svg.setAttributeNS(null,'viewBox', "0 0 24 24")
+            dislike_svg.setAttributeNS(null,'data-option', 'dislike')
+            dislike_svg.setAttributeNS(null,'class', 'hover:text-blue-400')
+            dislike_svg.setAttributeNS(null,'id', 'comment_dislike_btn')
+            dislike_svg.setAttributeNS(null,'data-comment', comment_id)
+
+            let dislike_path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+            dislike_path.setAttributeNS(null,'d', 'M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z')
+            dislike_path.setAttributeNS(null,'fill', 'currentColor')
+            dislike_path.setAttributeNS(null,'id', 'comment_dislike_btn')
+            dislike_path.setAttributeNS(null,'data-comment', comment_id)
+            dislike_path.setAttributeNS(null,'data-option', 'dislike')
+            
+
+            dislike_svg.appendChild(dislike_path)
+
+            dislike_count.setAttribute('id', 'comment_dislike_count')
+            dislike_btn.appendChild(dislike_svg)
+            dislike_btn.appendChild(dislike_count)
+
             reply.setAttribute('class', 'absolute top-5 left-[230px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
+
             reply.setAttribute('data-level', level )
             reply.value = comment_id
 
-            like_btn.innerHTML = 'Like Btn'
-            dislike_btn.innerHTML = 'Dislike Btn'
+            like_count.innerHTML = 0
+            dislike_count.innerHTML = 0
             reply.innerHTML = 'Reply'
 
             comment_actions.appendChild(like_btn)
@@ -375,7 +431,7 @@
                 comment_container.prepend(custom_container)
             } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
-                custom_container.setAttribute('class', 'px-2 mb-6 pl-[2em]')
+                custom_container.setAttribute('class', 'px-2 mb-6 pl-[2.5em]')
 
                 border_container.appendChild(user_details)
                 border_container.appendChild(body_details)
@@ -858,6 +914,9 @@
                     xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                 },
                 success: function(res){
+                    comment_actions.querySelector('#comment_like_btn_parent').classList.add('pointer-events-none')
+                    comment_actions.querySelector('#comment_dislike_btn_parent').classList.add('pointer-events-none')
+                    comment_actions.querySelector('#comment_reply').classList.add('pointer-events-none')
                     // set message html element text
                     
                     // for user not to open the options of a deleted comment
