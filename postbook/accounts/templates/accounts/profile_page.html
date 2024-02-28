@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load custom_tags %}
+{% block content %}
+
+    <section class="grid grid-cols-5 gap-2">
+        <div class="col-start-2 col-end-4">
+            <div class="flex items-center gap-3">
+                <p class="h-[150px] w-[150px] bg-blue-300 rounded-full"></p>
+                <div>
+                    <p class="text-3xl">{{ user.username }}</p>
+                    <p class="text-xl">{{ user.username }}</p>
+                </div>
+                
+            </div>
+            <div class=" mt-10 w-full " id="">
+                <ul class="flex justify-between items-center h-[40px]" id="profile_menu">
+                    <li class="w-[100px] text-center active-tab cursor-pointer hover:underline" data-profile-tab="posts" id="profile_tab">Posts</li>
+                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="comments" id="profile_tab">Comments</li>
+                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="saved" id="profile_tab">Saved</li>
+                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="upvoted" id="profile_tab">Upvoted</li>
+                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="following" id="profile_tab">Following</li>
+                </ul>
+            </div>
+
+            <div class="mt-6" id="profile_content">
+                {% include 'accounts/tabs/user_posts.html' with user_posts=user_posts %}
+            </div>
+            
+            
+        </div>
+        <div class="col-start-4 col-end-5">
+            <div class="bg-blue-300 h-[100px] rounded-md">
+
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript">
+        $(document).on('click', document, function(e){
+            if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
+                const parent = e.target.closest('#like_btn_parent')
+    
+                const option = e.target.getAttribute('data-option')
+                const post_id = e.target.getAttribute('data-post')
+                const svg_like = parent.querySelector('#like_btn')
+                const like_count = parent.querySelector('#like_count')
+    
+                updateVote(option, post_id, svg_like, parent)
+    
+            }
+    
+            if (e.target.id === 'dislike_btn') {
+                const parent = e.target.closest('#dislike_btn_parent')
+                console.log(parent)
+    
+                const option = e.target.getAttribute('data-option')
+                const post_id = e.target.getAttribute('data-post')
+                const svg_dislike = parent.querySelector('#dislike_btn')
+                const like_count = parent.querySelector('#dislike_count')
+                
+                updateVote(option, post_id, svg_dislike, parent)
+            }
+
+            if (e.target.id === 'profile_tab'){
+                const tab = e.target.getAttribute('data-profile-tab')
+                const tab_item = e.target
+
+                activeTab(tab, tab_item)
+            }
+        })
+
+        // check data profile tab value and render the component based on its value
+        function activeTab(tab, tab_item){
+            $('ul#profile_menu').find('li.active-tab').removeClass('active-tab')
+
+            const menu = document.getElementById('profile_menu')
+            if (tab === 'posts'){
+                // add active tab
+                tab_item.classList.add('active-tab')
+            }
+            else if (tab === 'comments'){
+                tab_item.classList.add('active-tab')
+            } else if (tab === 'saved'){
+                tab_item.classList.add('active-tab')
+            } else if (tab === 'upvoted'){
+                tab_item.classList.add('active-tab')
+            } else if (tab === 'following'){
+                tab_item.classList.add('active-tab')
+            }
+
+            
+        }
+
+        function updateVote(option, post_id, svg, parent){
+
+            $.ajax({
+                url: `/update-vote-post/${post_id}/`,
+                data:{
+                    option: option
+                },
+                type: 'GET',
+                success: function(res){
+                    const div_parent = parent.parentElement
+                    let dislike_count = div_parent.querySelector('#dislike_count')
+                    let like_count = div_parent.querySelector('#like_count')
+                    if (option === 'like'){
+                        if (res.option === 'removed like'){
+                            svg.classList.remove('text-red-400')
+                            like_count.innerHTML = res.like_count
+                            
+                        } else  {                            
+                            let dislike = div_parent.querySelector('#dislike_btn')
+                            
+                            like_count.innerHTML = res.like_count
+                            dislike_count.innerHTML = res.dislike_count
+
+                            dislike.classList.remove('text-blue-400')
+                            dislike.classList.add('hover:text-blue-400')
+                            svg.classList.add('text-red-400')
+                            
+                        }
+                    } else {
+                        if (res.option === 'removed dislike'){
+                            svg.classList.remove('text-blue-400')
+                            dislike_count.innerHTML = res.dislike_count
+                        } else {
+                            let like = div_parent.querySelector('#like_btn')
+                            
+                            like_count.innerHTML = res.like_count
+                            dislike_count.innerHTML = res.dislike_count
+
+                            like.classList.remove('text-red-400')
+                            like.classList.add('hover:text-red-400')
+                            svg.classList.add('text-blue-400')
+                        }
+                    }
+                            
+                    
+                },
+                error: function(err){
+                    alert(err)
+                }
+            })
+        }
+    </script>
+
+{% endblock %}
+
+
