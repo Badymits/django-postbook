@@ -49,7 +49,7 @@ class Post(models.Model):
         except:
             
             return 0 
-    
+   
 class Comment(models.Model):
     
     main_post           = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -109,6 +109,15 @@ class Comment(models.Model):
                 return comment.users.all().count()
         except:
             return 0
+        
+    # to retrieve comment user's profile photo
+    @property
+    def get_photo_url(self):
+        
+        if self.user.profile_pic and hasattr(self.user.profile_pic, 'url'):
+            return self.user.profile_pic.url
+        else:
+            return "profile/images/xianyun.jpg"
     
 class LikeModel(models.Model):
     
