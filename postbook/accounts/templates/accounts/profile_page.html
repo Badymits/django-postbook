@@ -12,30 +12,123 @@
                 </div>
                 
             </div>
-            <div class=" mt-10 w-full " id="">
+            <div class=" mt-10 w-full border-b-[1px] border-gray-300 pb-10" id="">
                 <ul class="flex justify-between items-center h-[40px]" id="profile_menu">
-                    <li class="w-[100px] text-center active-tab cursor-pointer hover:underline" data-profile-tab="posts" id="profile_tab">Posts</li>
-                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="comments" id="profile_tab">Comments</li>
-                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="saved" id="profile_tab">Saved</li>
-                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="upvoted" id="profile_tab">Upvoted</li>
-                    <li class="w-[100px] text-center cursor-pointer hover:underline" data-profile-tab="following" id="profile_tab">Following</li>
+
+                    <a href="{% url 'user' user.id 'posts' %}" data-profile-tab="posts" id="tab_a_elem">
+                        <li data-profile-tab="posts" 
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/posts/' in request.path %} active-tab {% endif %}" 
+                            id="profile_tab">
+                            Posts
+                        </li>
+                    </a>
+                    
+                    
+                    <a href="{% url 'user' user.id 'comments' %}" data-profile-tab="comments" id="tab_a_elem">
+                        <li data-profile-tab="comments"
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/comments/' in request.path %} active-tab {% endif %}"  
+                            id="profile_tab">
+                            Comments
+                        </li>
+                    </a>
+
+                    <a href="{% url 'user' user.id 'saved' %}" data-profile-tab="saved" id="tab_a_elem">
+                        <li data-profile-tab="saved" 
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/saved/' in request.path %} active-tab {% endif %}"  
+                            id="profile_tab">
+                            Saved
+                        </li>
+                    </a>
+
+
+                    <a href="{% url 'user' user.id 'upvoted' %}" data-profile-tab="upvoted" id="tab_a_elem">
+                        <li data-profile-tab="upvoted" 
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/upvoted/' in request.path %} active-tab {% endif %}"  
+                            id="profile_tab">
+                            Upvotes
+                        </li>
+                    </a>
+
+
+                    <a href="{% url 'user' user.id 'downvoted' %}" data-profile-tab="downvoted" id="tab_a_elem">
+                        <li data-profile-tab="downvoted" 
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/downvoted/' in request.path %} active-tab {% endif %}"  
+                            id="profile_tab">
+                            Downvotes
+                        </li>
+                    </a>
+                    
+
+                    <a href="{% url 'user' user.id 'groups' %}" data-profile-tab="groups" id="tab_a_elem">
+                        <li data-profile-tab="groups" 
+                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/groups/' in request.path %} active-tab {% endif %}" 
+                            id="profile_tab">
+                            Groups
+                        </li>
+                    </a>
+                    
                 </ul>
             </div>
 
-            <div class="mt-6" id="profile_content">
-                {% include 'accounts/tabs/user_posts.html' with user_posts=user_posts %}
+            <div class="mt-6" id="profile_content" onload="">
+                {% if '/posts/' in request.path  %}
+                    {% include 'accounts/tabs/user_posts.html' with user_posts=user_posts %}
+
+
+                {% elif '/comments/' in request.path %}
+                    {% include 'accounts/tabs/user_comments.html' with user_comments=user_comments %}
+
+
+                {% elif '/saved/' in request.path %}
+                    {% include 'accounts/tabs/user_saved_posts.html' %}
+
+
+                {% elif '/upvoted/' in request.path %}
+                    {% include 'accounts/tabs/user_upvoted_comments.html' %}
+
+
+                {% elif '/downvoted/' in request.path %}
+                    {% include 'accounts/tabs/user_downvoted_comments.html' %}
+
+
+                {% elif '/groups/' in request.path %}
+                    {% include 'accounts/tabs/user_upvoted_comments.html' %}
+                    
+
+                {% else %}
+                    <p>None</p>
+
+                {% endif %}
             </div>
             
             
         </div>
-        <div class="col-start-4 col-end-5">
-            <div class="bg-blue-300 h-[100px] rounded-md">
-
+        <div class="">
+            <div class="fixed bg-blue-300 h-[100px] w-[400px] rounded-md">
+                
+            
+                {% if request.user.is_authenticated %}
+                
+                {% endif %}
             </div>
         </div>
     </section>
 
     <script type="text/javascript">
+        let reset_btn = document.getElementById('resetBtn');
+        let post_div = document.querySelectorAll('#post-div');
+        let vote_div = document.getElementById('vote_div')
+    
+        
+        for (let i = 0; i < post_div.length; i++){
+    
+            post_div[i].addEventListener('click', function(e){
+                var post_id = post_div[i].querySelector("input").value
+                console.log(post_id)
+                window.location.href = `http://127.0.0.1:8000/detail-post/${post_id}/`         
+            })
+        }
+        const profile_content = document.getElementById('profile_content')
         $(document).on('click', document, function(e){
             if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
                 const parent = e.target.closest('#like_btn_parent')
@@ -61,34 +154,132 @@
                 updateVote(option, post_id, svg_dislike, parent)
             }
 
-            if (e.target.id === 'profile_tab'){
+            if (e.target.id === 'profile_tab' || e.target.id === 'tab_a_elem'){
                 const tab = e.target.getAttribute('data-profile-tab')
+                console.log('the tab: ', tab)
                 const tab_item = e.target
 
-                activeTab(tab, tab_item)
+                console.log('tab_item: ', tab_item)
+                const tab_a_elem = e.target.querySelector('#tab_a_elem').getAttribute('data-profile-tab')
+
+                console.log('tab_a_elem: ', tab_a_elem)
+                activeTab(tab, tab_item, tab_a_elem)
+            }
+
+            // comment votes handling
+            if (e.target.id === 'comment_like_btn'){
+                const parent = e.target.closest('#comment_like_btn_parent')
+
+                const option = e.target.getAttribute('data-option')
+                const comment_id = e.target.getAttribute('data-comment')
+                const svg_like = parent.querySelector('#comment_like_btn')
+
+                updateCommentVote(option, comment_id, svg_like, parent)
+            }
+
+            if (e.target.id === 'comment_dislike_btn'){
+                const parent = e.target.closest('#comment_dislike_btn_parent')
+
+                const option = e.target.getAttribute('data-option')
+                const comment_id = e.target.getAttribute('data-comment')
+                const svg_dislike = parent.querySelector('#comment_dislike_btn')
+
+                updateCommentVote(option, comment_id, svg_dislike, parent)
             }
         })
 
         // check data profile tab value and render the component based on its value
-        function activeTab(tab, tab_item){
+        function activeTab(tab, tab_item, tab_a_elem){
+
             $('ul#profile_menu').find('li.active-tab').removeClass('active-tab')
 
-            const menu = document.getElementById('profile_menu')
-            if (tab === 'posts'){
-                // add active tab
-                tab_item.classList.add('active-tab')
-            }
-            else if (tab === 'comments'){
-                tab_item.classList.add('active-tab')
-            } else if (tab === 'saved'){
-                tab_item.classList.add('active-tab')
-            } else if (tab === 'upvoted'){
-                tab_item.classList.add('active-tab')
-            } else if (tab === 'following'){
-                tab_item.classList.add('active-tab')
-            }
-
             
+            if (tab === 'posts' || tab_a_elem === 'posts'){
+                // add active tab
+                tab_item.classList.add('active-tab')     
+            }
+            else if (tab === 'comments' || tab_a_elem === 'comments'){
+                tab_item.classList.add('active-tab')
+            } 
+            else if (tab === 'saved'){
+                tab_item.classList.add('active-tab')
+            } 
+            else if (tab === 'upvoted'){
+                tab_item.classList.add('active-tab')
+            } 
+            else if (tab === 'downvoted'){
+                tab_item.classList.add('active-tab')
+            }
+            else if (tab === 'groups'){
+                tab_item.classList.add('active-tab')
+            }
+        }
+
+        function updateCommentVote(option, comment_id, svg, parent){
+            console.log(parent)
+            $.ajax({
+                url: `/update-vote-comment/${comment_id}/`,
+                data:{
+                    option: option
+                },
+                type: 'GET',
+                success: function(res){
+                    let dislike_count = parent.querySelector('#comment_dislike_count')
+                    let like_count = parent.querySelector('#comment_like_count')
+
+                    if (option === 'like'){
+                        // user clicks on a comment that they already liked
+                        if (res.option === 'removed like'){
+                            svg.classList.remove('text-red-400')
+                            like_count.innerHTML = res.like_count
+                        
+                        // liking the comment
+                        } else  {                            
+                            
+                            let div_parent = parent.parentElement // this is the comment actions div
+
+                            const dislike_counter = div_parent.querySelector('#comment_dislike_count')
+                            const dislike_svg = div_parent.querySelector('#comment_dislike_btn') // for the svg
+
+                            like_count.innerHTML = res.like_count
+                            dislike_counter.innerHTML = res.dislike_count
+
+                            dislike_svg.classList.remove('text-blue-400')
+                            dislike_svg.classList.add('hover:text-blue-400')
+                            svg.classList.add('text-red-400')
+                            
+                        }
+
+
+                    // dislike option logic
+                    } else {
+                        // when user clicks on an already disliked comment
+                        if (res.option === 'removed dislike'){
+                            
+                            svg.classList.remove('text-blue-400')
+                            dislike_count.innerHTML = res.dislike_count
+
+                        // first time clicking on the dislike btn
+                        } else {
+                            let div_parent = parent.parentElement // this is the comment actions div
+
+                            const dislike_counter = div_parent.querySelector('#comment_dislike_count')
+                            const like_svg = div_parent.querySelector('#comment_like_btn')
+                            const like_count = div_parent.querySelector('#comment_like_count')
+
+                            like_count.innerHTML = res.like_count
+                            dislike_count.innerHTML = res.dislike_count
+
+                            like_svg.classList.remove('text-red-400')
+                            like_svg.classList.add('hover:text-red-400')
+                            svg.classList.add('text-blue-400')
+                        }
+                    }
+                },
+                error: function(err){
+                    alert('There was an error, do something about it')
+                }
+            })
         }
 
         function updateVote(option, post_id, svg, parent){
