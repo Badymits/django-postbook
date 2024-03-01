@@ -82,3 +82,13 @@ class RegisterModelForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(RegisterModelForm, self).__init__(*args, **kwargs)
         del self.fields['password2']
+        
+
+class EditProfileForm(forms.ModelForm):
+    
+    class Meta:
+        
+        model = Account
+        fields = ['bio', 'profile_pic', 'banner_pic']
+    
+    
