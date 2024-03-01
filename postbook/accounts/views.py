@@ -110,6 +110,9 @@ def editProfile(request, id):
         if form.is_valid():
             profile = form.save(commit=False)
             
+            if form.cleaned_data['bio']:
+                profile.bio = form.cleaned_data['bio']
+            
             if form.cleaned_data['profile_pic']:
                 profile.profile_pic = form.cleaned_data['profile_pic']
 
