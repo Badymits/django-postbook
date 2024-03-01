@@ -46,7 +46,7 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     {% endif %}
-                    <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted }}</p>
+                    <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted|timesince }}</p>
 
                     <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
 
@@ -115,11 +115,14 @@
                             <div class="border-l-[2px] border-gray-400 " id="comment_thread">
                                 <div class="flex items-center gap-2 relative pl-2">
                                 
-                                    <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                                    <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                        <img src="{{ comment.get_photo_url }}" alt="{{ comment.user.username }}"  class="h-full w-full object-cover"/>
+                                        <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                                    </div>
                                     
-                                        <p>
-                                            <a href="{% url 'user' comment.user.id 'posts' %}" class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</a> 
-                                        </p>
+                                    <p>
+                                        <a href="{% url 'user' comment.user.id 'posts' %}" class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</a> 
+                                    </p>
                                     
                                     <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span>
                                     <p class="text-gray-500" id="comment_date">{{ comment.date_posted|timesince }} ago</p>
