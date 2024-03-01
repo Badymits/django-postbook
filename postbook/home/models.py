@@ -117,7 +117,7 @@ class Comment(models.Model):
         if self.user.profile_pic and hasattr(self.user.profile_pic, 'url'):
             return self.user.profile_pic.url
         else:
-            return "profile/images/xianyun.jpg"
+            return "/static/images/profile/images/xianyun.jpg"
     
 class LikeModel(models.Model):
     
