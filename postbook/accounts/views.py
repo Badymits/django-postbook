@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 
 from .models import Account
 from home.models import Post, Comment
-from .forms import RegisterModelForm, LoginModelForm
+from .forms import RegisterModelForm, LoginModelForm, EditProfileForm
 
 # Create your views here.
 def loginView(request):
@@ -89,6 +89,40 @@ def userView(request, id, tab):
         context['message'] = 'Account does not exist'
         context['posts'] = Post.objects.all()
         return render(request, 'home/home.html',context)
+
+@login_required(login_url='login')
+def editProfile(request, id):
+    
+    context = {}
+    form = EditProfileForm()
+    context['form'] = form
+    try:
+        user = get_object_or_404(Account, id=id)
+        
+    except:
+        context['message'] = 'User does not exist'
+        return JsonResponse(context)
+    
+    if request.method == 'POST':
+        print('post data: ',request.POST)
+        form = EditProfileForm(request.POST, request.FILES, instance=user)
+        
+        if form.is_valid():
+            profile = form.save(commit=False)
+            
+            if form.cleaned_data['profile_pic']:
+                profile.profile_pic = form.cleaned_data['profile_pic']
+
+            if form.cleaned_data['banner_pic']:
+                profile.banner_pic = form.cleaned_data['banner_pic']
+                
+            profile.save()
+            context['message'] = 'Profile Updated'
+            
+        return redirect('settings', 'account')
+            
+    return JsonResponse(context)
+    
     
     
 @login_required(login_url='login')
