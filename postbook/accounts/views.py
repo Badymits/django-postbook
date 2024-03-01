@@ -91,4 +91,10 @@ def userView(request, id, tab):
         return render(request, 'home/home.html',context)
     
     
+@login_required(login_url='login')
+def settingsView(request, tab):
     
+    context = {}
+    
+    
+    return render(request, 'accounts/settings.html', context)
