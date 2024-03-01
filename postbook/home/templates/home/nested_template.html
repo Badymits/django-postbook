@@ -11,8 +11,8 @@
                         <a href="{% url 'user' reply.user.id 'posts' %}" class="text-lg hover:underline cursor-pointer" id="comment_user">{{ reply.user.username }}</a> 
                     </p>
                     
-
-                    <p class="pl-2 text-gray-500" id="comment_date">{{ reply.date_posted }}</p>
+                    <span class="w-1 h-1 bg-black rounded-full">&nbsp;</span>
+                    <p class=" text-gray-500" id="comment_date"> {{ reply.date_posted|timesince }} ago</p>
                     <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
 
