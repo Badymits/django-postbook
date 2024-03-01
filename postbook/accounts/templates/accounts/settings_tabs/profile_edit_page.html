@@ -1,4 +1,37 @@
 
-<div>
-    <h1>Customize Profile</h1>
+<div class="w-[70%] h-full">
+    <h1 class="text-2xl">Customize Profile</h1>
+
+    <div>
+        <h1 class="border-b-[1px] border-gray-700 mt-10 text-sm font-normal ">Profile Information</h1>
+
+        something
+    </div>
+
+    <div class="mb-4">
+        <h1 class="border-b-[1px] border-gray-700 mt-14 mb-6 text-sm font-normal">Images </h1>
+        <p class="text-xs py-1">Images must be in .jpg or .png format</p>
+        <form action="{% url 'edit-profile' user.id %}" method="post" class="pt-4 flex flex-wrap items-center  gap-6 relative" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div >
+                <label for="profile_img" class="block">Profile Picture</label>
+                <input type="file" src="" alt="" name="profile_pic" accept="image/*" onchange="readURL(this)" class="border-[1px] text-xs">
+                <img src="{% if user.profile_pic %} {{ user.profile_pic.url }} {% endif %}" alt="" id="img-preview-profile" class="object-contain w-[200px] h-[200px] " >
+            </div>
+
+            <div>
+                <label for="" class="block">Banner Picture</label>
+                <input type="file" src="" alt="" name="banner_pic" accept="image/*" onchange="readURL(this)" class="border-[1px] text-xs">
+                <img src="" alt="" id="img-preview-banner" class="w-[550px] h-[200px] " >
+            </div>
+
+            <button type="submit" class="border-[1px] border-blue-400 absolute -bottom-12 rounded-full w-[100px]">Save</button>
+        </form>
+    </div>
+
+    <div class="mt-[9em]">
+        something
+    </div>
+    
 </div>
