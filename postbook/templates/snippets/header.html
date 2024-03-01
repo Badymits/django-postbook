@@ -14,8 +14,13 @@
             
                     <li class="cursor-pointer w-full hover:bg-gray-300">
                         <a href="{% url 'user' request.user.id 'posts' %}" class="flex items-center gap-2 w-full p-2">
-                            <p class="w-10 h-10 rounded-full bg-blue-300 relative">
+
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ user.profile_pic.url }}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
                                 <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+                            <p class=" rounded-full bg-blue-300 relative">
+                                
                             </p>
                             <div class="">
                                 <p class="text-sm">View Profile</p>
