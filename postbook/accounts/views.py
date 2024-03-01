@@ -77,7 +77,7 @@ def userView(request, id, tab):
         context['user'] = user
         
         if tab == 'posts':
-            user_posts = Post.objects.filter(user=user)
+            user_posts = Post.objects.filter(user=user).order_by('-date_posted')
             context['user_posts'] = user_posts
             
         elif tab == 'comments':
