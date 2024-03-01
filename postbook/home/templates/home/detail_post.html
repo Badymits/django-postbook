@@ -117,7 +117,10 @@
                                 
                                     <p class="w-10 h-10 rounded-full bg-blue-300 ">
                                     
-                                    <p class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</p> 
+                                        <p>
+                                            <a href="{% url 'user' comment.user.id 'posts' %}" class="text-lg hover:underline cursor-pointer" id="comment_user">{{ comment.user.username }}</a> 
+                                        </p>
+                                    
                                     
                                     <p class="pl-2 text-gray-500" id="comment_date">{{ comment.date_posted }}</p>
                                     <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
