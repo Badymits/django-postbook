@@ -13,7 +13,7 @@
                 <ul class="list-none flex flex-col gap-[20px] items-center justify-center w-[12em] h-full font-light">
             
                     <li class="cursor-pointer w-full hover:bg-gray-300">
-                        <a href="{% url 'user' request.user.id %}" class="flex items-center gap-2 w-full p-2">
+                        <a href="{% url 'user' request.user.id 'posts' %}" class="flex items-center gap-2 w-full p-2">
                             <p class="w-10 h-10 rounded-full bg-blue-300 relative">
                                 <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
                             </p>
