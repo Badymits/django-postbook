@@ -46,7 +46,7 @@
                 <div class="py-4 w-full" id="post-div">
                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
                     <p class="text-4xl pb-2">{{ post.title }}</p>
-                    <p class="text-sm font-thin">Posted by: <a href="" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted }}</p>
+                    <p class="text-sm font-thin">Posted by: <a href="" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|timesince }}</p>
                     
                     {% if post.image %}
 
