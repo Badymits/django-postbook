@@ -48,7 +48,7 @@
                 {% if '/account/' in request.path %}
                     {% include 'accounts/settings_tabs/account_edit_page.html' %}
                 {% elif '/profile/' in request.path %}
-                    {% include 'accounts/settings_tabs/profile_edit_page.html' %}
+                    {% include 'accounts/settings_tabs/profile_edit_page.html' with user=request.user %}
                 {% else %}
                     <p>Nothing to see here...</p>
                 {% endif %}
@@ -58,5 +58,22 @@
 
         
     </section>
+
+    <script type="text/javascript">
+        function readURL(input){
+            // check if input exists
+            if (input.files && input.files[0]){
+                //create file reader obj
+                var reader = new FileReader()
+
+                // set the img to img preview
+                reader.onload = function(e){
+                    $('#img-preview-profile').attr('src', e.target.result)
+                }
+
+                reader.readAsDataURL(input.files[0])
+            }
+        }
+    </script>
 
 {% endblock %}
