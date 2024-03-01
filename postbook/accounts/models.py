@@ -56,8 +56,8 @@ class Account(AbstractBaseUser, PermissionsMixin):
     first_name              = models.CharField(max_length=255, blank=True, null=True)
     last_name               = models.CharField(max_length=255, blank=True, null=True)
     date_joined             = models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-    profile_pic             = models.ImageField(upload_to='images', blank=True, null=True)
-    banner_pic              = models.ImageField(upload_to='images', blank=True, null=True)
+    profile_pic             = models.ImageField(upload_to='profile/images/', blank=True, null=True)
+    banner_pic              = models.ImageField(upload_to='profile/images/', blank=True, null=True)
     
     is_admin                = models.BooleanField(default=False)
     is_active               = models.BooleanField(default=True)
