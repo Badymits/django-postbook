@@ -66,7 +66,11 @@ class Comment(models.Model):
     # By making use of reply_id, we avoid loading the reply model object if it exists, which can lead to an N+1 problem
     @property
     def is_reply(self):
-        return self.reply_id is not None
+        return self.reply is not None
+    
+    @property
+    def get_reply(self):
+        return self.reply
     
     # if true, then we can identify if it is a nested comment or not.
     @property
