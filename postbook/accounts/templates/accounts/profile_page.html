@@ -12,8 +12,8 @@
                 </div>
                 
             </div>
-            <div class=" mt-10 w-full border-b-[1px] border-gray-300 pb-10" id="">
-                <ul class="flex justify-between items-center h-[40px]" id="profile_menu">
+            <div class=" mt-10 w-full border-b-[1px] border-gray-300 pb-3" id="">
+                <ul class="flex {% if request.user == user %} justify-between {% else %} justify-start {% endif %} items-center h-[40px]" id="profile_menu">
 
                     <a href="{% url 'user' user.id 'posts' %}" data-profile-tab="posts" id="tab_a_elem">
                         <li data-profile-tab="posts" 
@@ -31,33 +31,34 @@
                             Comments
                         </li>
                     </a>
-
-                    <a href="{% url 'user' user.id 'saved' %}" data-profile-tab="saved" id="tab_a_elem">
-                        <li data-profile-tab="saved" 
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/saved/' in request.path %} active-tab {% endif %}"  
-                            id="profile_tab">
-                            Saved
-                        </li>
-                    </a>
-
-
-                    <a href="{% url 'user' user.id 'upvoted' %}" data-profile-tab="upvoted" id="tab_a_elem">
-                        <li data-profile-tab="upvoted" 
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/upvoted/' in request.path %} active-tab {% endif %}"  
-                            id="profile_tab">
-                            Upvotes
-                        </li>
-                    </a>
+                    <!-- these contents are only available for the logged in user -->
+                    {% if request.user == user %}
+                        <a href="{% url 'user' user.id 'saved' %}" data-profile-tab="saved" id="tab_a_elem">
+                            <li data-profile-tab="saved" 
+                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/saved/' in request.path %} active-tab {% endif %}"  
+                                id="profile_tab">
+                                Saved
+                            </li>
+                        </a>
 
 
-                    <a href="{% url 'user' user.id 'downvoted' %}" data-profile-tab="downvoted" id="tab_a_elem">
-                        <li data-profile-tab="downvoted" 
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/downvoted/' in request.path %} active-tab {% endif %}"  
-                            id="profile_tab">
-                            Downvotes
-                        </li>
-                    </a>
-                    
+                        <a href="{% url 'user' user.id 'upvoted' %}" data-profile-tab="upvoted" id="tab_a_elem">
+                            <li data-profile-tab="upvoted" 
+                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/upvoted/' in request.path %} active-tab {% endif %}"  
+                                id="profile_tab">
+                                Upvotes
+                            </li>
+                        </a>
+
+
+                        <a href="{% url 'user' user.id 'downvoted' %}" data-profile-tab="downvoted" id="tab_a_elem">
+                            <li data-profile-tab="downvoted" 
+                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/downvoted/' in request.path %} active-tab {% endif %}"  
+                                id="profile_tab">
+                                Downvotes
+                            </li>
+                        </a>
+                    {% endif %}
 
                     <a href="{% url 'user' user.id 'groups' %}" data-profile-tab="groups" id="tab_a_elem">
                         <li data-profile-tab="groups" 
@@ -68,6 +69,15 @@
                     </a>
                     
                 </ul>
+
+                {% if request.user == user %}
+                    <a href="{% url 'create-post' %}" class="ml-2 mt-6 border-[1px] block hover:border-gray-400 rounded-full p-2 font-normal w-[120px]">
+                        <i class="fa fa-plus" aria-hidden="true" class="mr-2"></i>
+                        
+                        
+                        Create Post
+                    </a>
+                {% endif %}
             </div>
 
             <div class="mt-6" id="profile_content" onload="">
