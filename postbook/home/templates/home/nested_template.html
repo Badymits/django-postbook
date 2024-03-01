@@ -5,7 +5,10 @@
             <div class="border-l-[2px] border-gray-400" id="comment_thread">
                 <div class="flex items-center gap-2 relative pl-2">
                 
-                    <p class="w-10 h-10 rounded-full bg-blue-300 ">
+                    <div class="w-10 h-10 rounded-[50%] relative overflow-hidden">
+                        <img src="{{ reply.get_photo_url }}" alt="{{ reply.user.username }}"  class="h-full w-full object-cover"/>
+                        <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                    </div>
                     
                     <p>
                         <a href="{% url 'user' reply.user.id 'posts' %}" class="text-lg hover:underline cursor-pointer" id="comment_user">{{ reply.user.username }}</a> 
