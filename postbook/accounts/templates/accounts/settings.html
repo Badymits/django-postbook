@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <section class="grid grid-cols-7">
+        <div class="col-start-2 col-end-7">
+            <div class="border-b-[1px] border-gray-500 pb-2 pl-4">
+                <h1 class="text-2xl pb-6">User Settings</h1>
+
+                <ul class="flex items-center justify-start ">
+
+                    <a  href="{% url 'settings' 'account' %}"
+                        class="me-[1.5em] ">
+                        <li class="cursor-pointer hover:text-gray-500 {% if '/account/' in request.path %} settings-tab {% endif %}">
+                            &nbsp;&nbsp;&nbsp;Account&nbsp;&nbsp;&nbsp;
+                        </li>     
+                    </a>
+
+                    <a  href="{% url 'settings' 'profile' %}"
+                        class="me-[1.5em] cursor-pointer hover:text-gray-500 {% if '/profile/' in request.path %} settings-tab {% endif %}">
+                        <li>
+                            &nbsp;&nbsp;&nbsp;Profile&nbsp;&nbsp;&nbsp;
+                        </li>
+                    </a>
+
+                    <a class="me-[1.5em] cursor-pointer hover:text-gray-500 {% if '//' in request.path %} decoration-2 underline underline-offset-[16px] {% endif %}">
+                        <li>
+                            &nbsp;&nbsp;&nbsp;Safety & Privacy&nbsp;&nbsp;&nbsp;
+                        </li>
+                    </a>
+                    
+                    <a class="me-[1.5em] cursor-pointer hover:text-gray-500 {% if '//' in request.path %} decoration-2 underline underline-offset-[16px] {% endif %}">
+                        <li>
+                            &nbsp;&nbsp;&nbsp;Feed Settings&nbsp;&nbsp;&nbsp;
+                        </li>
+                    </a>
+                    
+                    <a class="me-[1.5em] cursor-pointer hover:text-gray-500 {% if '//' in request.path %} decoration-2 underline underline-offset-[16px] {% endif %}">
+                        <li>
+                            &nbsp;&nbsp;&nbsp;Notifications&nbsp;&nbsp;&nbsp;
+                        </li>
+                    </a>
+                </ul>
+            </div>
+
+            <div class="mt-10 pl-4" id="settings_content">
+                {% if '/account/' in request.path %}
+                    {% include 'accounts/settings_tabs/account_edit_page.html' %}
+                {% elif '/profile/' in request.path %}
+                    {% include 'accounts/settings_tabs/profile_edit_page.html' %}
+                {% else %}
+                    <p>Nothing to see here...</p>
+                {% endif %}
+            </div>
+            
+        </div>
+
+        
+    </section>
+
+{% endblock %}
