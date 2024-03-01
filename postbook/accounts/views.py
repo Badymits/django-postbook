@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from .models import Account
-from home.models import Post
+from home.models import Post, Comment
 from .forms import RegisterModelForm, LoginModelForm
 
 # Create your views here.
@@ -68,19 +68,26 @@ def logoutView(request):
 
 
 @login_required(login_url='login')
-def userView(request, id):
+def userView(request, id, tab):
     
     context = {}
+    
     try:
         user = get_object_or_404(Account, id=id)
         context['user'] = user
         
-        user_posts = Post.objects.filter(user=user)
-        context['user_posts'] = user_posts
+        if tab == 'posts':
+            user_posts = Post.objects.filter(user=user)
+            context['user_posts'] = user_posts
+            
+        elif tab == 'comments':
+            user_comments = Comment.objects.filter(user=user).order_by('-date_posted')
+            context['user_comments'] = user_comments
         
         return render(request, 'accounts/profile_page.html', context)
     except:
         context['message'] = 'Account does not exist'
+        context['posts'] = Post.objects.all()
         return render(request, 'home/home.html',context)
     
     
