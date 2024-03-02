@@ -77,3 +77,20 @@ class Account(AbstractBaseUser, PermissionsMixin):
     
     def has_module_perms(self, app_label):
         return True
+    
+    
+    @property
+    def get_user_photo_url(self):
+        
+        if self.profile_pic and hasattr(self.profile_pic, 'url'):
+            return self.profile_pic.url
+        else:
+            return "/static/images/profile/images/xianyun.jpg"
+    
+    @property
+    def get_user_banner_url(self):
+        
+        if self.banner_pic and hasattr(self.banner_pic, 'url'):
+            return self.banner_pic.url
+        else:
+            return "/static/images/images/furinalezgoooo.png"
