@@ -33,13 +33,13 @@
             
             <div class=" pt-4 flex flex-wrap items-center  gap-6 relative">
                 <div>
-                    <input type="file" src="" alt="" name="profile_pic" accept="image/*" onchange="readURL(this)" class="border-[1px] text-xs">
+                    <input type="file" src="" alt="" name="profile_pic" accept="image/*" onchange="readURL(this, 'profile')" class="border-[1px] text-xs">
                     <img src="{% if user.profile_pic %} {{ user.profile_pic.url }} {% endif %}" alt="" id="img-preview-profile" class="object-contain w-[200px] h-[200px] border-[1px] border-solid my-2" >
                 </div>
     
                 <div>
-                    <input type="file" src="" alt="" name="banner_pic" accept="image/*" onchange="readURL(this)" class="border-[1px] text-xs">
-                    <img src="" alt="" id="img-preview-banner" class="w-[550px] h-[200px] border-[1px]  my-2" >
+                    <input type="file" src="" alt="" name="banner_pic" accept="image/*" onchange="readURL(this, 'banner')" class="border-[1px] text-xs">
+                    <img src="{% if user.banner_pic %} {{ user.banner_pic.url }} {% endif %}" alt="" id="img-preview-banner" class="w-[550px] h-[200px] border-[1px]  my-2 object-contain" >
                 </div>
             </div>
             
