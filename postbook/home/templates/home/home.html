@@ -8,14 +8,20 @@
         
         <div class=" col-start-2 col-end-4">
             <div class="w-full bg-gray-300 h-[60px] flex items-center justify-center w-full gap-[5px] px-4 rounded-xl">
-                Profile Image
+                
+                <a href="{% url 'user' request.user.id 'posts' %}" class="block w-14 h-11 bg-red-200 rounded-[50%] relative overflow-hidden cursor-pointer">
+                    <img src="{{ request.user.get_user_photo_url}}" alt="{{ request.user.username }}"  class="h-full w-full object-cover"/>
+                    <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                </a>
                 
                 <input type="text" class="w-full h-[40px] rounded-lg" placeholder="Create Post" onclick='createPostUrl()'>
-                <div>
-                    image here
+
+                <div class="text-2xl px-1 cursor-pointer hover:bg-gray-400" >
+                    <i class="fa fa-file-image-o" aria-hidden="true"></i>
                 </div>
-                <div>
-                    Paste link
+                
+                <div class="text-2xl px-1 cursor-pointer hover:bg-gray-400">
+                    <i class="fa fa-link" aria-hidden="true"></i>
                 </div>
             </div>
             <div class="pt-2">
