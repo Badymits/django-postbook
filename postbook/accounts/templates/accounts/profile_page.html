@@ -118,7 +118,7 @@
             
         </div>
         <div class="">
-            <div class="fixed bg-gray-200  w-[400px] rounded-md">
+            <div class="fixed bg-gray-100  w-[400px] rounded-md">
                 
                 <div class="rounded-t-lg w-full h-[150px] relative overflow-hidden">
                     <img src="{{ user.get_user_banner_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
@@ -126,18 +126,24 @@
                         <a href="{% url 'settings' 'profile' %}" class="block absolute z-50 bottom-2 right-3 bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center">
                             <i class="fa fa-camera-retro" aria-hidden="true"></i>
                         </a>
-
-                    {% else %}
-                        <!-- check if user is in their friend's list -->
-                        <button class="absolute bottom-0 right-0 z-50  h-[50px] bg-red-200 block"> Add Friend </button>
-
+                    
                     {% endif %}
                 </div>
                 
 
-                <div class="mt-5 p-3">
+                <div class="mt-5 p-3 overflow-hidden">
                     <h1 class="text-3xl"> {{ user.username }} </h1>
+                    {% if user.bio %}
+                        <p class="my-2 font-light break-words">{{ user.bio }}</p>
+                    {% endif %}
 
+                    <!-- add and condition to check if they aren't friends yet -->
+                    {% if request.user != user %}
+                        <button class="z-50 p-2 w-[100px] bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full"> 
+                            <i class="fa fa-plus-circle pr-1" aria-hidden="true"></i>
+                            Add Friend 
+                        </button>
+                    {% endif %}
                     <div class="flex items-center w-full mt-4 ">
                         <div>
                             <h1 class="text-gray-500">
@@ -161,11 +167,38 @@
                         </div>
                     </div>
                 </div>
-                
+                <hr class="border-[1px] border-gray-300 m-3">
                 {% if request.user == user %}
-                <div class="mt-4 p-3">
-                    <h1>Settings</h1>
-                </div>
+                    <div class="mt-4 p-3">
+                        <h1 class="text-gray-500">SETTINGS</h1>
+
+                        <div class="flex items-center mt-7 relative">
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+
+                            <div class="text-sm pl-3">
+                                <h1>Profile</h1>
+                                <p class="text-gray-500">Customize your profile</p>
+                            </div>
+
+                            <a href="{% url 'settings' 'profile' %}" class="block absolute right-0 bg-gray-200 hover:bg-gray-300 hover:underline font-medium text-sm p-3 rounded-full">Edit Profile</a>
+                        </div>
+
+                        <div class="flex items-center mt-7 relative">
+                            <i class="fa fa-align-right bg-gray-300 w-5 h-5 rounded-full p-4 flex items-center justify-center" aria-hidden="true" ></i>
+
+                            <div class="text-sm pl-5">
+                                <h1>Bio</h1>
+                                <p class="text-gray-500">Give a description about you</p>
+                            </div>
+
+                            <a href="{% url 'settings' 'profile' %}" class="block absolute right-0 bg-gray-200 hover:bg-gray-300 hover:underline font-medium text-sm p-3 rounded-full">Edit Bio</a>
+                        </div>
+                        
+                    </div>
+                    <hr class="border-[1px] border-gray-300 m-3">
                 {% endif %}
             </div>
         </div>
