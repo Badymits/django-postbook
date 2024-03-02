@@ -60,7 +60,7 @@
     </section>
 
     <script type="text/javascript">
-        function readURL(input){
+        function readURL(input, pic){
             // check if input exists
             if (input.files && input.files[0]){
                 //create file reader obj
@@ -68,7 +68,12 @@
 
                 // set the img to img preview
                 reader.onload = function(e){
-                    $('#img-preview-profile').attr('src', e.target.result)
+                    if (pic === 'profile'){
+                        $('#img-preview-profile').attr('src', e.target.result)
+                    }
+                    else if (pic === 'banner'){
+                        $('#img-preview-banner').attr('src', e.target.result)
+                    }
                 }
 
                 reader.readAsDataURL(input.files[0])
