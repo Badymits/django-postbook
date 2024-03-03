@@ -6,7 +6,7 @@ from django.core import serializers
 import json
 
 from accounts.models import Account
-from .models import Post, Comment, LikeModel, DislikeModel
+from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel
 from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
 
 # Create your views here.
@@ -134,6 +134,46 @@ def deletePost(request, id):
         return JsonResponse(context)
     
 @login_required(login_url='login')
+def savePost(request, id):
+    
+    context = {}
+    
+    try:
+        post = get_object_or_404(Post, id=id)
+    except:
+        context['message'] = 'Post does not exist'
+        
+        return JsonResponse(context)
+    
+    try:
+        saved_post = get_object_or_404(SavedPostsModel, post__id=id)
+        
+    except:
+        
+        saved_post = SavedPostsModel.objects.create(
+            post=post
+        )
+        print('user added')
+        saved_post.users.add(request.user)
+        context['message'] = 'Saved Post!'
+        
+    
+        return JsonResponse(context)
+    
+    if saved_post.users.filter(id=request.user.id).exists():
+        print('USER REMOVEDDD')
+        saved_post.users.remove(request.user)
+        context['message'] = 'Removed from saved posts'
+        context['action_taken'] = 'Removed'
+    else:
+        print('USER ADDED!!')
+        saved_post.users.add(request.user)
+        context['message'] = 'Added to saved posts'
+        context['action_taken'] = 'Added'
+    
+    return JsonResponse(context)
+    
+@login_required(login_url='login')
 def updateVotePost(request, id):
     
     context = {}
@@ -149,6 +189,7 @@ def updateVotePost(request, id):
     
     if request.GET.get('option') == 'like':
         
+        # get the like and dislike objs to check if user exists in any of the two models
         try:
             like_obj = get_object_or_404(LikeModel, post=post)
         except:
@@ -162,11 +203,13 @@ def updateVotePost(request, id):
         except:
             dislike_obj = None
         
-        
+        # if user clicks on an already liked post
         if like_obj.users.filter(id=request.user.id).exists():
             like_obj.users.remove(request.user)
             
             context['option'] = 'removed like'
+            
+        # first time/ clicking on a post that has no like vote
         else:
             if dislike_obj is not None:
                 dislike_obj.users.remove(request.user)
@@ -175,11 +218,11 @@ def updateVotePost(request, id):
                 context['dislike_count'] = 0
             like_obj.users.add(request.user)
             
-            
+        # returning the user count for like and dislike model to render immediately
             context['option'] = 'added'
         context['like_count'] = like_obj.users.all().count()
         
-            
+    # same process with like, getting the like and dislike object. Then remove/add user depending on the action/option
     elif request.GET.get('option') == 'dislike':
         print(request.GET.get('option'))
         try:
@@ -255,7 +298,7 @@ def createComment(request, id):
             context['message'] = 'Comment Successful'
             messages.success(request, 'Comment Success')
             
-            # too lazy but same result (yes, these values can be passed in like the example on line 161). Then pass the context var
+            # too lazy but same result . Then pass the context var
             # all together
             return JsonResponse({
                 'comment_id': comment.id,
