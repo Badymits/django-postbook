@@ -46,7 +46,7 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     {% endif %}
-                    <p class="text-md pb-3 text-gray-500">Posted by: {{ post.user.username }} {{ post.date_posted|timesince }}</p>
+                    <p class="text-md pb-3 text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|timesince }}</p>
 
                     <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
 
