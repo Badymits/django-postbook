@@ -244,7 +244,7 @@
                 const post_id = e.target.getAttribute('data-post')
                 const svg_like = parent.querySelector('#like_btn')
                 const like_count = parent.querySelector('#like_count')
-    
+                
                 updateVote(option, post_id, svg_like, parent)
     
             }
@@ -299,8 +299,15 @@
                 const user = e.target.getAttribute('data-user')
                 const save_post_btn = e.target.closest('#save_post_btn_parent')
 
+                const save_post_icon = e.target.querySelector('.fa')
                 const save_post_text = save_post_btn.querySelector('.save_text')
                 console.log(save_post_btn)
+
+                const new_icon = document.createElement('i')
+                new_icon.setAttribute('id', 'save_post_btn')
+                new_icon.setAttribute('data-post-id', post_id)
+                new_icon.setAttribute('data-user', user)
+                new_icon.ariaHidden = true
 
                 $.ajax({
                     url: `/save-post/${post_id}/`,
@@ -315,10 +322,16 @@
                         console.log(res)
                         alert(res.message)
                         if (res.action_taken === 'Removed'){
+
+                            new_icon.setAttribute('class', 'fa fa-bookmark-o')
                             save_post_text.innerHTML = 'Save'
+                            save_post_btn.replaceChild(new_icon, save_post_icon)
                         } 
                         else if (res.action_taken === 'Added') {
-                            save_post_text.innerHTML = 'Removed from saved'
+
+                            new_icon.setAttribute('class', 'fa fa-bookmark')                   
+                            save_post_text.innerHTML = 'Remove from saved'
+                            save_post_btn.replaceChild(new_icon, save_post_icon)
                         }
                         
 
