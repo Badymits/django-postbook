@@ -66,15 +66,27 @@
                             <p>{{ post.comment_set.all|length }} {{ post.comment_set.count|pluralize:"comment,comments" }}</p>
                         </div>
 
-                        <div class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-3 ">
-                            <i class="fa fa-share-square-o" aria-hidden="true"></i>
-                            <p>Share post</p>
-                        </div>
+                        <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-3 block" id="share_post_btn" value="{{ post.id }}" data-post-id="{{ post.id }}">
+                            <i class="fa fa-share-square-o" aria-hidden="true" id="share_post_btn" data-post-id="{{ post.id }}"></i>
+                            <p id="share_post_btn" data-post-id="{{ post.id }}">Share post</p>
+                        </button>
 
-                        <div class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-2 ">
-                            <i class="fa fa-bookmark-o" aria-hidden="true"></i>
-                            <p>Save</p>
-                        </div>
+                        <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-2 block" id="save_post_btn_parent" value="{{ post.id }}" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
+
+                            <!-- wrapping the if condition within the text/p element will interfere with the event delegation. It wont detect this element. -->
+                            {% is_saved post.id request.user as post_saved %}
+                            {% if post_saved %}
+                                <i class="fa fa-bookmark" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}"></i>
+                                <p class="save_text" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
+                                    Remove from saved
+                                </p>
+                            {% else %}  
+                                <i class="fa fa-bookmark-o" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}"></i>
+                                <p class="save_text" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
+                                    Save
+                                </p>
+                            {% endif %}
+                        </button>
                         
                     </div>
                 </div>
