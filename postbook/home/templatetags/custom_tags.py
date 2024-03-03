@@ -1,7 +1,7 @@
 from django import template
 from django.shortcuts import get_object_or_404
 
-from ..models import LikeModel, DislikeModel
+from ..models import LikeModel, DislikeModel, SavedPostsModel
 
 register = template.Library()
 
@@ -87,6 +87,17 @@ def getCommentVoteCount(comment, user, option):
 
 
 @register.simple_tag
-def postVotes(*args):
+def is_saved(post, user):
     
-    pass
+    try:
+        saved_post = get_object_or_404(SavedPostsModel, post__id=post)
+        
+        if saved_post.users.filter(id=user.id).exists():
+            return True
+        else:
+            
+            return False
+    except:
+        return False
+        
+        
