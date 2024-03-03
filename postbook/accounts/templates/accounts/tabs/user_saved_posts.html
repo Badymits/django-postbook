@@ -34,8 +34,8 @@
                     </svg>
                     {% else %}
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
-                        class="hover:text-blue-400" id="dislike_btn" data-post="{{ post.id }}">
-                        <path fill="currentColor"  id="dislike_btn" data-post="{{ post.id }}" data-option="dislike"
+                        class="hover:text-blue-400" id="dislike_btn" data-post="{{ post.post.id }}">
+                        <path fill="currentColor"  id="dislike_btn" data-post="{{ post.post.id }}" data-option="dislike"
                         d="M20.901 10.566A1.001 1.001 0 0 0 20 10h-4V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v7H4a1.001 1.001 0 0 0-.781 1.625l8 10a1 1 0 0 0 1.562 0l8-10c.24-.301.286-.712.12-1.059M12 19.399L6.081 12H10V4h4v8h3.919z"/>
                     </svg>
                     {% endif %}
@@ -74,15 +74,16 @@
                 </button>
 
                 <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-2 block" id="save_post_btn_parent" value="{{ post.post.id }}" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}">
-                    <i class="fa fa-bookmark-o" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}"></i>
-                    
+
                     <!-- wrapping the if condition within the text/p element will interfere with the event delegation. It wont detect this element. -->
                     {% is_saved post.post.id request.user as post_saved %}
                     {% if post_saved %}
+                        <i class="fa fa-bookmark" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}"></i>
                         <p class="save_text" id="save_post_btn" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}">
                             Remove from saved
                         </p>
                     {% else %}  
+                        <i class="fa fa-bookmark-o" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}"></i>
                         <p class="save_text" id="save_post_btn" data-post-id="{{ post.post.id }}" data-user="{{ request.user }}">
                             Save
                         </p>
