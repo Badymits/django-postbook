@@ -1,14 +1,136 @@
-<header class="bg-gray-300 h-[60px] flex justify-between items-center px-10 fixed w-full z-50">
-    <h1 class="text-4xl font-thin">
+<header class="bg-gray-300 h-[60px] grid grid-cols-5 gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50">
+    <div class=" col-start-1 col-end-2 flex text-4xl font-thin">
         <a href="{% url 'home' %}">PostBook</a>
-    </h1>
-    <div>
-        Searchbar
+        
     </div>
-    <div class="relative">
+    
+    <div class="col-start-2 col-end-5 flex items-center gap-4">
+
+        <form action="" method="get" class="relative w-[700px]" >
+            
+            <label class="flex relative">
+                <i class="fa fa-search absolute left-2 z-50 top-3 bottom-3 " aria-hidden="true"></i>
+                <input type="text" name="search" placeholder="Search Postbook " class="pl-7 w-full rounded-full font-sans" />
+            </label>
+            
+            
+        </form>
+
+        <div class="text-sm p-3">
+            <div class="flex items-center gap-8">
+                <a href="{% url 'home' %}">
+                    <i class="fa fa-home text-3xl" data-tooltip-target="tooltip-home" data-tooltip-placement="bottom" aria-hidden="true"></i>
+                </a>
+                
+                <div class="ml-6 relative">
+                    <i class="fa fa-bell text-2xl cursor-pointer" id="notif_btn" aria-hidden="true" data-tooltip-target="tooltip-notif" data-tooltip-placement="bottom"></i>
+                    <div class="hidden absolute top-9 right-0 w-[400px] bg-gray-100 shadow-md rounded-lg text-lg" id="notif_menu">
+                        <div class="p-3 border-b-[1px] border-gray-600 flex items-center justify-between">
+                            Notifications
+                            <a href="{% url 'settings' 'account' %}">
+                                <i class="fa fa-cog" aria-hidden="true" data-tooltip-target="tooltip-settings" data-tooltip-placement="bottom"></i>   
+                            </a>
+                             
+                        </div>
+
+                        <!-- put for loop here -->
+                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+                            
+                            <div class="">
+                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
+                                <p class="text-sm">Post body</p>
+                            </div> 
+                        </div>
+                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+                            
+                            <div class="">
+                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
+                                <p class="text-sm">Post body</p>
+                            </div> 
+                        </div>
+                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+                            
+                            <div class="">
+                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
+                                <p class="text-sm">Post body</p>
+                            </div> 
+                        </div>
+                        <div class="bg-gray-400 rounded-b-lg">
+                            <a href="" class="block text-center m-auto h-[50px] flex justify-center items-center hover:underline text-white">See All</a>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                <div class="ml-6">
+                    <i class="fa fa-users text-2xl cursor-pointer" aria-hidden="true" data-tooltip-target="tooltip-community" data-tooltip-placement="bottom"></i>
+                </div>
+
+                <div class="ml-6">
+                    <i class="fa fa-comments-o text-2xl cursor-pointer" aria-hidden="true" data-tooltip-target="tooltip-message" data-tooltip-placement="bottom"></i>
+                </div>
+            </div>
+            
+
+            <div id="tooltip-home" role="tooltip" class="absolute z-10 
+                invisible px-3 py-2 text-xs font-medium text-white 
+                transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                opacity-0 tooltip dark:bg-gray-700">
+                    Home Page
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+            <div id="tooltip-notif" role="tooltip" class="absolute z-10 
+                invisible px-3 py-2 text-xs font-medium text-white 
+                transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                opacity-0 tooltip dark:bg-gray-700">
+                    Notifications
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+            <div id="tooltip-community" role="tooltip" class="absolute z-10 
+                invisible px-3 py-2 text-xs font-medium text-white 
+                transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                opacity-0 tooltip dark:bg-gray-700">
+                    Communities
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+            <div id="tooltip-message" role="tooltip" class="absolute z-10 
+                invisible px-3 py-2 text-xs font-medium text-white 
+                transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                opacity-0 tooltip dark:bg-gray-700">
+                    Messages
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+
+            <div id="tooltip-settings" role="tooltip" class="absolute z-10 
+                invisible px-3 py-2 text-xs font-medium text-white 
+                transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                opacity-0 tooltip dark:bg-gray-700">
+                    Settings
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
+            
+        </div>
+        
+    </div>
+    <div class="relative place-self-end self-center">
         <!-- add hover effect here -->
-        <div class="text-2xl cursor-pointer" id="profile">
-            Welcome {{ request.user.username }}!
+        <div class="text-2xl cursor-pointer  flex items-center justify-end gap-3 hover:border-[1px] border-gray-600 w-[220px] p-2" id="profile">
+            <h1 class="text-right"> Welcome {{ request.user.username }}!</h1>
             <div id="profile-menu" class="hidden absolute top-10 right-0 bg-gray-200  rounded-md shadow-xl py-2 pb-4">
                 <ul class="list-none flex flex-col gap-[20px] items-center justify-center w-[12em] h-full font-light">
             
@@ -42,8 +164,11 @@
                     </li>
                     
                 </ul>
+                
             </div>
+            <i class="fa fa-arrow-down text-sm" aria-hidden="true"></i>
         </div>
+        
         
     </div>
     
@@ -52,6 +177,16 @@
 
 <script type="text/javascript">
     let profile_div = document.getElementById('profile')
+    let notif_btn = document.getElementById('notif_btn')
+    let notif_menu = document.getElementById('notif_menu')
+
+    notif_btn.addEventListener('click', function(e){
+        if (notif_menu.classList.contains('hidden')){
+            notif_menu.classList.remove('hidden')
+        }else{
+            notif_menu.classList.add('hidden')
+        }
+    })
 
     profile_div.addEventListener('click', function(e) {
         
