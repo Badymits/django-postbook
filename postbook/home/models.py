@@ -11,7 +11,6 @@ class Post(models.Model):
     date_posted         = models.DateTimeField(auto_now_add=True)
     image               = models.ImageField(upload_to='images', blank=True, null=True)
     slug                = models.SlugField(default="", max_length=255, blank=True, null=True)
-    votes               = models.IntegerField(blank=True, null=True)
     
     def __str__(self):
         return self.title
@@ -49,7 +48,7 @@ class Post(models.Model):
         except:
             
             return 0 
-   
+
 class Comment(models.Model):
     
     main_post           = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -143,3 +142,13 @@ class DislikeModel(models.Model):
             return f'disliking post: {self.post.title}'
         elif self.comment:
             return f'disliking comment: {self.comment.body}'
+        
+
+class SavedPostsModel(models.Model):
+    
+    users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    post                = models.ForeignKey(Post, null=True, blank=True, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return f'saved post: {self.post.title}'
+    
