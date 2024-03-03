@@ -94,7 +94,7 @@
 
 
                 {% elif '/saved/' in request.path %}
-                    {% include 'accounts/tabs/user_saved_posts.html' %}
+                    {% include 'accounts/tabs/user_saved_posts.html' with user_saved_posts=user_saved_posts %}
 
 
                 {% elif '/upvoted/' in request.path %}
@@ -187,7 +187,7 @@
                         </div>
 
                         <div class="flex items-center mt-7 relative">
-                            <i class="fa fa-align-right bg-gray-300 w-5 h-5 rounded-full p-4 flex items-center justify-center" aria-hidden="true" ></i>
+                            <i class="fa fa-align-right bg-gray-300 w-8 h-8 rounded-full p-5 flex items-center justify-center" aria-hidden="true" ></i>
 
                             <div class="text-sm pl-5">
                                 <h1>Bio</h1>
@@ -205,6 +205,23 @@
     </section>
 
     <script type="text/javascript">
+        // to be used for the delete functio where we place the csrf token to the request headers
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
         let reset_btn = document.getElementById('resetBtn');
         let post_div = document.querySelectorAll('#post-div');
         let vote_div = document.getElementById('vote_div')
@@ -275,6 +292,41 @@
                 const svg_dislike = parent.querySelector('#comment_dislike_btn')
 
                 updateCommentVote(option, comment_id, svg_dislike, parent)
+            }
+
+            if (e.target.id === 'save_post_btn' || e.target.id === 'save_post_btn_parent'){
+                const post_id = e.target.getAttribute('data-post-id')
+                const user = e.target.getAttribute('data-user')
+                const save_post_btn = e.target.closest('#save_post_btn_parent')
+
+                const save_post_text = save_post_btn.querySelector('.save_text')
+                console.log(save_post_btn)
+
+                $.ajax({
+                    url: `/save-post/${post_id}/`,
+                    type: 'PUT',
+                    data: {
+                        user: user
+                    },
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                    },
+                    success: function(res){
+                        console.log(res)
+                        alert(res.message)
+                        if (res.action_taken === 'Removed'){
+                            save_post_text.innerHTML = 'Save'
+                        } 
+                        else if (res.action_taken === 'Added') {
+                            save_post_text.innerHTML = 'Removed from saved'
+                        }
+                        
+
+                    },
+                    error: function(err){
+                        console.error(err)
+                    }
+                })
             }
         })
 
