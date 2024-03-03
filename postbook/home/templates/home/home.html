@@ -97,15 +97,16 @@
                                     </button>
         
                                     <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-2 block" id="save_post_btn_parent" value="{{ post.id }}" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
-                                        <i class="fa fa-bookmark-o" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}"></i>
-                                        
+
                                         <!-- wrapping the if condition within the text/p element will interfere with the event delegation. It wont detect this element. -->
                                         {% is_saved post.id request.user as post_saved %}
                                         {% if post_saved %}
+                                            <i class="fa fa-bookmark" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}"></i>
                                             <p class="save_text" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
                                                 Remove from saved
                                             </p>
                                         {% else %}  
+                                            <i class="fa fa-bookmark-o" aria-hidden="true" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}"></i>
                                             <p class="save_text" id="save_post_btn" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
                                                 Save
                                             </p>
@@ -124,7 +125,7 @@
             </div>
         </div>
         <div class="">
-            <div class="fixed bg-gray-300 h-[500px] w-[400px] rounded-lg p-4">
+            <div class="fixed bg-gray-100 h-[500px] w-[400px] rounded-lg p-4">
                 <p class="text-2xl font-thin">About PostBook...</p>
                 <br>
                 <p class="text-justify">
@@ -239,8 +240,14 @@
                 const user = e.target.getAttribute('data-user')
                 const save_post_btn = e.target.closest('#save_post_btn_parent')
 
+                const save_post_icon = save_post_btn.querySelector('.fa')
                 const save_post_text = save_post_btn.querySelector('.save_text')
-                console.log(save_post_btn)
+
+                const new_icon = document.createElement('i')
+                new_icon.setAttribute('id', 'save_post_btn')
+                new_icon.setAttribute('data-post-id', post_id)
+                new_icon.setAttribute('data-user', user)
+                new_icon.ariaHidden = true
 
                 $.ajax({
                     url: `/save-post/${post_id}/`,
@@ -254,7 +261,18 @@
                     success: function(res){
                         console.log(res)
                         alert(res.message)
-                        save_post_text.innerHTML = 'Removed from saved'
+                        if (res.action_taken === 'Removed'){
+
+                            new_icon.setAttribute('class', 'fa fa-bookmark-o')
+                            save_post_text.innerHTML = 'Save'
+                            save_post_btn.replaceChild(new_icon, save_post_icon)
+                        } 
+                        else if (res.action_taken === 'Added') {
+
+                            new_icon.setAttribute('class', 'fa fa-bookmark')                   
+                            save_post_text.innerHTML = 'Remove from saved'
+                            save_post_btn.replaceChild(new_icon, save_post_icon)
+                        }
 
                     },
                     error: function(err){
