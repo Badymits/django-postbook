@@ -3,9 +3,10 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from .models import Account
-from home.models import Post, Comment
+from home.models import Post, Comment, SavedPostsModel
 from .forms import RegisterModelForm, LoginModelForm, EditProfileForm
 
 # Create your views here.
@@ -83,6 +84,11 @@ def userView(request, id, tab):
         elif tab == 'comments':
             user_comments = Comment.objects.filter(user=user).order_by('-date_posted')
             context['user_comments'] = user_comments
+        
+        elif tab == 'saved':
+            user_saved_posts = SavedPostsModel.objects.filter(users__id=user.id)
+            print(user_saved_posts)
+            context['user_saved_posts'] = user_saved_posts
         
         return render(request, 'accounts/profile_page.html', context)
     except:
