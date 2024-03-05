@@ -98,7 +98,7 @@
 
 
                 {% elif '/upvoted/' in request.path %}
-                    {% include 'accounts/tabs/user_upvoted_comments.html' %}
+                    {% include 'accounts/tabs/user_upvoted_posts.html' with upvotes=upvotes %}
 
 
                 {% elif '/downvoted/' in request.path %}
