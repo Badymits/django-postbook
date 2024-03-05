@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load custom_tags %}
+{% load humanize %}
 
 {% block content %}
 
@@ -125,7 +126,7 @@
                                     </p>
                                     
                                     <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span>
-                                    <p class="text-gray-500" id="comment_date">{{ comment.date_posted|timesince }} ago</p>
+                                    <p class="text-gray-500" id="comment_date">{{ comment.date_posted|naturaltime }}</p>
                                     <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
                                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
                         
@@ -225,8 +226,10 @@
             </div>
         </div>
     </section>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/plugin/relativeTime.min.js"></script>
     <script type="text/javascript">
+        dayjs.extend(window.dayjs_plugin_relativeTime)
         let comment_form = document.getElementById('comment_form')
         let post_id = document.getElementById('post_id').value
         
@@ -259,25 +262,28 @@
                     $('#body').val('')
                     $('#success_msg').html(res);
                     console.log(res.comment_body, ' ', res.comment_user)
-                    createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level);
+
+                    createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path ); // pinahirapan ko lang sarili ko lmao
                 }
             })
         })
         // its repetitive I know pero wala na tayong no choice
         // creating the element manually was the only solution (that I know) for this problem
         // this creates the comment element dynamically, without the need to refresh the page to render the comment
-        function createComment(body, users_name, date, comment_id, level){
+        function createComment(body, users_name, date, comment_id, level, user_dp, img_path){
             if (comment_container.classList.contains('hidden')){
                 comment_container.classList.remove('hidden')
             }
             const custom_container = document.createElement('div')
             let border_container = document.createElement('div')
             let user_details = document.createElement('div')
-            let profile_pic = document.createElement('p')
+            
             let username = document.createElement('p')
             let comment_date = document.createElement('p')
         
-
+            let profile_pic
+            const img_wrapper = document.createElement('div')
+            const img_span = document.createElement('span')
             let comment_options_div = document.createElement('div')
             let comment_button = document.createElement('p')
             let comment_options = document.createElement('div')
@@ -287,7 +293,28 @@
 
             border_container.setAttribute('class', 'border-l-[2px] border-gray-400 pb-4')
             user_details.setAttribute('class', 'flex items-center gap-2 relative pl-2')
-            profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
+            if (user_dp){
+                
+                img_wrapper.setAttribute('class', 'w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden')
+                img_span.setAttribute('class', 'w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full')
+
+                profile_pic = document.createElement('img')
+                profile_pic.setAttribute('class', 'h-full w-full object-cover')
+
+                img_wrapper.appendChild(profile_pic)
+                img_wrapper.appendChild(img_span)
+
+                profile_pic.src = img_path
+                profile_pic.alt = users_name
+
+                user_details.appendChild(img_wrapper)
+            } else {
+                console.log('FALSE', user_dp)
+                profile_pic = document.createElement('p')
+                profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
+                user_details.appendChild(profile_pic)
+            }
+            
             username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
             comment_date.setAttribute('class', 'pl-2 text-gray-500')
 
@@ -322,7 +349,7 @@
             comment_options_div.appendChild(comment_options)
 
 
-            user_details.appendChild(profile_pic)
+            
             user_details.appendChild(username)
             user_details.appendChild(comment_date)
             user_details.appendChild(comment_options_div)
@@ -750,6 +777,7 @@
         // first param refers to the individual reply
         // second param refers to the comment that is being replied to
         // third param will be the section of all the replies related to the main comment
+        // fourth param refers to the target parent
         function saveReplyComment(trgt, id, reply_section, parent_thread){
             
             let body = trgt.querySelector('#body').value
@@ -768,7 +796,7 @@
                     },
                     success: function(res){
                         console.log(res)
-                        let result = createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level)
+                        let result = createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
                         createNestedComment(result, reply_section, parent_thread)
                     },
                     error: function(err){
