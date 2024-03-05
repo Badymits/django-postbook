@@ -92,6 +92,10 @@ def userView(request, id, tab):
         elif tab == 'upvoted':
             upvotes = LikeModel.objects.filter(users__id=user.id)
             context['upvotes'] = upvotes
+            
+        elif tab == 'downvoted':
+            downvotes = DislikeModel.objects.filter(users__id=user.id)
+            context['downvotes'] = downvotes
         
         return render(request, 'accounts/profile_page.html', context)
     except:
