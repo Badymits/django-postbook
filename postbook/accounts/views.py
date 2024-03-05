@@ -87,10 +87,9 @@ def userView(request, id, tab):
         
         elif tab == 'saved':
             user_saved_posts = SavedPostsModel.objects.filter(users__id=user.id)
-            print(user_saved_posts)
             context['user_saved_posts'] = user_saved_posts
         
-        elif tab == 'upvotes':
+        elif tab == 'upvoted':
             upvotes = LikeModel.objects.filter(users__id=user.id)
             context['upvotes'] = upvotes
         
