@@ -102,7 +102,7 @@
 
 
                 {% elif '/downvoted/' in request.path %}
-                    {% include 'accounts/tabs/user_downvoted_comments.html' %}
+                    {% include 'accounts/tabs/user_downvoted_posts.html' with downvotes=downvotes %}
 
 
                 {% elif '/groups/' in request.path %}
