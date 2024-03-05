@@ -98,7 +98,7 @@
                     </div>
             </div>
             <div class="p-4 bg-gray-200 rounded-xl">
-                <p>Comment as <span class="text-blue-600 hover:underline cursor-pointer">{{ request.user.username }}</span></p>
+                <p>Comment as <a href="{% url 'user' request.user.id 'posts' %}" class="text-blue-600 hover:underline cursor-pointer ">{{ request.user.username }}</a></p>
                 <form action="" method="post" id="comment_form">
                     {% csrf_token %}
                     <input type="hidden" name="user" id="user" value="{{ request.user }}">
