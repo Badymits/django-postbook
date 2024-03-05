@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 from .models import Account
-from home.models import Post, Comment, SavedPostsModel
+from home.models import Post, Comment, SavedPostsModel, LikeModel, DislikeModel
 from .forms import RegisterModelForm, LoginModelForm, EditProfileForm
 
 # Create your views here.
@@ -89,6 +89,10 @@ def userView(request, id, tab):
             user_saved_posts = SavedPostsModel.objects.filter(users__id=user.id)
             print(user_saved_posts)
             context['user_saved_posts'] = user_saved_posts
+        
+        elif tab == 'upvotes':
+            upvotes = LikeModel.objects.filter(users__id=user.id)
+            context['upvotes'] = upvotes
         
         return render(request, 'accounts/profile_page.html', context)
     except:
