@@ -3,8 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-import json
-
+import jsonpickle
 from accounts.models import Account
 from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel
 from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
@@ -295,17 +294,20 @@ def createComment(request, id):
                 comment.comment_level = 1
             
             comment.save()
-            context['message'] = 'Comment Successful'
+            context['message'] = 'Comment Successful'           
             messages.success(request, 'Comment Success')
             
             # too lazy but same result . Then pass the context var
             # all together
             return JsonResponse({
+                'comment': jsonpickle.encode(comment),
                 'comment_id': comment.id,
                 'comment_user': comment.user.username,
                 'comment_body': comment.body,
                 'comment_date': comment.date_posted,
-                'comment_level': comment.comment_level
+                'comment_level': comment.comment_level,
+                'has_profile_pic': True if comment.user.profile_pic else False,
+                'img_path': f'http://127.0.0.1:8000/{comment.user.profile_pic.url}',
             })
         else:
             messages.error(request, 'There was an error')
