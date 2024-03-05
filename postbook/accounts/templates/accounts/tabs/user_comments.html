@@ -31,7 +31,7 @@
 
                                     is replying to 
 
-                                    <a href="{% url 'user' comment.user.id 'posts' %}" class="text-gray-500 hover:underline"> {{ comment.get_reply.user.username }} </a>
+                                    <a href="{% url 'user' comment.get_reply.user.id 'posts' %}" class="text-gray-500 hover:underline"> {{ comment.get_reply.user.username }} </a>
                                 </p>
 
                             {% else %}
