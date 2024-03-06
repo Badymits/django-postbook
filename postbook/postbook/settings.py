@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 # The Daphne development server will conflict with any other third-party apps that require an overloaded or replacement runserver command. 
 INSTALLED_APPS = [
-    'daphne',
+    'daphne', # Daphne is a high-performance ASGI server that Django Channels can use to handle WebSocket connections.
     'home',
     'accounts',
     'django.contrib.admin',
@@ -83,6 +83,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# by doing this, we are using the in-memory channel layer provided by Django Channels for development purposes.
+# In production, you would typically use a more robust channel layer backend, such as Redis or RabbitMQ
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': "channels.layers.InMemoryChannelLayer"
