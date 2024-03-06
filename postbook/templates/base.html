@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,12 +32,13 @@
             {% endblock %}
         </div>
         
-        <div class="fixed bottom-3 left-5 h-[110px] w-[110px] bg-sky-200" id="message_notif">
+        <div class="fixed left-[50%] right-[50%] bottom-3 mx-auto block h-[110px] w-[110px] bg-sky-200 hidden" id="message_notif">
             <p>Message here</p>
         </div>
     {% endif %}
     
 </body>
 <!-- for tooltip css -->
+<script type="text/javascript" src="{% static 'js/events.js' %}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
 </html>
