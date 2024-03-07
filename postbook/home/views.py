@@ -24,6 +24,7 @@ def homePage(request):
 @login_required(login_url='login')
 def createPost(request):
     
+    context = {}
     form = CreatePostForm()
     req_user = Account.objects.get(email=request.user.email)
     
@@ -36,7 +37,8 @@ def createPost(request):
             post.user = req_user
             form.save()
             
-            messages.success(request, 'POST MADE!')
+            messages.success(request, 'POST CREATED!')
+            context['message'] = 'Post created!'
             return redirect('home')
         else:
             print('ERROR')
@@ -98,6 +100,7 @@ def editPost(request, id):
             post.save()
             
             messages.success(request, 'Edit Successful!')
+            
             return redirect('detail-post', id)
         else:
             messages.error(request, 'Something went wrong...')
