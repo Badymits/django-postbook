@@ -6,16 +6,8 @@
 
     <section class="grid grid-cols-5 gap-2">
         <div class="col-start-2 col-end-4 pb-[20em]">
-            {% if messages %}
-
-                {% for message in messages %}
-
-                    <p class="text-red-400 text-xl" id="success_msg">{{ message }}</p>
-                    <p id="success_msg"></p>
-
-                {% endfor %}
-
-            {% endif %}
+            
+            <input type="hidden" value="{{ request.user.username }}" id="user">
 
             <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  relative"> 
                     {% if request.user == post.user %}
@@ -225,11 +217,31 @@
                 <h1>That's all, happy posting</h1>
             </div>
         </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-green-200 flex items-center rounded-md" id="message_notif">
+                    <p id="message_text" class="p-1">{{ message }}</p>
+                    <i  id="message_close"
+                        class="fa fa-times text-xl cursor-pointer absolute right-3
+                        hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center" 
+                        aria-hidden="true">
+                    </i>
+                </div>
+            {% endfor %}
+        {% endif %}
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/plugin/relativeTime.min.js"></script>
     <script type="text/javascript">
-        dayjs.extend(window.dayjs_plugin_relativeTime)
+
+        const user = document.getElementById('user').value
+        let url = `ws://${window.location.host}/ws/socket-server/` // instead of http, we use websocket channel (ws)
+
+        // create websocket object
+        const notifSocket = new WebSocket(url)
+
+        dayjs.extend(window.dayjs_plugin_relativeTime) // necessary plugin for using the fromNow() dayjs method
         let comment_form = document.getElementById('comment_form')
         let post_id = document.getElementById('post_id').value
         
@@ -690,6 +702,11 @@
                             dislike_svg.classList.remove('text-blue-400')
                             dislike_svg.classList.add('hover:text-blue-400')
                             svg.classList.add('text-red-400')
+
+                            // check if different user
+                            //notifSocket.send(JSON.stringify({
+                            //    'message': 'Test'
+                            //}))
                             
                         }
 
@@ -749,6 +766,10 @@
                             dislike.classList.remove('text-blue-400')
                             svg.classList.add('text-red-400')
                             
+                            notifSocket.send(JSON.stringify({
+                                'message': `${user} liked your post!`,
+                                'post_id': post_id
+                            }))
                         }
                     } else {
                         if (res.option === 'removed dislike'){
@@ -762,6 +783,11 @@
 
                             like.classList.remove('text-red-400')
                             svg.classList.add('text-blue-400')
+
+                            notifSocket.send(JSON.stringify({
+                                'message': `${user} disliked your post!`,
+                                'post_id': post_id
+                            }))
                         }
                     }
                             
