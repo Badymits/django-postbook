@@ -32,8 +32,13 @@
             {% endblock %}
         </div>
         
-        <div class="fixed left-[50%] right-[50%] bottom-3 mx-auto block h-[110px] w-[110px] bg-sky-200 hidden" id="message_notif">
-            <p>Message here</p>
+        <div class="fixed left-3 bottom-3 mx-auto block h-[110px] w-[300px] bg-sky-200 hidden flex items-center rounded-md" id="message_notif">
+            <p id="message_text" class="p-1">Message here</p>
+            <i  id="message_close"
+                class="fa fa-times absolute top-2 right-2 text-lg cursor-pointer 
+                hover:bg-gray-200 rounded-full w-5 h-5 flex items-center justify-center" 
+                aria-hidden="true">
+            </i>
         </div>
     {% endif %}
     
