@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'daphne', # Daphne is a high-performance ASGI server that Django Channels can use to handle WebSocket connections.
     'home',
     'accounts',
+    'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,6 +54,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'postbook.urls'
@@ -77,6 +80,33 @@ WSGI_APPLICATION = 'postbook.wsgi.application'
 
 AUTH_USER_MODEL = 'accounts.Account'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOW_CREDENTIALS = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+}
+
+# if not firebase_admin._apps:
+#     cred = credentials.Certificate(GOOGLE_APPLICATION_CREDENTIALS)
+#     default_app = firebase_admin.initialize_app(cred)
+
+FCM_DJANGO_SETTINGS = {
+     # default: _('FCM Django')
+    "APP_VERBOSE_NAME": "_('FCM Django')",
+     # true if you want to have only one active device per registered user at a time
+     # default: False
+    "ONE_DEVICE_PER_USER": False,
+     # devices to which notifications cannot be sent,
+     # are deleted upon receiving error response from FCM
+     # default: False
+    "DELETE_INACTIVE_DEVICES": False,
+}
 
 #Authentication backends
 AUTHENTICATION_BACKENDS = (
