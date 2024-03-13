@@ -33,6 +33,7 @@ class RegisterModelForm(UserCreationForm):
         attrs={
             "class": "border border-solid w-full h-[40px] rounded-lg",
             "placeholder": "Confirm Password",
+            "name": "password1"
         }),
         label="Confirm Password",
         required=True
@@ -41,6 +42,7 @@ class RegisterModelForm(UserCreationForm):
         attrs={
                 "class": "border border-solid w-full h-[40px] rounded-lg",
                 "placeholder": "Enter Password",
+                "name": "password",
             }),
         label="Password",
         required=True
@@ -55,7 +57,7 @@ class RegisterModelForm(UserCreationForm):
                 attrs={
                     "class": "border border-solid w-full h-[40px] rounded-lg",
                     "placeholder": "Enter email",
-                    
+                    "name": "email"
                 }
             ),
             "first_name": forms.TextInput(
@@ -68,6 +70,7 @@ class RegisterModelForm(UserCreationForm):
                 attrs={
                     "class": "border border-solid w-full h-[40px] rounded-lg",
                     "placeholder": "Enter Username",
+                    "name": "username",
                 }
             ),
             "last_name": forms.TextInput(
