@@ -10,6 +10,7 @@
     <section class="bg-gray-400 h-[100vh] max-w-full relative">
         <div class="bg-white h-[80vh] w-[40%] absolute top-[12%] m-0 right-[30%] left-[30%] rounded-lg ">
             <h1 class="text-center text-5xl font-thin uppercase">Register</h1>
+            {{ form.non_field_errors }}
             <div >
                 <form action="{% url 'register' %}" method="post" class="flex flex-col items-center justify-center
                  w-[60%] mx-auto h-[45em]">
@@ -18,6 +19,7 @@
                         <div class="w-full text-left my-2 text-lg">
                             <label for="">{{ field.label }}</label>
                             {{ field }}
+                            {{ field.errors }}
                         </div>
                         
                     {% endfor %}
