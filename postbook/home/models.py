@@ -51,8 +51,8 @@ class Post(models.Model):
 
 class Comment(models.Model):
     
-    main_post           = models.ForeignKey(Post, on_delete=models.CASCADE)
-    reply               = models.ForeignKey('Comment', on_delete=models.DO_NOTHING, null=True, related_name='replies') # to be used in a nested comment thread
+    main_post           = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
+    reply               = models.ForeignKey('Comment',default="", on_delete=models.SET_DEFAULT, null=True, related_name='replies') # to be used in a nested comment thread
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body                = models.CharField(max_length=955)
     image               = models.ImageField(default='images', blank=True, null=True)
@@ -121,8 +121,8 @@ class Comment(models.Model):
 class LikeModel(models.Model):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_likes')
-    post                = models.ForeignKey(Post, related_name='post_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
-    comment             = models.ForeignKey(Comment, related_name='comment_likes', null=True, blank=True, on_delete=models.DO_NOTHING)
+    post                = models.ForeignKey(Post, related_name='post_likes', null=True, blank=True, on_delete=models.SET_NULL)
+    comment             = models.ForeignKey(Comment, related_name='comment_likes', null=True, blank=True, on_delete=models.SET_NULL)
     
     
     def __str__(self):
@@ -130,18 +130,22 @@ class LikeModel(models.Model):
             return f'liking post: {self.post.title}'
         elif self.comment:
             return f'liking comment: {self.comment.body}'
+        else:
+            return f'deleted post | comment'
     
 class DislikeModel(models.Model):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
-    post                = models.ForeignKey(Post, related_name='post_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
-    comment             = models.ForeignKey(Comment, related_name='comment_dislikes', null=True, blank=True, on_delete=models.DO_NOTHING)
+    post                = models.ForeignKey(Post, related_name='post_dislikes', null=True, blank=True, on_delete=models.SET_NULL)
+    comment             = models.ForeignKey(Comment, related_name='comment_dislikes', null=True, blank=True, on_delete=models.SET_NULL)
     
     def __str__(self):
         if self.post:
             return f'disliking post: {self.post.title}'
         elif self.comment:
             return f'disliking comment: {self.comment.body}'
+        else:
+            return f'deleted post | comment'
         
 
 class SavedPostsModel(models.Model):
