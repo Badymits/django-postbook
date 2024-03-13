@@ -39,7 +39,7 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     {% endif %}
-                    <p class="text-md pb-3 text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|timesince }}</p>
+                    <p class="text-md pb-3 text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
 
                     <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
 
@@ -218,9 +218,11 @@
             </div>
         </div>
 
+        <!-- messages passed thru django-messages such as user edit post, 
+            this uses the same html template below for the messages passed thru context vars -->
         {% if messages %}
             {% for message in messages %}
-                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-green-200 flex items-center rounded-md" id="message_notif">
+                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md" id="message_notif">
                     <p id="message_text" class="p-1">{{ message }}</p>
                     <i  id="message_close"
                         class="fa fa-times text-xl cursor-pointer absolute right-3
@@ -230,6 +232,16 @@
                 </div>
             {% endfor %}
         {% endif %}
+    
+        <!-- for the comments -->
+        <div class="hidden fixed left-[35%] right-[35%] bottom-5 mx-auto block h-[50px] w-[500px] bg-green-200 flex items-center rounded-md" id="comment_message_notif">
+            <p id="comment_message_text" class="p-1"></p>
+            <i  id="comment_message_close"
+                class="fa fa-times text-xl cursor-pointer absolute right-3
+                hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center" 
+                aria-hidden="true">
+            </i>
+        </div>
     </section>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/dayjs.min.js" integrity="sha512-Ot7ArUEhJDU0cwoBNNnWe487kjL5wAOsIYig8llY/l0P2TUFwgsAHVmrZMHsT8NGo+HwkjTJsNErS6QqIkBxDw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.5/plugin/relativeTime.min.js"></script>
@@ -251,6 +263,7 @@
         let comment_menu = document.getElementById('comment_menu');
         let comment_options = document.getElementById('comment_options');
         let comment_actions = document.getElementById('comment_actions');
+        const comment_message_notif = document.getElementById('comment_message_notif')
 
         let edit_btn = document.getElementById('edit_btn');
         let vote_div = document.getElementById('vote_div')
@@ -272,10 +285,20 @@
                 dataType: "json",
                 success:function(res){
                     $('#body').val('')
-                    $('#success_msg').html(res);
-                    console.log(res.comment_body, ' ', res.comment_user)
+                    $('#comment_message_text').html(res.server_message);
 
-                    createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path ); // pinahirapan ko lang sarili ko lmao
+                    comment_message_notif.classList.remove('hidden')
+                    comment_message_notif.querySelector('#comment_message_text').innerHTML = res.server_message
+                    console.log(res.comment_body, ' ', res.comment_user, ' ', res.server_message)
+
+                    createComment(res.comment_body, 
+                        res.comment_user, 
+                        dayjs(res.comment_date).fromNow(), 
+                        res.comment_id, 
+                        res.comment_level, 
+                        res.has_profile_pic, 
+                        res.img_path 
+                    ); // pinahirapan ko lang sarili ko lmao
                 }
             })
         })
@@ -564,7 +587,7 @@
                 const parent = e.target.parentElement
 
                 // pass in the event along with the hidden input with the comment's ID
-                saveComment(e, parent.querySelector('#comment_id').value)
+                saveEditedComment(e, parent.querySelector('#comment_id').value)
             }
 
             if (e.target.id === 'delete_btn'){
@@ -666,6 +689,26 @@
                 const svg_dislike = parent.querySelector('#comment_dislike_btn')
 
                 updateCommentVote(option, comment_id, svg_dislike, parent)
+            }
+
+            // closing the notif display of post edits
+            if (e.target.id === 'message_close'){
+                const message_notif = e.target.closest('#message_notif')
+                const message_text = message_notif.querySelector('#message_text')
+        
+                if (!message_notif.classList.contains('hidden')){
+                    message_notif.classList.add('hidden')
+                    message_text.innerHTML = ""
+                }
+            }
+
+            if (e.target.id === 'comment_message_close'){
+                const comment_message_text = message_notif.querySelector('#comment_message_text')
+
+                if (!comment_message_notif.classList.contains('hidden')){
+                    comment_message_notif.classList.add('hidden')
+                    comment_message_text.innerHTML = ""
+                }
             }
 
         })
@@ -916,7 +959,8 @@
             
         }
 
-        function saveComment(e, id){
+
+        function saveEditedComment(e, id){
             // just like the cancel btn, we traverse the DOM and get the parent of event target
             let parent = e.target.parentElement
 
@@ -933,10 +977,15 @@
                 },
                 success: function(res){
                     console.log(res)
+
+                    comment_message_notif.classList.remove('hidden')
+                    comment_message_notif.classList.remove('bg-green-200')
+                    comment_message_notif.classList.add('bg-blue-200')
+
+                    comment_message_notif.querySelector('#comment_message_text').innerHTML = res.server_message
                     // after successful edit, set the parent and hidden input values to the new comment
                     parent.innerHTML = res.comment
                     hidden_comment.value = res.comment
-                    console.log(hidden_comment)
                 }, 
                 error: function(err){
                     console.error(err)
@@ -982,10 +1031,19 @@
                     xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                 },
                 success: function(res){
+
+                    // set message html element text
+                    comment_message_notif.classList.remove('hidden')
+                    comment_message_notif.classList.remove('bg-green-200')
+                    comment_message_notif.classList.remove('bg-blue-200')
+                    comment_message_notif.classList.add('bg-red-200')
+
+                    comment_message_notif.querySelector('#comment_message_text').innerHTML = res.server_message
+
                     comment_actions.querySelector('#comment_like_btn_parent').classList.add('pointer-events-none')
                     comment_actions.querySelector('#comment_dislike_btn_parent').classList.add('pointer-events-none')
                     comment_actions.querySelector('#comment_reply').classList.add('pointer-events-none')
-                    // set message html element text
+                    
                     
                     // for user not to open the options of a deleted comment
                     comment_menu.classList.add('pointer-events-none')
