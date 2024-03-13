@@ -44,10 +44,40 @@ def loginView(request):
     return render(request, 'accounts/login.html', context)
 
 def registerView(request):
+    
+    form = RegisterModelForm()
+    context = {'reg_form': form}
    
     if request.method == 'POST':
         # add password authentication
         form = RegisterModelForm(request.POST)
+        
+        email = request.POST['email']
+        username = request.POST['username']
+        password = request.POST['password']
+        password1 = request.POST['password1']
+        
+        try:
+            user = get_object_or_404(Account, email=email)
+        except:
+            user = None
+            
+        try:
+            user = get_object_or_404(Account, username=username)
+        except:
+            user = None
+            
+        if user is not None:
+            context['message'] = 'Email already exists'
+            return render(request, 'accoutns/register.html', context)
+        
+        if user is not None:
+            context['message'] = 'Username is already taken'
+            return render(request, 'accounts/register.html', context)
+        
+        if password != password1:
+            context['message'] = "Passwords don't match"
+            return render(request, 'accounts/register.html', context)
         
         if form.is_valid():
             form.save()
@@ -57,8 +87,7 @@ def registerView(request):
         else:
             messages.error(request, 'Please enter valid information and all')
             
-    form = RegisterModelForm()
-    context = {'reg_form': form}
+
     return render(request, 'accounts/register.html', context)
 
 def logoutView(request):
