@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load custom_tags %}
+{% load humanize %}
 
 {% block content %}
 
@@ -72,7 +73,7 @@
                                 <div class="px-3" id="post-div">
                                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
                                     <p class="text-4xl pb-2">{{ post.title }}</p>
-                                    <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.user.id 'posts'  %}" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|timesince }}</p>
+                                    <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.user.id 'posts'  %}" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|naturaltime }}</p>
                                     
                                     {% if post.image %}
 
@@ -119,7 +120,7 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <p>No posts...</p>
+                    <p class="text-center mt-10">No posts...</p>
                 {% endif %}
 
                 
@@ -146,9 +147,12 @@
                 </a>
             </div>
         </div>
+        <!-- notifications for deleted post -->
         {% if messages %}
             {% for message in messages %}
-                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-green-200 flex items-center rounded-md" id="message_notif">
+                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px]
+                    {% if message.tags == 'info' %} bg-red-200 {% else %} bg-green-200 {% endif %} 
+                    flex items-center rounded-md" id="message_notif">
                     <p id="message_text" class="p-1">{{ message }}</p>
                     <i  id="message_close"
                         class="fa fa-times text-xl cursor-pointer absolute right-3
@@ -158,6 +162,16 @@
                 </div>
             {% endfor %}
         {% endif %}
+        
+        <!-- for saving/unsaving posts -->
+        <div class="hidden fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-gray-200 flex items-center rounded-md border-[1px] border-black" id="home_message_notif">
+            <p id="home_message_text" class="p-1">{{ message }}</p>
+            <i  id="home_message_close"
+                class="fa fa-times text-xl cursor-pointer absolute right-3
+                hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center" 
+                aria-hidden="true">
+            </i>
+        </div>
         
         
     </section>
@@ -192,6 +206,8 @@
         let post_div = document.querySelectorAll('#post-div');
         let vote_div = document.getElementById('vote_div')
         const post_container = document.getElementById('post_container')
+        const home_message_notif = document.getElementById('home_message_notif')
+        const home_message_text = document.getElementById('home_message_text')
 
         
         for (let i = 0; i < post_div.length; i++){
@@ -251,6 +267,10 @@
                 updateVote(option, post_id, svg_dislike, parent)
             }
 
+            if (e.target.id === 'home_message_close'){
+                home_message_notif.classList.add('hidden')
+            }
+
             if (e.target.id === 'share_post_btn'){
                 console.log(e.target)
             }
@@ -280,18 +300,20 @@
                     },
                     success: function(res){
                         console.log(res)
-                        alert(res.message)
+                        home_message_notif.classList.remove('hidden')
                         if (res.action_taken === 'Removed'){
 
                             new_icon.setAttribute('class', 'fa fa-bookmark-o')
                             save_post_text.innerHTML = 'Save'
                             save_post_btn.replaceChild(new_icon, save_post_icon)
+                            home_message_text.innerHTML = res.message    
                         } 
                         else if (res.action_taken === 'Added') {
 
                             new_icon.setAttribute('class', 'fa fa-bookmark')                   
                             save_post_text.innerHTML = 'Remove from saved'
                             save_post_btn.replaceChild(new_icon, save_post_icon)
+                            home_message_text.innerHTML = res.message
                         }
 
                     },
