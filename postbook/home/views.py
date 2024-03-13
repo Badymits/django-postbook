@@ -128,7 +128,7 @@ def deletePost(request, id):
         post = get_object_or_404(Post, id=id)
         post.delete()
         context['message'] = 'Post has been deleted!'
-        messages.success(request, 'Post has been deleted')
+        messages.info(request, 'Post has been deleted')
         return redirect('home')
         
     except:
@@ -165,12 +165,12 @@ def savePost(request, id):
     if saved_post.users.filter(id=request.user.id).exists():
         print('USER REMOVEDDD')
         saved_post.users.remove(request.user)
-        context['message'] = 'Removed from saved posts'
+        context['message'] = 'Removed from saved'
         context['action_taken'] = 'Removed'
     else:
         print('USER ADDED!!')
         saved_post.users.add(request.user)
-        context['message'] = 'Added to saved posts'
+        context['message'] = 'Post saved'
         context['action_taken'] = 'Added'
     
     return JsonResponse(context)
@@ -297,8 +297,7 @@ def createComment(request, id):
                 comment.comment_level = 1
             
             comment.save()
-            context['message'] = 'Comment Successful'           
-            messages.success(request, 'Comment Success')
+            context['server_message'] = 'Comment Successful!'           
             
             # too lazy but same result . Then pass the context var
             # all together
@@ -310,7 +309,8 @@ def createComment(request, id):
                 'comment_date': comment.date_posted,
                 'comment_level': comment.comment_level,
                 'has_profile_pic': True if comment.user.profile_pic else False,
-                'img_path': f'http://127.0.0.1:8000/{comment.user.profile_pic.url}',
+                'img_path': f'http://127.0.0.1:8000{comment.user.profile_pic.url}',
+                'server_message': 'Comment Successful!',
             })
         else:
             messages.error(request, 'There was an error')
@@ -341,8 +341,7 @@ def editComment(request, id):
             
             comment.save()
             
-            messages.success(request, 'comment edited')
-            context['message'] = 'success'
+            context['server_message'] = 'Edit Saved!'
             context['comment'] = comment.body
             return JsonResponse(context)
         
@@ -359,7 +358,7 @@ def deleteComment(request, id):
         comment = get_object_or_404(Comment, id=id)
         
         comment.delete()
-        context['message'] = 'Comment Successfully deleted'
+        context['server_message'] = 'Comment Deleted'
         return JsonResponse(context)
     except:
         context['message'] = 'Comment does not exist'
