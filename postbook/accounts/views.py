@@ -23,21 +23,21 @@ def loginView(request):
             user = Account.objects.get(email=email)
             print(user.username)
         except:
-            messages.error(request, 'User does not exist')
+            messages.error(request, 'Account does not exist', extra_tags='login')
         try:
             # THIS IS VERY MISLEADING POTANGINAAAAAAAAAAAAAAAAAAAAAAAAAA
             # since the username field is set to email, USE THAT INSTEAD TO PASS IN THE USERNAME PARAM
             user = authenticate(username=email, password=password)
         except:
-            return redirect('register')
+            messages.error(request, 'Credential Error', extra_tags='login')
+            return redirect('login')
         print(user)
         if user is not None:
             login(request, user)
             print('SUCCESS')
             return redirect('home')
         else:
-            print(messages.error)
-            messages.error(request, 'Credential Error')
+            messages.error(request, 'Credential Error', extra_tags='login')
         
     context = {'login_form': form}
     
@@ -58,35 +58,33 @@ def registerView(request):
         password1 = request.POST['password1']
         
         try:
-            user = get_object_or_404(Account, email=email)
+            email_user = get_object_or_404(Account, email=email)
         except:
-            user = None
+            email_user = None
             
         try:
-            user = get_object_or_404(Account, username=username)
+            username = get_object_or_404(Account, username=username)
         except:
-            user = None
+            username = None
             
-        if user is not None:
+        if email_user is not None:
             context['message'] = 'Email already exists'
-            return render(request, 'accoutns/register.html', context)
+            messages.error(request, 'Email already exists', extra_tags='register')
+            return render(request, 'accounts/register.html', context)
         
-        if user is not None:
-            context['message'] = 'Username is already taken'
+        if username is not None:
+            messages.error(request, 'Username is already taken', extra_tags='register')
             return render(request, 'accounts/register.html', context)
         
         if password != password1:
-            context['message'] = "Passwords don't match"
+            messages.error(request, "Passwords don't match", extra_tags='register')
             return render(request, 'accounts/register.html', context)
         
         if form.is_valid():
             form.save()
             
-            messages.success(request, 'Registered Successfully! You may now enter your credentials')
+            messages.success(request, 'Register Successfull! You may enter your credentials', extra_tags='login')
             return redirect('login')
-        else:
-            messages.error(request, 'Please enter valid information and all')
-            
 
     return render(request, 'accounts/register.html', context)
 
