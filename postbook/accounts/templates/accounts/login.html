@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script> <!-- jquery -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- for icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <title>PostBook</title>
 </head>
@@ -28,15 +30,42 @@
                         <a href="{% url 'register' %}" class="decoration-sky-500 underline hover:decoration-2 duration-500">Click here </a>
                         to sign up!
                     </p>
-                    {% if messages %}
-                        {% for message in messages %}
-                            <p>{{message}}</p>
-                        {% endfor %}
-                    {% endif %}
                     
                 </form>
             </div>  
         </div>
+        <!-- because the messages have extra tag option, calling the tags property will also include the extra tags aof the message -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.extra_tags != 'login' %} hidden {% endif %} 
+                    fixed left-[35%] right-[35%] top-[2em] mx-auto block h-[50px] w-[500px] 
+                    {% if message.tags == 'login success' %} bg-green-300 border-green-700 {% else %} bg-red-400 border-red-700  {% endif %} 
+                    flex items-center rounded-md border-[1px]" 
+
+                    id="home_message_notif">
+                    <p id="home_message_text" class="p-1 text-center w-full text-black mx-6">{{ message }}</p>
+
+                    <i  id="home_message_close"
+                        class="fa fa-times text-xl cursor-pointer absolute right-3 
+                        {% if message.tags == 'login success' %} bg-green-500 hover:bg-green-400  {% else %} bg-red-500 hover:bg-red-400 {% endif %}
+                        rounded-full w-7 h-7 flex items-center justify-center text-black" 
+                        aria-hidden="true">
+                    </i>
+                </div>
+            {% endfor %}
+        {% endif %}
     </section>
 </body>
+<script>
+    $(document).on('click', document, function(e){
+        console.log(e.target)
+        if (e.target.id==='home_message_close'){
+            if (document.getElementById('home_message_notif').classList.contains('block')){
+                console.log('contains')
+                document.getElementById('home_message_notif').classList.remove('block')
+            }
+            document.getElementById('home_message_notif').classList.add('hidden')
+        }
+    })
+</script>
 </html>
