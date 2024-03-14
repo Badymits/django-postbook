@@ -220,7 +220,7 @@
 
         <!-- messages passed thru django-messages such as user edit post, 
             this uses the same html template below for the messages passed thru context vars -->
-        {% if messages %}
+        {% if messages and messages.extra_tags == 'detail_post' %}
             {% for message in messages %}
                 <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md" id="message_notif">
                     <p id="message_text" class="p-1">{{ message }}</p>
