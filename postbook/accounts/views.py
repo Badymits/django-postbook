@@ -28,16 +28,11 @@ def loginView(request):
             # THIS IS VERY MISLEADING POTANGINAAAAAAAAAAAAAAAAAAAAAAAAAA
             # since the username field is set to email, USE THAT INSTEAD TO PASS IN THE USERNAME PARAM
             user = authenticate(username=email, password=password)
+            login(request, user)
+            return redirect('home')
         except:
             messages.error(request, 'Credential Error', extra_tags='login')
             return redirect('login')
-        print(user)
-        if user is not None:
-            login(request, user)
-            print('SUCCESS')
-            return redirect('home')
-        else:
-            messages.error(request, 'Credential Error', extra_tags='login')
         
     context = {'login_form': form}
     
