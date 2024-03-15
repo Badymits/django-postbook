@@ -119,7 +119,7 @@
                                     
                                     <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span>
                                     <p class="text-gray-500" id="comment_date">{{ comment.date_posted|naturaltime }}</p>
-                                    <div class="absolute right-0 w-7 text-center text-2xl top-0 ">
+                                    <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if comment.is_deleted == True %} pointer-events-none {% endif %}">
                                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
                         
                                         <div class="hidden absolute right-2 bg-gray-400 rounded-md w-[4em] y-1 flex flex-col justify-center divide-gray-600"
@@ -135,11 +135,15 @@
                                 </div>
                         
                                 <div class="pl-[3.5em] py-2 " id="comment_body_div">
-                                    <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
-                                    <p id="comment_body" >{{ comment.body }}</p>
+                                    {% if comment.is_deleted == True %}
+                                    <p> [Deleted] </p>
+                                    {% else %}
+                                        <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
+                                        <p id="comment_body" >{{ comment.body }}</p>
+                                    {% endif %}
                                 </div>
                         
-                                <div class="mb-[3.3em] relative pl-[3px] " id="comment_actions">                          
+                                <div class="mb-[3.3em] relative pl-[3px] {% if comment.is_deleted == True %} pointer-events-none {% endif %}" id="comment_actions">                          
                                     <button class="flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
                                         {% commentLike comment.id request.user as liked %}
                                         {% if liked %}
@@ -185,7 +189,7 @@
                                 </div>
                                 <br>
 
-                                <div class="pl-[8px]" id="comment_replies">
+                                <div class="pl-[14px]" id="comment_replies">
                                     {% include 'home/nested_template.html' with replies=comment.get_replies %}                                
                                 </div>
                             </div>                
@@ -494,7 +498,7 @@
 
             if (level === 1){
                 console.log('LEVEL 1')
-                custom_container.setAttribute('class', 'mb-8 border-none')
+                custom_container.setAttribute('class', 'mb-6 border-none')
 
                 border_container.appendChild(user_details)
                 border_container.appendChild(body_details)
@@ -861,7 +865,7 @@
                     },
                     success: function(res){
                         console.log(res)
-                        let result = createComment(res.comment_body, res.comment_user, res.comment_date, res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
+                        let result = createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
                         createNestedComment(result, reply_section, parent_thread)
                     },
                     error: function(err){
