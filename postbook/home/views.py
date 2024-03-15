@@ -19,7 +19,7 @@ def index(request):
 @login_required(login_url='login')
 def homePage(request):
     
-    posts = Post.objects.all().order_by('-date_posted')
+    posts = Post.all_objects.all().order_by('-date_posted')
     context = {'user': request.user, 'posts': posts}
     return render(request, 'home/home.html', context)
 
