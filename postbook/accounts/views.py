@@ -20,7 +20,7 @@ def loginView(request):
         email=request.POST['email']
         password = request.POST['password']
         try: 
-            user = Account.objects.get(email=email)
+            user = get_object_or_404(Account, email=email)
             print(user.username)
         except:
             messages.error(request, 'Account does not exist', extra_tags='login')
