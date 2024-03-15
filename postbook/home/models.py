@@ -82,8 +82,8 @@ class Post(SoftDeleteModel):
 
 class Comment(SoftDeleteModel):
     
-    main_post           = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
-    reply               = models.ForeignKey('Comment',default="", on_delete=models.SET_DEFAULT, null=True, related_name='replies') # to be used in a nested comment thread
+    main_post           = models.ForeignKey(Post, on_delete=models.CASCADE, null=True)
+    reply               = models.ForeignKey('Comment', default="", on_delete=models.SET_DEFAULT, null=True, related_name='replies') # to be used in a nested comment thread
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body                = models.CharField(max_length=955)
     image               = models.ImageField(default='images', blank=True, null=True)
@@ -105,12 +105,22 @@ class Comment(SoftDeleteModel):
     # if true, then we can identify if it is a nested comment or not.
     @property
     def has_replies(self):
-        return self.replies.exists()
+        if self.is_deleted == True or self.is_deleted == False:
+            return self.replies.exists()
+        else:
+            return self.replies.DoesNotExist
     
     # gets all replies related to the object that called it
     @property
     def get_replies(self):
-        return self.replies.all()
+        
+        #  this will lead to an O(n) problem for larger scale comment threads
+        replies = []
+        for obj in Comment.all_objects.filter(main_post=self.main_post):
+            if (obj.is_deleted or obj.is_deleted == False) and obj.reply == self:
+                replies.append(obj)
+        
+        return replies
     
     
     def get_likes(self):
