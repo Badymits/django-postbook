@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load custom_tags %}
+{% load static %}
 {% block content %}
 
     <section class="grid grid-cols-5 gap-2">
@@ -121,7 +122,7 @@
             <div class="fixed bg-gray-100  w-[400px] rounded-md">
                 
                 <div class="rounded-t-lg w-full h-[150px] relative overflow-hidden">
-                    <img src="{{ user.get_user_banner_url }}" alt="{{ user.username }}" class="w-full h-full object-cover">
+                    <img src="{% if user.banner_pic %} {{ user.get_user_banner_url }} {% else %} {% static '/images/images/download.jpg' %} {% endif %}" alt="{{ user.username }}" class="w-full h-full object-cover">
                     {% if request.user == user %}
                         <a href="{% url 'settings' 'profile' %}" class="block absolute z-50 bottom-2 right-3 bg-gray-200 hover:bg-gray-300 rounded-full w-10 h-10 flex items-center justify-center">
                             <i class="fa fa-camera-retro" aria-hidden="true"></i>
