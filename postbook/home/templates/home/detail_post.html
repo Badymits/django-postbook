@@ -492,7 +492,6 @@
             comment_replies.setAttribute('class', 'pl-[3em]')
             comment_replies.id ='comment_replies'
 
-            console.log('IF CONDITION LEVELS')
             if (level === 1){
                 console.log('LEVEL 1')
                 custom_container.setAttribute('class', 'mb-8 border-none')
@@ -505,6 +504,7 @@
 
                 custom_container.append(border_container)
                 comment_container.prepend(custom_container)
+
             } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
                 custom_container.setAttribute('class', 'px-2 mb-6 pl-[2.5em]')
@@ -543,7 +543,7 @@
                 // VERY DANGEROUS IK. And yes it is based on how I structured the HTML but the one I made got me the results that I need so yeah...
                 // since our current location in the DOM is on the comment options, we need to get to the parent first
 
-                let first_div = e.target.closest('div') // this div holds the comment options (the edit and report btns)
+                let first_div = e.target.closest('div') // this div holds the comment options (the edit,delete, and report btns)
 
                 let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
                 
@@ -565,7 +565,6 @@
                 } 
                 
             }
-            console.log('value', e.target)
 
             if (e.target.id === 'cancel_btn'){
                 // traversing the dom to go to its parent element
@@ -574,8 +573,6 @@
                 // the queryselectorAll returns a list, the textarea is the first index always
                 // being a textarea input, we can just access it's value
                 let initial_comment = parent.querySelector('#comment_text_prev')
-                
-                console.log('LETS SEEEEE', initial_comment.value)
                 
                 // just revert back to its previous state
                 parent.innerHTML = initial_comment.value
@@ -592,8 +589,7 @@
 
             if (e.target.id === 'delete_btn'){
                 const parent = e.target.parentElement
-                
-                console.log(parent.querySelector('#delete_btn').value)
+
                 deleteComment(e, parent.querySelector('#delete_btn').value)
             }
 
