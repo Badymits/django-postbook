@@ -136,7 +136,7 @@
                         
                                 <div class="pl-[3.5em] py-2 " id="comment_body_div">
                                     {% if comment.is_deleted %}
-                                        <p> [Deleted] </p>
+                                        <p class="font-semibold"> [Deleted] </p>
                                     {% else %}
                                         <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
                                         <p id="comment_body" >{{ comment.body }}</p>
