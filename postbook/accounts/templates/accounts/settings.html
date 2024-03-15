@@ -55,7 +55,22 @@
             </div>
             
         </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="{% if message.extra_tags != 'settings' %} hidden {% endif %} 
+                    fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] 
+                    {% if message.tags == 'settings success' %} bg-green-200
+                    {% elif message.tags == 'settings error' %} bg-red-200
+                    {% else %} bg-blue-200
+                    {% endif %} 
+                    flex items-center rounded-md border-[1px] border-black" 
 
+                    id="settings_message_notif">
+                    <p id="settings_message_text" class="p-1">{{ message }}</p>
+                    
+                </div>
+            {% endfor %}
+        {% endif %}
         
     </section>
 
@@ -79,6 +94,14 @@
                 reader.readAsDataURL(input.files[0])
             }
         }
+        const settings_message_notif = document.getElementById('settings_message_notif')
+        if (settings_message_notif !== null){
+            setTimeout(function(){
+                settings_message_notif.classList.add('hidden')
+            }, 3000)
+        }
+        
+        
     </script>
 
 {% endblock %}
