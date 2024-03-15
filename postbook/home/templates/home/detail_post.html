@@ -220,11 +220,11 @@
 
         <!-- messages passed thru django-messages such as user edit post, 
             this uses the same html template below for the messages passed thru context vars -->
-        {% if messages and messages.extra_tags == 'detail_post' %}
+        {% if messages  %}
             {% for message in messages %}
-                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md" id="message_notif">
-                    <p id="message_text" class="p-1">{{ message }}</p>
-                    <i  id="message_close"
+                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md" id="detail_message_notif">
+                    <p id="detail_message_text" class="p-1">{{ message }}</p>
+                    <i  id="detail_message_close"
                         class="fa fa-times text-xl cursor-pointer absolute right-3
                         hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center" 
                         aria-hidden="true">
@@ -692,13 +692,13 @@
             }
 
             // closing the notif display of post edits
-            if (e.target.id === 'message_close'){
-                const message_notif = e.target.closest('#message_notif')
-                const message_text = message_notif.querySelector('#message_text')
+            if (e.target.id === 'detail_message_close'){
+                const detail_message_notif = e.target.closest('#detail_message_notif')
+                const detail_message_text = message_notif.querySelector('#detail_message_text')
         
-                if (!message_notif.classList.contains('hidden')){
-                    message_notif.classList.add('hidden')
-                    message_text.innerHTML = ""
+                if (!detail_message_notif.classList.contains('hidden')){
+                    detail_message_notif.classList.add('hidden')
+                    detail_message_text.innerHTML = ""
                 }
             }
 
