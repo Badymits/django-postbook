@@ -3,7 +3,34 @@ from django.conf import settings
 from django.utils.text import slugify
 
 # Create your models here.
-class Post(models.Model):
+
+# returns the objects that have not been deleted
+# removes the necessary step to include is_deleted=False in each of our query (madami yun taena so this saves time)
+class SoftDeleteManager(models.Manager):
+    
+    def get_queryset(self):
+        return super().get_queryset().filter(is_deleted=False)
+
+# to keep track of the deleted comments. For the replies to retain in the template
+class SoftDeleteModel(models.Model):
+    
+    is_deleted          = models.BooleanField(default=False)
+    objects             = SoftDeleteManager()
+    all_objects         = models.Manager()
+    
+    def soft_delete(self):
+        self.is_deleted = True
+        self.save()
+        
+    def restore(self):
+        self.is_deleted = False
+        self.save()
+
+    class Meta:
+        abstract = True
+
+# create our models as subclasses of SoftDeleteModel to grant them the ability to be soft-deleted 
+class Post(SoftDeleteModel):
     
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title               = models.CharField(max_length=255)
@@ -49,7 +76,7 @@ class Post(models.Model):
             
             return 0 
 
-class Comment(models.Model):
+class Comment(SoftDeleteModel):
     
     main_post           = models.ForeignKey(Post, on_delete=models.SET_NULL, null=True)
     reply               = models.ForeignKey('Comment',default="", on_delete=models.SET_DEFAULT, null=True, related_name='replies') # to be used in a nested comment thread
@@ -118,7 +145,7 @@ class Comment(models.Model):
         else:
             return "/static/images/profile/images/xianyun.jpg"
     
-class LikeModel(models.Model):
+class LikeModel(SoftDeleteModel):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_likes')
     post                = models.ForeignKey(Post, related_name='post_likes', null=True, blank=True, on_delete=models.SET_NULL)
@@ -133,7 +160,7 @@ class LikeModel(models.Model):
         else:
             return f'deleted post | comment'
     
-class DislikeModel(models.Model):
+class DislikeModel(SoftDeleteModel):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
     post                = models.ForeignKey(Post, related_name='post_dislikes', null=True, blank=True, on_delete=models.SET_NULL)
@@ -148,11 +175,11 @@ class DislikeModel(models.Model):
             return f'deleted post | comment'
         
 
-class SavedPostsModel(models.Model):
+class SavedPostsModel(SoftDeleteModel):
     
     users               = models.ManyToManyField(settings.AUTH_USER_MODEL)
     post                = models.ForeignKey(Post, null=True, blank=True, on_delete=models.CASCADE)
     
     def __str__(self):
         return f'saved post: {self.post.title}'
-    
+      
