@@ -8,6 +8,8 @@ from accounts.models import Account
 from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel
 from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
 
+HOME_LEVEL = 80
+
 # Create your views here.
 def index(request):
     
@@ -37,12 +39,12 @@ def createPost(request):
             post.user = req_user
             form.save()
             
-            messages.success(request, 'POST CREATED!')
+            messages.success(request, 'POST CREATED!', extra_tags='home')
             context['message'] = 'Post created!'
             return redirect('home')
         else:
             print('ERROR')
-            messages.error(request, 'Something went wrong...')
+            messages.error(request, 'Something went wrong...', extra_tags='home')
             
     context = {'form': form}
     
@@ -65,7 +67,7 @@ def detailPost(request, id):
         context['replies'] = replies
         context['comments'] = comments
     except:
-        messages.error(request, 'No Comments')    
+        context['message'] = 'No comments'  
     
     return render(request, 'home/detail_post.html', context)
 
@@ -99,11 +101,11 @@ def editPost(request, id):
                 post.image = form.cleaned_data['image']
             post.save()
             
-            messages.success(request, 'Edit Successful!')
+            messages.success(request, 'Edit Successful!', extra_tags='detail')
             
             return redirect('detail-post', id)
         else:
-            messages.error(request, 'Something went wrong...')
+            messages.error(request, 'Something went wrong...', extra_tags='detail')
     
     # setting the initial values to be rendered in the form
     form = UpdatePostForm(
@@ -128,7 +130,7 @@ def deletePost(request, id):
         post = get_object_or_404(Post, id=id)
         post.delete()
         context['message'] = 'Post has been deleted!'
-        messages.info(request, 'Post has been deleted')
+        messages.info(request, 'Post has been deleted', extra_tags='home') 
         return redirect('home')
         
     except:
@@ -157,8 +159,8 @@ def savePost(request, id):
         )
         print('user added')
         saved_post.users.add(request.user)
-        context['message'] = 'Saved Post!'
-        
+        context['message'] = 'Post saved'
+        context['action_taken'] = 'Added'
     
         return JsonResponse(context)
     
@@ -291,7 +293,7 @@ def createComment(request, id):
                         comment.comment_level = main_comment.comment_level + 1
                         
                 except:
-                    messages.error(request, 'cant do that')
+                    messages.error(request, 'Comment does not exist or has been deleted', extra_tags='detail')
             else:
                 
                 comment.comment_level = 1
@@ -313,7 +315,7 @@ def createComment(request, id):
                 'server_message': 'Comment Successful!',
             })
         else:
-            messages.error(request, 'There was an error')
+            messages.error(request, 'There was an error', extra_tags='detail')
             
     
     
@@ -328,7 +330,7 @@ def editComment(request, id):
         comment = get_object_or_404(Comment, id=id)
     except:
         context['message'] = 'Comment has been deleted'
-        messages.error(request, 'Comment has been deleted')
+        messages.error(request, 'Comment has been deleted', extra_tags='detail')
         
     if request.method == 'POST':
        
