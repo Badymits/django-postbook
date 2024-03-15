@@ -130,13 +130,12 @@ def editProfile(request, id):
     
     context = {}
     form = EditProfileForm()
-    context['form'] = form
     try:
         user = get_object_or_404(Account, id=id)
         
     except:
         context['message'] = 'User does not exist'
-        return JsonResponse(context)
+        return redirect('home')
     
     if request.method == 'POST':
         print('post data: ',request.POST)
@@ -155,10 +154,9 @@ def editProfile(request, id):
                 profile.banner_pic = form.cleaned_data['banner_pic']
                 
             profile.save()
-            context['message'] = 'Profile Updated'
-            
-        return redirect('settings', 'account')
-            
+            messages.success(request, 'Changes Saved', extra_tags='settings')
+            return redirect('settings', 'profile')
+        
     return JsonResponse(context)
     
     
