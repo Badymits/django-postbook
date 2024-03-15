@@ -1,4 +1,6 @@
 {% load custom_tags %}
+{% load humanize %}
+
 {% for reply in replies %}
     <!-- recursive approach to display nested replies -->
         <div class="mb-6 pl-[2em]">
@@ -15,7 +17,7 @@
                     </p>
                     
                     <span class="w-1 h-1 bg-black rounded-full">&nbsp;</span>
-                    <p class=" text-gray-500" id="comment_date"> {{ reply.date_posted|timesince }} ago</p>
+                    <p class=" text-gray-500" id="comment_date"> {{ reply.date_posted|naturaltime }}</p>
                     <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if reply.is_deleted == True %} pointer-events-none {% endif %}">
                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
 
@@ -32,7 +34,7 @@
                 </div>
 
                 <div class="pl-[3.5em] py-2 " id="comment_body_div">
-                    {% if reply.is_deleted == True %}
+                    {% if reply.is_deleted %}
                         <p>[Deleted]</p>
                     {% else %}
                         <input type="hidden" id="comment_text_prev" value="{{ reply.body }}">
