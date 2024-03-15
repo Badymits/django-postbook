@@ -15,8 +15,12 @@ class SoftDeleteManager(models.Manager):
 class SoftDeleteModel(models.Model):
     
     is_deleted          = models.BooleanField(default=False)
-    objects             = SoftDeleteManager()
-    all_objects         = models.Manager()
+    
+    objects             = SoftDeleteManager() # for reverse relationships
+    
+    # as a replacement from the usual 'Model.objects.all() -> Model.all_objects.all()'
+    # this will also include the objects that have been soft deleted
+    all_objects         = models.Manager() 
     
     def soft_delete(self):
         self.is_deleted = True
