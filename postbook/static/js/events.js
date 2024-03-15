@@ -8,6 +8,8 @@
 $(document).on('click', document, function(e){
     console.log('events file: ', e.target)
 
+    // the message notif only refers to the channel notification
+    // for context there are other message notif in detail post and home template, just named differently
     if (e.target.id === 'message_close'){
         const message_notif = e.target.closest('#message_notif')
         const message_text = message_notif.querySelector('#message_text')
