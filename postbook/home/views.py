@@ -62,9 +62,7 @@ def detailPost(request, id):
         return redirect('home')
     context = {'post': post}
     try:
-        comments = Comment.objects.filter(main_post=post.id, comment_level=1).order_by('-date_posted')
-        replies = Comment.objects.filter(replies__isnull=False).order_by("-date_posted")
-        context['replies'] = replies
+        comments = Comment.all_objects.filter(main_post=post.id, comment_level=1).order_by('-date_posted')
         context['comments'] = comments
     except:
         context['message'] = 'No comments'  
@@ -129,6 +127,7 @@ def deletePost(request, id):
     try:
         post = get_object_or_404(Post, id=id)
         post.delete()
+        
         context['message'] = 'Post has been deleted!'
         messages.info(request, 'Post has been deleted', extra_tags='home') 
         return redirect('home')
@@ -359,11 +358,26 @@ def deleteComment(request, id):
     try:
         comment = get_object_or_404(Comment, id=id)
         
-        comment.delete()
+        comment.soft_delete()
         context['server_message'] = 'Comment Deleted'
         return JsonResponse(context)
     except:
-        context['message'] = 'Comment does not exist'
+        context['server_message'] = 'Comment does not exist'
+        return JsonResponse(context)
+
+# removes the comment completely
+@login_required(login_url='login')
+def removeComment(id):
+    
+    context = {}
+    try:
+        comment = get_object_or_404(Comment, id=id)
+        comment.delete()
+        context['server_message'] = 'Comment Deleted from DB'
+        return JsonResponse(context)
+        
+    except:
+        context['server_message'] = 'Comment does not exist'
         return JsonResponse(context)
     
 @login_required(login_url='login')
