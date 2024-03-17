@@ -89,6 +89,23 @@ class Comment(SoftDeleteModel):
     image               = models.ImageField(default='images', blank=True, null=True)
     date_posted         = models.DateTimeField(auto_now_add=True, null=True)
     comment_level       = models.IntegerField(null=True, blank=True)
+    is_edited           = models.BooleanField(default=False, null=True, blank=True)
+    
+    # override the __init__ method of models.Model so that you can keep a copy of the original value
+    __original_body = None
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_body = self.body
+        
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        
+        if self.__original_body != self.body:
+            self.is_edited = True
+        
+        super().save(force_insert, force_update, *args, **kwargs) # Call the "real" save() method
+        self.__original_body = self.body
+            
     
     def __str__(self):
         return f'{self.user.first_name} replying to {self.main_post.title} content: {self.body}'
