@@ -118,7 +118,12 @@
                                     </p>
                                     
                                     <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span>
-                                    <p class="text-gray-500" id="comment_date">{{ comment.date_posted|naturaltime }}</p>
+                                    <p class="text-gray-500 comment_date" id="comment_date">{{ comment.date_posted|naturaltime }}</p>
+
+                                    {% if comment.is_edited and comment.is_deleted == False %}
+                                        <p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>
+                                    {% endif %}
+
                                     <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if comment.is_deleted == True %} pointer-events-none {% endif %}">
                                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>
                         
@@ -138,6 +143,7 @@
                                     {% if comment.is_deleted %}
                                         <p class="font-semibold"> [Deleted] </p>
                                     {% else %}
+                                        <!-- to be used when canceling a comment that is being edited, to store og value -->
                                         <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
                                         <p id="comment_body" >{{ comment.body }}</p>
                                     {% endif %}
@@ -318,6 +324,7 @@
             let user_details = document.createElement('div')
             
             let username = document.createElement('p')
+            let span_separator = document.createElement('span')
             let comment_date = document.createElement('p')
         
             let profile_pic
@@ -355,7 +362,9 @@
             }
             
             username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
-            comment_date.setAttribute('class', 'pl-2 text-gray-500')
+            span_separator.setAttribute('class', 'w-1 h-1 bg-gray-500 rounded-full')
+            comment_date.setAttribute('class', 'text-gray-500 comment_date')
+            comment_date.setAttribute('id', 'comment_date')
 
             comment_options_div.setAttribute('class', 'absolute right-0 w-7 text-center text-2xl top-0')
 
@@ -374,6 +383,7 @@
             comment_delete.setAttribute('value', comment_id)
 
             username.innerHTML = users_name
+            span_separator.innerHTML = '&nbsp;'
             comment_date.innerHTML = date
             comment_button.innerHTML = '...'
             comment_edit.innerHTML = 'Edit'
@@ -390,6 +400,7 @@
 
             
             user_details.appendChild(username)
+            user_details.appendChild(span_separator)
             user_details.appendChild(comment_date)
             user_details.appendChild(comment_options_div)
 
@@ -962,7 +973,14 @@
 
         function saveEditedComment(e, id){
             // just like the cancel btn, we traverse the DOM and get the parent of event target
-            let parent = e.target.parentElement
+
+            let parent = e.target.parentElement // the parent will be the comment body
+
+            let grandparent = parent.parentElement // this refers to the comment_body_div id
+
+            let grandparent_sibling = grandparent.previousElementSibling // the parent of the comment date
+
+            let comment_date  = grandparent_sibling.querySelector('.comment_date')
 
             let new_comment = parent.querySelectorAll('#body')[0] // we get the textarea
             let hidden_comment = parent.querySelector('#comment_text_prev') // get the hidden input to change its value on success
@@ -977,6 +995,8 @@
                 },
                 success: function(res){
                     console.log(res)
+
+                    $(comment_date).after(`<p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>`)
 
                     comment_message_notif.classList.remove('hidden')
                     comment_message_notif.classList.remove('bg-green-200')
