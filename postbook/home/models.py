@@ -213,4 +213,21 @@ class SavedPostsModel(SoftDeleteModel):
     
     def __str__(self):
         return f'saved post: {self.post.title}'
+    
+
+class Notification(models.Model):
+    
+    sender              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    is_read             = models.BooleanField(default=False, null=True, blank=True)
+    message             = models.CharField(max_length=355, null=True, blank=True)
+
+    def __str__(self):
+        return self.message
+    
+class Clients(models.Model):
+    
+    channel_name        = models.CharField(max_length=955, null=True, blank=True)
+    
+    
+    
       
