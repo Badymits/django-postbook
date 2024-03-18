@@ -217,7 +217,9 @@ class SavedPostsModel(SoftDeleteModel):
 
 class Notification(models.Model):
     
-    sender              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    sender              = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sender', null=True, blank=True)
+    receiver            = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='receiver', null=True, blank=True)
+    notif_type          = models.CharField(max_length=255, null=True, blank=True)
     is_read             = models.BooleanField(default=False, null=True, blank=True)
     message             = models.CharField(max_length=355, null=True, blank=True)
 
