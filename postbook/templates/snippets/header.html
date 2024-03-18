@@ -38,41 +38,30 @@
                         </div>
 
                         <!-- put for loop here -->
-                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
-                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
-                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
-                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
-                            </div>
-                            
-                            <div class="">
-                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
-                                <p class="text-sm">Post body</p>
-                            </div> 
-                        </div>
-                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
-                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
-                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
-                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
-                            </div>
-                            
-                            <div class="">
-                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
-                                <p class="text-sm">Post body</p>
-                            </div> 
-                        </div>
-                        <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300">
-                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
-                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
-                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
-                            </div>
-                            
-                            <div class="">
-                                <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">&nbsp; </span>  2h </p>
-                                <p class="text-sm">Post body</p>
-                            </div> 
-                        </div>
+                        {% if notifications %}
+
+                            {% for notif in notifications|slice:":3" %}
+                                <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300 {% if notif.is_read == False %} bg-blue-200  {% endif %}">
+                                    <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                        <img src="{{ notif.sender.get_user_photo_url}}" alt="{{ notif.sender.username }}"  class="h-full w-full object-cover"/>
+                                        <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                                    </div>
+                                    
+                                    <div class="">
+                                        <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">Post like </span>  2h </p>
+                                        <p class="text-sm">{{ notif.message }}</p>
+                                    </div> 
+                                </div>
+                            {% endfor %}
+
+                        {% else %}
+
+                            <p class="text-center p-5">You have 0 notifications</p>
+                        {% endif %}
+                        
+                        
                         <div class="bg-gray-400 rounded-b-lg">
-                            <a href="" class="block text-center m-auto h-[50px] flex justify-center items-center hover:underline text-white">See All</a>
+                            <a href="" class="block text-center m-auto h-[50px] flex justify-center items-center hover:underline text-white">See All ({{ notifications.receiver.count }})</a>
                         </div>
                     </div>
                     
