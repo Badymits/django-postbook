@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 import jsonpickle
 from accounts.models import Account
-from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel
+from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel, Notification
 from .forms import CreatePostForm, UpdatePostForm, CreateCommentForm, EditCommentForm
 
 HOME_LEVEL = 80
@@ -20,7 +20,8 @@ def index(request):
 def homePage(request):
     
     posts = Post.all_objects.all().order_by('-date_posted')
-    context = {'user': request.user, 'posts': posts}
+    notifications = Notification.objects.filter(receiver=request.user)
+    context = {'user': request.user, 'posts': posts, 'notifications': notifications}
     return render(request, 'home/home.html', context)
 
 @login_required(login_url='login')
