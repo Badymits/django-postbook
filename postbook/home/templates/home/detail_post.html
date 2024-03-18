@@ -8,6 +8,7 @@
         <div class="col-start-2 col-end-4 pb-[20em]">
             
             <input type="hidden" value="{{ request.user.username }}" id="user">
+            <input type="hidden" value="{{ post.user.username }}" id="post_user">
 
             <div class="w-full bg-gray-200 mb-6 relative p-4 rounded-xl  relative"> 
                     {% if request.user == post.user %}
@@ -258,7 +259,8 @@
     <script type="text/javascript">
 
         const user = document.getElementById('user').value
-        let url = `ws://${window.location.host}/ws/socket-server/` // instead of http, we use websocket channel (ws)
+        const post_user = document.getElementById('post_user').value
+        let url = `ws://${window.location.host}/ws/socket-server/${post_user}/` // instead of http, we use websocket channel (ws)
 
         // create websocket object
         const notifSocket = new WebSocket(url)
@@ -796,6 +798,7 @@
             })
         }
 
+        // vote handling for Posts
         function updateVote(option, post_id, svg){
             $.ajax({
                 url: `/update-vote-post/${post_id}/`,
@@ -820,10 +823,15 @@
                             dislike.classList.remove('text-blue-400')
                             svg.classList.add('text-red-400')
                             
-                            notifSocket.send(JSON.stringify({
-                                'message': `${user} liked your post!`,
-                                'post_id': post_id
-                            }))
+                            console.log('POST_USER: ', post_user)
+                            console.log('LOGGED IN USER: ', user)
+                            if (post_user !== user){
+                                notifSocket.send(JSON.stringify({
+                                    'message': `${user} liked your post!`,
+                                    'post_id': post_id
+                                }))
+                            }
+                            
                         }
                     } else {
                         if (res.option === 'removed dislike'){
@@ -838,10 +846,15 @@
                             like.classList.remove('text-red-400')
                             svg.classList.add('text-blue-400')
 
-                            notifSocket.send(JSON.stringify({
-                                'message': `${user} disliked your post!`,
-                                'post_id': post_id
-                            }))
+                            console.log('POST_USER: ', post_user)
+                            console.log('LOGGED IN USER: ', user)
+                            if (post_user !== user){
+                                notifSocket.send(JSON.stringify({
+                                    'message': `${user} disliked your post!`,
+                                    'post_id': post_id
+                                }))
+                            }
+                            
                         }
                     }
                             
