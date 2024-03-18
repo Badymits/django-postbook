@@ -32,6 +32,7 @@
                         <div class="flex w-full bg-gray-200 mb-6 relative   rounded-sm hover:border-black border-[1px] cursor-pointer">
                             <div class="w-[50px] bg-gray-300 border-r-[1px] border-black px-4">
                                 <div class=" flex flex-col items-center gap-2 py-2" id="vote_div">
+                                    <input type="hidden" value="{{ post.user.username }}" id="post_user">
                                     <button class="flex items-center gap-2 text-xl hover:bg-gray-300 rounded-md " id="like_btn_parent">
                                         {% is_liked post.id request.user as liked %}
                                         {% if liked %}
@@ -186,7 +187,8 @@
     <script type="text/javascript">
 
         const user = document.getElementById('user').value
-        let url = `ws://${window.location.host}/ws/socket-server/` // instead of http, we use websocket channel (ws)
+        const post_user = document.getElementById('post_user').value
+        let url = `ws://${window.location.host}/ws/socket-server/${post_user}/` // instead of http, we use websocket channel (ws)
 
         // create websocket object
         const notifSocket = new WebSocket(url)
@@ -251,26 +253,29 @@
         $(document).on('click', document, function(e){
             if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
                 const parent = e.target.closest('#like_btn_parent')
-    
+                const post_user = parent.previousElementSibling.value
+                console.log(post_user)
+
                 const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
                 const svg_like = parent.querySelector('#like_btn')
                 const like_count = parent.querySelector('#like_count')
     
-                updateVote(option, post_id, svg_like, parent)
+                updateVote(option, post_id, svg_like, parent, post_user)
     
             }
     
             if (e.target.id === 'dislike_btn') {
                 const parent = e.target.closest('#dislike_btn_parent')
-                console.log(parent)
+                const post_user = parent.previousElementSibling.previousElementSibling.value // calling prevElementSibling will only refer to the like btn based on the HTML structure
+                console.log(post_user)
     
                 const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
                 const svg_dislike = parent.querySelector('#dislike_btn')
                 const like_count = parent.querySelector('#dislike_count')
                 
-                updateVote(option, post_id, svg_dislike, parent)
+                updateVote(option, post_id, svg_dislike, parent, post_user)
             }
 
             if (e.target.id === 'home_message_close'){
@@ -330,7 +335,7 @@
             }
         })
 
-        function updateVote(option, post_id, svg, parent){
+        function updateVote(option, post_id, svg, parent, post_user){
 
             $.ajax({
                 url: `/update-vote-post/${post_id}/`,
@@ -343,6 +348,7 @@
                     let dislike_count = div_parent.querySelector('#dislike_count')
                     let like_count = div_parent.querySelector('#like_count')
                     if (option === 'like'){
+                        // clicking on an already liked btn
                         if (res.option === 'removed like'){
                             svg.classList.remove('text-red-400')
                             like_count.innerHTML = res.like_count
@@ -357,13 +363,22 @@
                             dislike.classList.add('hover:text-blue-400')
                             svg.classList.add('text-red-400')
 
+                            console.log('POST_USER: ', post_user)
+                            console.log('LOGGED IN USER: ', user)
+                            if (post_user !== user){
+                                
+                            }
+
                             notifSocket.send(JSON.stringify({
+                                'target_user': post_user,
                                 'message': `${user} liked your post!`,
                                 'post_id': post_id
                             }))
                             
+                            
                         }
                     } else {
+                        // clicking on an already disliked btn
                         if (res.option === 'removed dislike'){
                             svg.classList.remove('text-blue-400')
                             dislike_count.innerHTML = res.dislike_count
@@ -377,7 +392,14 @@
                             like.classList.add('hover:text-red-400')
                             svg.classList.add('text-blue-400')
 
+                            console.log('POST_USER: ', post_user)
+                            console.log('LOGGED IN USER: ', user)
+                            if (post_user !== user){
+                                
+                            }
+
                             notifSocket.send(JSON.stringify({
+                                'target_user': post_user,
                                 'message': `${user} disliked your post!`,
                                 'post_id': post_id
                             }))
