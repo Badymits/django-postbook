@@ -1,12 +1,11 @@
 
 // the URL and the websocket OBJ has been created in the detail post file instead
-//let url = `ws://${window.location.host}/ws/socket-server/` // instead of http, we use websocket channel (ws)
+//let url = `ws://${window.location.host}/ws/socket-server/${post_user}` // instead of http, we use websocket channel (ws)
 
-// create websocket object
+//create websocket object
 //const notifSocket = new WebSocket(url)
 
 $(document).on('click', document, function(e){
-    console.log('events file: ', e.target)
 
     // the message notif only refers to the channel notification
     // for context there are other message notif in detail post and home template, just named differently
