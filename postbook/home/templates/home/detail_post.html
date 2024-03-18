@@ -827,6 +827,7 @@
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
                                 notifSocket.send(JSON.stringify({
+                                    'target_user': post_user,
                                     'message': `${user} liked your post!`,
                                     'post_id': post_id
                                 }))
@@ -850,6 +851,7 @@
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
                                 notifSocket.send(JSON.stringify({
+                                    'target_user': post_user,
                                     'message': `${user} disliked your post!`,
                                     'post_id': post_id
                                 }))
