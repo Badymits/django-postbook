@@ -73,7 +73,7 @@
                             <div class="py-4 w-full" id="post_container">
                                 <div class="px-3" id="post-div">
                                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
-                                    <p class="text-4xl pb-2">{{ post.title }}</p>
+                                    <p class="text-4xl pb-2" id="post_title">{{ post.title }}</p>
                                     <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.user.id 'posts'  %}" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|naturaltime }}</p>
                                     
                                     {% if post.image %}
@@ -253,29 +253,29 @@
         $(document).on('click', document, function(e){
             if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
                 const parent = e.target.closest('#like_btn_parent')
+                const post_title = parent.parentElement.parentElement.nextElementSibling.querySelector('#post_title').innerHTML // refers to vote_div's container
                 const post_user = parent.previousElementSibling.value
-                console.log(post_user)
-
-                const option = e.target.getAttribute('data-option')
+                const option = e.target.getAttribute('data-option')               
                 const post_id = e.target.getAttribute('data-post')
                 const svg_like = parent.querySelector('#like_btn')
                 const like_count = parent.querySelector('#like_count')
     
-                updateVote(option, post_id, svg_like, parent, post_user)
+                updateVote(option, post_id, svg_like, parent, post_user, post_title)
     
             }
     
             if (e.target.id === 'dislike_btn') {
                 const parent = e.target.closest('#dislike_btn_parent')
+                const post_title = parent.parentElement.parentElement.nextElementSibling.querySelector('#post_title').innerHTML
                 const post_user = parent.previousElementSibling.previousElementSibling.value // calling prevElementSibling will only refer to the like btn based on the HTML structure
                 console.log(post_user)
-    
+                console.log(post_title)
                 const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
                 const svg_dislike = parent.querySelector('#dislike_btn')
                 const like_count = parent.querySelector('#dislike_count')
                 
-                updateVote(option, post_id, svg_dislike, parent, post_user)
+                updateVote(option, post_id, svg_dislike, parent, post_user, post_title)
             }
 
             if (e.target.id === 'home_message_close'){
@@ -335,7 +335,7 @@
             }
         })
 
-        function updateVote(option, post_id, svg, parent, post_user){
+        function updateVote(option, post_id, svg, parent, post_user, post_title){
 
             $.ajax({
                 url: `/update-vote-post/${post_id}/`,
@@ -366,14 +366,13 @@
                             console.log('POST_USER: ', post_user)
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
-                                
-                            }
-
-                            notifSocket.send(JSON.stringify({
-                                'target_user': post_user,
-                                'message': `${user} liked your post!`,
-                                'post_id': post_id
-                            }))
+                                notifSocket.send(JSON.stringify({
+                                    'notif_type': 'post_vote',
+                                    'target_user': post_user,
+                                    'message': `${user} liked your post!`,
+                                    'post_title': post_title
+                                }))
+                            }      
                             
                             
                         }
@@ -395,14 +394,13 @@
                             console.log('POST_USER: ', post_user)
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
-                                
+                                notifSocket.send(JSON.stringify({
+                                    'notif_type': 'post_vote',
+                                    'target_user': post_user,
+                                    'message': `${user} disliked your post!`,
+                                    'post_title': post_title
+                                }))
                             }
-
-                            notifSocket.send(JSON.stringify({
-                                'target_user': post_user,
-                                'message': `${user} disliked your post!`,
-                                'post_id': post_id
-                            }))
                         }
                     }
                             
