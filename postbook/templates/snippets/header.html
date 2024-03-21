@@ -1,3 +1,4 @@
+{% load humanize %}
 <header class="bg-gray-300 h-[60px] grid grid-cols-5 gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px] border-gray-500">
     <div class=" col-start-1 col-end-2 flex text-4xl font-thin">
         <a href="{% url 'home' %}">PostBook</a>
@@ -29,6 +30,8 @@
                 <div class="ml-6 relative">
                     <i class="fa fa-bell text-2xl cursor-pointer" id="notif_btn" aria-hidden="true" data-tooltip-target="tooltip-notif" data-tooltip-placement="bottom"></i>
                     <div class="hidden absolute top-9 right-0 w-[400px] bg-gray-100 shadow-md rounded-lg text-lg" id="notif_menu">
+                        <!-- place number of unread notifications -->
+                        <!-- on login, if there are any unread notifications, show a popup message below the icon saying "you have x notifications" -->
                         <div class="p-3 border-b-[1px] border-gray-600 flex items-center justify-between">
                             Notifications
                             <a href="{% url 'settings' 'account' %}">
@@ -48,8 +51,8 @@
                                     </div>
                                     
                                     <div class="">
-                                        <p class="text-md">Post title: <span class="w-1 h-1 me-6 m-0 bg-gray-500 rounded-full">Post like </span>  2h </p>
-                                        <p class="text-sm">{{ notif.message }}</p>
+                                        <p class="text-sm">Post title: <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span> {{ notif.date_added|naturaltime }} </p>
+                                        <p class="text-md">{{ notif.message }}</p>
                                     </div> 
                                 </div>
                             {% endfor %}
