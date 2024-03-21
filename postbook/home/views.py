@@ -20,7 +20,7 @@ def index(request):
 def homePage(request):
     
     posts = Post.all_objects.all().order_by('-date_posted')
-    notifications = Notification.objects.filter(receiver=request.user)
+    notifications = Notification.objects.filter(receiver=request.user).order_by('-date_added')
     context = {'user': request.user, 'posts': posts, 'notifications': notifications}
     return render(request, 'home/home.html', context)
 
@@ -282,7 +282,7 @@ def createComment(request, id):
             
             comment.main_post = main_post
             comment.user = request.user
-            
+            comment.is_edited = False
             
             if request.POST['is_reply'] == 'true':
                 # put in request data the main comment for this line pota
