@@ -222,6 +222,7 @@ class Notification(models.Model):
     notif_type          = models.CharField(max_length=255, null=True, blank=True)
     is_read             = models.BooleanField(default=False, null=True, blank=True)
     message             = models.CharField(max_length=355, null=True, blank=True)
+    date_added          = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return self.message
