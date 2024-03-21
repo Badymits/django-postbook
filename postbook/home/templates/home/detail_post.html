@@ -42,7 +42,7 @@
                     {% endif %}
                     <p class="text-md pb-3 text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
 
-                    <p class="text-4xl my-2 leading-7">{{ post.title }}</p>
+                    <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
 
                     {% if post.image %}
                         <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[550px] max-w-[550px] mx-auto my-6">
@@ -260,6 +260,7 @@
 
         const user = document.getElementById('user').value
         const post_user = document.getElementById('post_user').value
+        const post_title = document.getElementById('post_title').innerHTML
         let url = `ws://${window.location.host}/ws/socket-server/${post_user}/` // instead of http, we use websocket channel (ws)
 
         // create websocket object
@@ -521,6 +522,16 @@
 
                 custom_container.append(border_container)
                 comment_container.prepend(custom_container)
+
+                if (post_user !== user){
+                    notifSocket.send(JSON.stringify({
+                        'target_user': post_user,
+                        'message': `${user} commented your post!`,
+                        'post_id': 0,
+                        'post_title': post_title,
+                        'comment_body': body
+                    }))
+                }
 
             } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
