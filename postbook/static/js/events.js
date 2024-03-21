@@ -25,12 +25,18 @@ notifSocket.onmessage = function(e){
     let data = JSON.parse(e.data)
     console.log('the data: ', data)
     let notif_div = document.getElementById('message_notif')
-    const message_construct = data.message + 'post no: ' + data.post_id
+    let notif_header = document.getElementById('message_header')
 
     if (data){
         notif_div.classList.remove('hidden')
-        notif_div.querySelector('#message_text').innerHTML = message_construct
-
+        if (data.notif_type === 'post_vote'){
+            notif_div.querySelector('#message_text').innerHTML = `post liked: ${data.post_title}`
+        } else if ( data.notif_type === 'post_comment' ){
+            notif_div.querySelector('#message_text').innerHTML = data.comment_body
+        }
+        
+        notif_header.innerHTML = data.message
+        $('#sender_profile').attr('src', data.img_path)
     }
     
 }
