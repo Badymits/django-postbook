@@ -19,9 +19,10 @@ class NotifConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user'].username # the logged in user
         self.target_user = self.scope.get("url_route").get("kwargs").get("username") # username is unique
 
+        # create unique group to send message/notification to intended user
         self.user_room_name = f'notifications_for_{self.user}'
         
-        print('the user group', self.user_room_name)
+        
         if self.scope["user"].is_anonymous:
             # Reject the connection
             self.close()
@@ -43,15 +44,18 @@ class NotifConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        target_user = await database_sync_to_async(Account.objects.get)(username=self.target_user)
         
-        if text_data_json['post_id']:
-            post_id = text_data_json['post_id']
-        event = {
-            'type': 'send_notification',
-            'message': message,
-            'post_id': post_id if True else None
-        }
+        target_user = await database_sync_to_async(Account.objects.get)(username=text_data_json['target_user'])
+        
+        if text_data_json['notif_type'] == 'post_vote':
+            print(text_data_json['post_title'])
+            event = {
+                'type': 'send_notification',
+                'notif_type': 'post_vote',
+                'message': message,
+                'post_title': text_data_json['post_title'],
+                'sender': self.scope['user'],
+            }
         
         # create notification
         notif_obj = Notification(
@@ -69,9 +73,15 @@ class NotifConsumer(AsyncWebsocketConsumer):
         
     # sends message to intended user
     async def send_notification(self, event):
-        await self.send(text_data=json.dumps({
-            'message': event['message'],
-            'post_id': event['post_id']
-        }))
+        
+        if event['notif_type'] == 'post_vote':
+            await self.send(text_data=json.dumps({
+                'message': event['message'],
+                'post_title': event['post_title'],
+                'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}",
+                'notif_type': 'post_vote'
+            }))
+        elif event['notif_type'] == 'comment_notif':
+            pass
         
 
