@@ -294,15 +294,16 @@ def createComment(request, id):
                         
                 except:
                     messages.error(request, 'Comment does not exist or has been deleted', extra_tags='detail')
+                    return redirect('detail-post', id)
             else:
                 
                 comment.comment_level = 1
             
             comment.save()
-            context['server_message'] = 'Comment Successful!'           
+            context['server_message'] = 'success'           
             
-            # too lazy but same result . Then pass the context var
-            # all together
+            # we can just pass in the variables thru context like the server_message one. 
+            # Too lazy but same result . Then pass the context var all together
             return JsonResponse({
                 'comment': jsonpickle.encode(comment),
                 'comment_id': comment.id,
