@@ -6,7 +6,7 @@
     <section class="grid grid-cols-5 gap-2">
         <div class="col-start-2 col-end-4">
             <div class="flex items-center gap-3">
-
+                <input type="hidden" value="{{ request.user.username }}" id="user">
                 <div class="h-[170px] w-[170px] bg-red-200 rounded-[50%] relative overflow-hidden">
                     <img src="{{ user.get_user_photo_url }}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
                 </div>
@@ -84,7 +84,8 @@
                     </a>
                 {% endif %}
             </div>
-
+            <!-- to be used for websocket url -->
+            <input type="hidden" name="" id="websocket" value="{{ request.path }}">
             <div class="mt-6" id="profile_content" onload="">
                 {% if '/posts/' in request.path  %}
                     {% include 'accounts/tabs/user_posts.html' with user_posts=user_posts %}
@@ -203,9 +204,32 @@
                 {% endif %}
             </div>
         </div>
+
+        <!-- for saving/unsaving posts -->
+        <div class="hidden fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md border-[1px] border-black" id="home_message_notif">
+            <p id="home_message_text" class="p-1">{{ message }}</p>
+            <i  id="home_message_close"
+                class="fa fa-times text-xl cursor-pointer absolute right-3
+                hover:bg-gray-200 rounded-full w-7 h-7 flex items-center justify-center" 
+                aria-hidden="true">
+            </i>
+        </div>
     </section>
 
     <script type="text/javascript">
+        
+        const user = document.getElementById('user').value
+        if (document.getElementById('websocket').value !== '/auth/user/2/comments/'){
+            const post_user = document.getElementById('post_user').value
+        } else {
+            const post_user = user
+        }
+        
+        let url = `ws://${window.location.host}/ws/socket-server/${post_user}/` // instead of http, we use websocket channel (ws)
+
+        //create websocket object
+        const notifSocket = new WebSocket(url)
+
         // to be used for the delete functio where we place the csrf token to the request headers
         function getCookie(name) {
             var cookieValue = null;
@@ -225,7 +249,9 @@
 
         let reset_btn = document.getElementById('resetBtn');
         let post_div = document.querySelectorAll('#post-div');
-        let vote_div = document.getElementById('vote_div')
+        let vote_div = document.getElementById('vote_div');
+        const home_message_notif = document.getElementById('home_message_notif')
+        const home_message_text = document.getElementById('home_message_text')
     
         
         for (let i = 0; i < post_div.length; i++){
@@ -240,26 +266,30 @@
         $(document).on('click', document, function(e){
             if (e.target.id === 'like_post_btn' || e.target.id === 'like_btn'){
                 const parent = e.target.closest('#like_btn_parent')
+                const post_title = parent.parentElement.parentElement.nextElementSibling.querySelector('#post_title').innerHTML // refers to vote_div's container
+                const post_user = parent.previousElementSibling.value
     
                 const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
                 const svg_like = parent.querySelector('#like_btn')
                 const like_count = parent.querySelector('#like_count')
                 
-                updateVote(option, post_id, svg_like, parent)
+                updateVote(option, post_id, svg_like, parent, post_user, post_title)
     
             }
     
             if (e.target.id === 'dislike_btn') {
                 const parent = e.target.closest('#dislike_btn_parent')
                 console.log(parent)
+                const post_title = parent.parentElement.parentElement.nextElementSibling.querySelector('#post_title').innerHTML
+                const post_user = parent.previousElementSibling.previousElementSibling.value // calling prevElementSibling will only refer to the like btn based on the HTML structure
     
                 const option = e.target.getAttribute('data-option')
                 const post_id = e.target.getAttribute('data-post')
                 const svg_dislike = parent.querySelector('#dislike_btn')
                 const like_count = parent.querySelector('#dislike_count')
                 
-                updateVote(option, post_id, svg_dislike, parent)
+                updateVote(option, post_id, svg_dislike, parent, post_user, post_title)
             }
 
             if (e.target.id === 'profile_tab' || e.target.id === 'tab_a_elem'){
@@ -277,6 +307,7 @@
             // comment votes handling
             if (e.target.id === 'comment_like_btn'){
                 const parent = e.target.closest('#comment_like_btn_parent')
+                
 
                 const option = e.target.getAttribute('data-option')
                 const comment_id = e.target.getAttribute('data-comment')
@@ -287,6 +318,7 @@
 
             if (e.target.id === 'comment_dislike_btn'){
                 const parent = e.target.closest('#comment_dislike_btn_parent')
+                
 
                 const option = e.target.getAttribute('data-option')
                 const comment_id = e.target.getAttribute('data-comment')
@@ -294,13 +326,16 @@
 
                 updateCommentVote(option, comment_id, svg_dislike, parent)
             }
+            if (e.target.id === 'home_message_close'){
+                home_message_notif.classList.add('hidden')
+            }
 
             if (e.target.id === 'save_post_btn' || e.target.id === 'save_post_btn_parent'){
                 const post_id = e.target.getAttribute('data-post-id')
                 const user = e.target.getAttribute('data-user')
                 const save_post_btn = e.target.closest('#save_post_btn_parent')
 
-                const save_post_icon = e.target.querySelector('.fa')
+                const save_post_icon = save_post_btn.querySelector('.fa')
                 const save_post_text = save_post_btn.querySelector('.save_text')
                 console.log(save_post_btn)
 
@@ -321,18 +356,20 @@
                     },
                     success: function(res){
                         console.log(res)
-                        alert(res.message)
+                        home_message_notif.classList.remove('hidden')
                         if (res.action_taken === 'Removed'){
 
                             new_icon.setAttribute('class', 'fa fa-bookmark-o')
                             save_post_text.innerHTML = 'Save'
                             save_post_btn.replaceChild(new_icon, save_post_icon)
+                            home_message_text.innerHTML = res.message 
                         } 
                         else if (res.action_taken === 'Added') {
 
                             new_icon.setAttribute('class', 'fa fa-bookmark')                   
                             save_post_text.innerHTML = 'Remove from saved'
                             save_post_btn.replaceChild(new_icon, save_post_icon)
+                            home_message_text.innerHTML = res.message 
                         }
                         
 
@@ -438,7 +475,7 @@
             })
         }
 
-        function updateVote(option, post_id, svg, parent){
+        function updateVote(option, post_id, svg, parent, post_user, post_title){
 
             $.ajax({
                 url: `/update-vote-post/${post_id}/`,
@@ -464,6 +501,13 @@
                             dislike.classList.remove('text-blue-400')
                             dislike.classList.add('hover:text-blue-400')
                             svg.classList.add('text-red-400')
+
+                            notifSocket.send(JSON.stringify({
+                                'notif_type': 'post_vote',
+                                'target_user': post_user,
+                                'message': `${user} liked your post!`,
+                                'post_title': post_title
+                            }))
                             
                         }
                     } else {
@@ -479,6 +523,13 @@
                             like.classList.remove('text-red-400')
                             like.classList.add('hover:text-red-400')
                             svg.classList.add('text-blue-400')
+
+                            notifSocket.send(JSON.stringify({
+                                'notif_type': 'post_vote',
+                                'target_user': post_user,
+                                'message': `${user} disliked your post!`,
+                                'post_title': post_title
+                            }))
                         }
                     }
                             
