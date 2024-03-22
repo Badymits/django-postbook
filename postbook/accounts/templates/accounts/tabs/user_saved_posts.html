@@ -1,5 +1,5 @@
 {% load custom_tags %}
-
+{% load humanize %}
 
 {% if user_saved_posts %}
     {% for post in user_saved_posts %}
@@ -7,6 +7,7 @@
     <div class="flex w-full bg-gray-200 mb-6 relative   rounded-sm hover:border-black border-[1px] cursor-pointer">
         <div class="w-[50px] bg-gray-300 border-r-[1px] border-black px-4">
             <div class=" flex flex-col items-center gap-2 py-2" id="vote_div">
+                <input type="hidden" value="{{ post.post.user.username }}" id="post_user">
                 <button class="flex items-center gap-2 text-xl hover:bg-gray-300 rounded-md " id="like_btn_parent">
                     {% is_liked post.post.id request.user as liked %}
                     {% if liked %}
@@ -47,8 +48,8 @@
         <div class="py-4 w-full" id="post_container">
             <div class="px-3" id="post-div">
                 <input type="hidden" name="post_id" id="post_id" value="{{ post.post.id }}" class="post_id">
-                <p class="text-4xl pb-2">{{ post.post.title }}</p>
-                <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.post.user.id 'posts'  %}" class="hover:underline"> {{ post.post.user.username }} </a> {{ post.post.date_posted|timesince }}</p>
+                <p class="text-4xl pb-2" id="post_title">{{ post.post.title }}</p>
+                <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.post.user.id 'posts'  %}" class="hover:underline"> {{ post.post.user.username }} </a> {{ post.post.date_posted|naturaltime }}</p>
                 
                 {% if post.post.image %}
 
