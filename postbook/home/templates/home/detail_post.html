@@ -523,12 +523,12 @@
                 custom_container.append(border_container)
                 comment_container.prepend(custom_container)
 
+                // websocket will send to consumer file if user is not the one who made the posts (this logic goes for update vote websocket send block)
                 if (post_user !== user){
                     notifSocket.send(JSON.stringify({
+                        'notif_type': 'post_comment',
                         'target_user': post_user,
                         'message': `${user} commented your post!`,
-                        'post_id': 0,
-                        'post_title': post_title,
                         'comment_body': body
                     }))
                 }
@@ -625,7 +625,7 @@
             if (e.target.id === 'comment_reply'){
                 
                 const parent = e.target.parentElement;
-
+                
                 let first_div = parent.closest('div') // this div holds the comment options (the edit and report btns)
             
                 let second_div = first_div.parentElement // this div positions the comment options btn (the "...")
@@ -656,17 +656,18 @@
             // saving the reply comment to the db
             if (e.target.id === 'reply_comment_btn'){
                 const parent  = e.target.parentElement;
-                console.log(parent)
                 const reply_section = parent.parentElement
-                console.log('reply section: ',reply_section)
 
+                // from parent -> comment_actions -> comment_body_div -> div container with no ID -> queryselector
+                const target_user = parent.parentElement.parentElement.querySelector('#comment_user').innerHTML
+                
                 // refers to the comment thread so when user replies, the comment actually replies to its respective parent 
                 // (unlike where the comment just replies to a random parent thread)
                 const parent_thread =  reply_section.parentElement
 
                 const main_comment = parent.querySelector('#hidden_input_reply').value
                 
-                saveReplyComment(parent, main_comment, reply_section, parent_thread)
+                saveReplyComment(parent, main_comment, reply_section, parent_thread, target_user)
             }
 
             // post votes handling
@@ -697,22 +698,27 @@
             // comment votes handling
             if (e.target.id === 'comment_like_btn'){
                 const parent = e.target.closest('#comment_like_btn_parent')
+                // from parent -> comment_actions -> comment_body_div -> div container with no ID -> queryselector
+                const comment_user = parent.parentElement.previousElementSibling.previousElementSibling.querySelector('#comment_user').innerHTML
+                const comment_body = parent.parentElement.previousElementSibling.querySelector('#comment_text_prev').value
 
                 const option = e.target.getAttribute('data-option')
                 const comment_id = e.target.getAttribute('data-comment')
                 const svg_like = parent.querySelector('#comment_like_btn')
 
-                updateCommentVote(option, comment_id, svg_like, parent)
+                updateCommentVote(option, comment_id, svg_like, parent, comment_user, comment_body)
             }
 
             if (e.target.id === 'comment_dislike_btn'){
                 const parent = e.target.closest('#comment_dislike_btn_parent')
+                const comment_user = parent.parentElement.previousElementSibling.previousElementSibling.querySelector('#comment_user').innerHTML
+                const comment_body = parent.parentElement.previousElementSibling.querySelector('#comment_text_prev').value
 
                 const option = e.target.getAttribute('data-option')
                 const comment_id = e.target.getAttribute('data-comment')
                 const svg_dislike = parent.querySelector('#comment_dislike_btn')
 
-                updateCommentVote(option, comment_id, svg_dislike, parent)
+                updateCommentVote(option, comment_id, svg_dislike, parent, comment_user, comment_body)
             }
 
             // closing the notif display of post edits
@@ -737,7 +743,7 @@
 
         })
 
-        function updateCommentVote(option, comment_id, svg, parent){
+        function updateCommentVote(option, comment_id, svg, parent, comment_user, comment_body){
             console.log(parent)
             $.ajax({
                 url: `/update-vote-comment/${comment_id}/`,
@@ -768,13 +774,17 @@
 
                             dislike_svg.classList.remove('text-blue-400')
                             dislike_svg.classList.add('hover:text-blue-400')
-                            svg.classList.add('text-red-400')
-
-                            // check if different user
-                            //notifSocket.send(JSON.stringify({
-                            //    'message': 'Test'
-                            //}))
+                            svg.classList.add('text-red-400')   
                             
+                            // change post user to comment user, because when USER A likes someone else's comment on their own post, the notification does not push thru
+                            if (post_user !== user){
+                                notifSocket.send(JSON.stringify({
+                                    'notif_type': 'comment_vote',
+                                    'target_user': comment_user,
+                                    'message': `${user} liked your comment!`,
+                                    'comment_body': comment_body
+                                }))
+                            }
                         }
 
 
@@ -800,6 +810,15 @@
                             like_svg.classList.remove('text-red-400')
                             like_svg.classList.add('hover:text-red-400')
                             svg.classList.add('text-blue-400')
+
+                            if (post_user !== user){
+                                notifSocket.send(JSON.stringify({
+                                    'notif_type': 'comment_vote',
+                                    'target_user': comment_user,
+                                    'message': `${user} disliked your comment!`,
+                                    'comment_body': comment_body
+                                }))
+                            }
                         }
                     }
                 },
@@ -838,9 +857,10 @@
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
                                 notifSocket.send(JSON.stringify({
+                                    'notif_type': 'post_vote',
                                     'target_user': post_user,
                                     'message': `${user} liked your post!`,
-                                    'post_id': post_id
+                                    'post_title': post_title
                                 }))
                             }
                             
@@ -862,9 +882,10 @@
                             console.log('LOGGED IN USER: ', user)
                             if (post_user !== user){
                                 notifSocket.send(JSON.stringify({
+                                    'notif_type': 'post_vote',
                                     'target_user': post_user,
                                     'message': `${user} disliked your post!`,
-                                    'post_id': post_id
+                                    'post_title': post_title
                                 }))
                             }
                             
@@ -884,7 +905,7 @@
         // second param refers to the comment that is being replied to
         // third param will be the section of all the replies related to the main comment
         // fourth param refers to the target parent
-        function saveReplyComment(trgt, id, reply_section, parent_thread){
+        function saveReplyComment(trgt, id, reply_section, parent_thread, target_user){
             
             let body = trgt.querySelector('#body').value
             if (body === ''){
@@ -902,8 +923,15 @@
                     },
                     success: function(res){
                         console.log(res)
-                        let result = createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
-                        createNestedComment(result, reply_section, parent_thread)
+                        if (res.server_message === 'success'){
+                            let result = createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
+                            createNestedComment(result, reply_section, parent_thread, body, target_user)
+                        } else {
+                            comment_message_notif.classList.remove('hidden')
+                            comment_message_notif.classList.remove('bg-green-200')
+                            comment_message_notif.classList.add('bg-red-200')
+                            comment_message_notif.querySelector('#comment_message_text').innerHTML = 'Comment does not exist or has been deleted by user. Please refresh the page'
+                        }
                     },
                     error: function(err){
                         alert(err)
@@ -914,13 +942,19 @@
 
         } 
 
-        function createNestedComment(comment, reply_section, parent_thread){
+        function createNestedComment(comment, reply_section, parent_thread, body, target_user){
             const child = reply_section.querySelector('#reply_div')
             reply_section.removeChild(child)
 
-            parent_thread.removeChild(reply_section)
+            parent_thread.removeChild(reply_section) // removing the reply textarea template
             parent_thread.append(comment)
-        
+            console.log(target_user)
+            notifSocket.send(JSON.stringify({
+                'notif_type': 'comment_reply',
+                'target_user': target_user,
+                'message': `${user} replied to your comment`,
+                'comment_body': body,
+            }))
         }
 
         // to be used for the delete functio where we place the csrf token to the request headers
