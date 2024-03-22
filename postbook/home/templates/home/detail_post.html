@@ -777,7 +777,7 @@
                             svg.classList.add('text-red-400')   
                             
                             // change post user to comment user, because when USER A likes someone else's comment on their own post, the notification does not push thru
-                            if (post_user !== user){
+                            if (comment_user !== user){
                                 notifSocket.send(JSON.stringify({
                                     'notif_type': 'comment_vote',
                                     'target_user': comment_user,
@@ -811,7 +811,7 @@
                             like_svg.classList.add('hover:text-red-400')
                             svg.classList.add('text-blue-400')
 
-                            if (post_user !== user){
+                            if (comment_user !== user){
                                 notifSocket.send(JSON.stringify({
                                     'notif_type': 'comment_vote',
                                     'target_user': comment_user,
