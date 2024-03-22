@@ -923,7 +923,7 @@
                     },
                     success: function(res){
                         console.log(res)
-                        if (res.server_message === 'success'){
+                        if (res.server_message === 'Comment Made!'){
                             let result = createComment(res.comment_body, res.comment_user, dayjs(res.comment_date).fromNow(), res.comment_id, res.comment_level, res.has_profile_pic, res.img_path)
                             createNestedComment(result, reply_section, parent_thread, body, target_user)
                         } else {
