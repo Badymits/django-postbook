@@ -19,7 +19,7 @@
                     <span class="w-1 h-1 bg-black rounded-full">&nbsp;</span>
                     <p class=" text-gray-500 comment_date" id="comment_date"> {{ reply.date_posted|naturaltime }}</p>
 
-                    {% if comment.is_edited and comment.is_deleted == False %}
+                    {% if reply.is_edited and reply.is_deleted == False %}
                         <p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>
                     {% endif %}
                     <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if reply.is_deleted == True %} pointer-events-none {% endif %}">
