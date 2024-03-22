@@ -30,9 +30,15 @@ notifSocket.onmessage = function(e){
     if (data){
         notif_div.classList.remove('hidden')
         if (data.notif_type === 'post_vote'){
-            notif_div.querySelector('#message_text').innerHTML = `post liked: ${data.post_title}`
-        } else if ( data.notif_type === 'post_comment' ){
-            notif_div.querySelector('#message_text').innerHTML = data.comment_body
+            notif_div.querySelector('#message_text').innerHTML = `post: ${data.post_title}`
+
+        } 
+        
+        else if ( data.notif_type === 'post_comment' || data.notif_type === 'comment_reply'){
+            notif_div.querySelector('#message_text').innerHTML = `their comment: ${data.comment_body}`
+        }
+        else if ( data.notif_type === 'comment_vote'){
+            notif_div.querySelector('#message_text').innerHTML = `comment: ${data.comment_body}`
         }
         
         notif_header.innerHTML = data.message
