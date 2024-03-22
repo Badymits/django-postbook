@@ -92,19 +92,21 @@ class Comment(SoftDeleteModel):
     is_edited           = models.BooleanField(default=False, null=True, blank=True)
     
     # override the __init__ method of models.Model so that you can keep a copy of the original value
-    __original_body = None
+    __original_name = None
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.__original_body = self.body
+        self.__original_name = self.body
         
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         
-        if self.__original_body != self.body:
+        # making sure that the original value is not empty. 
+        # The init method does not run when obj of a class is created despite it being a well known fact... at least for me
+        if self.body != self.__original_name and self.__original_name != "":
             self.is_edited = True
         
         super().save(force_insert, force_update, *args, **kwargs) # Call the "real" save() method
-        self.__original_body = self.body
+        self.__original_name = self.body
             
     
     def __str__(self):
