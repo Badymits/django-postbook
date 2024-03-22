@@ -48,12 +48,28 @@ class NotifConsumer(AsyncWebsocketConsumer):
         target_user = await database_sync_to_async(Account.objects.get)(username=text_data_json['target_user'])
         
         if text_data_json['notif_type'] == 'post_vote':
-            print(text_data_json['post_title'])
             event = {
                 'type': 'send_notification',
                 'notif_type': 'post_vote',
                 'message': message,
                 'post_title': text_data_json['post_title'],
+                'sender': self.scope['user'],
+            }
+        elif text_data_json['notif_type'] == 'post_comment' or text_data_json['notif_type'] == 'comment_reply':
+            event = {
+                'type': 'send_notification',
+                'notif_type': 'post_comment' if text_data_json['notif_type'] == 'post_comment' else 'comment_reply',
+                'message': message,
+                'comment_body': text_data_json['comment_body'],
+                'sender': self.scope['user'],
+            }
+            
+        elif text_data_json['notif_type'] == 'comment_vote':
+            event = {
+                'type': 'send_notification',
+                'notif_type': 'comment_vote',
+                'message': message,
+                'comment_body': text_data_json['comment_body'],
                 'sender': self.scope['user'],
             }
         
@@ -81,7 +97,22 @@ class NotifConsumer(AsyncWebsocketConsumer):
                 'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}",
                 'notif_type': 'post_vote'
             }))
-        elif event['notif_type'] == 'comment_notif':
-            pass
+            
+        elif event['notif_type'] == 'post_comment' or event['notif_type'] == 'comment_vote':
+            await self.send(text_data=json.dumps({
+                'message': event['message'],
+                'comment_body': event['comment_body'],
+                'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}",
+                'notif_type': 'post_comment' if event['notif_type'] == 'post_comment' else 'comment_vote'
+            }))
+            
+        elif event['notif_type'] == 'comment_reply':
+            print(event['comment_body'])
+            await self.send(text_data=json.dumps({
+                'message': event['message'],
+                'comment_body': event['comment_body'],
+                'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}",
+                'notif_type': 'comment_reply'
+            }))
         
 
