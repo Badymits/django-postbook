@@ -300,7 +300,7 @@ def createComment(request, id):
                 comment.comment_level = 1
             
             comment.save()
-            context['server_message'] = 'success'           
+            context['server_message'] = 'Comment Made!'           
             
             # we can just pass in the variables thru context like the server_message one. 
             # Too lazy but same result . Then pass the context var all together
@@ -313,7 +313,7 @@ def createComment(request, id):
                 'comment_level': comment.comment_level,
                 'has_profile_pic': True if comment.user.profile_pic else False,
                 'img_path': f'http://127.0.0.1:8000{comment.user.profile_pic.url}',
-                'server_message': 'Comment Successful!',
+                'server_message': 'Comment Made!',
             })
         else:
             messages.error(request, 'There was an error', extra_tags='detail')
