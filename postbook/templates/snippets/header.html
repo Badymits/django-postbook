@@ -1,13 +1,17 @@
 {% load humanize %}
-<header class="bg-gray-300 h-[60px] grid grid-cols-5 gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px] border-gray-500">
-    <div class=" col-start-1 col-end-2 flex text-4xl font-thin">
-        <a href="{% url 'home' %}">PostBook</a>
+<header class="bg-gray-300 h-[60px] grid grid-cols-9 xl:grid-cols-5 md:grid-cols-7 
+gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px] border-gray-500">
+    
+    <div class="w-[10%] col-start-1 col-end-2 xl:col-start-1 xl:col-end-2 gap-2 text-4xl font-thin">
+
+        <i class="fa fa-bars xl:hidden text-lg absolute left-2 top-2 hover:bg-gray-400 rounded-full cursor-pointer p-2 w-10 text-center h-10 z-50" id="side_menu" aria-hidden="true"></i>
+        <a href="{% url 'home' %}" class="xl:block hidden">PostBook</a>
         
     </div>
     
-    <div class="col-start-2 col-end-5 flex items-center gap-4">
+    <div class=" md:col-start-2 md:col-end-8 xl:col-start-2 xl:col-end-5 flex items-center gap-4">
 
-        <form action="" method="get" class="relative w-[700px] rounded-t-xl pb-3 mt-2" id="search_form">
+        <form action="" method="get" class="relative w-[900px] hidden xl:block md:block xl:w-[700px] md:w-[800px]   rounded-t-xl pb-3 xl:mt-2 md:mt-2" id="search_form">
             
             <div class="flex relative mx-1">
                 <i class="fa fa-search absolute left-2 z-50 top-3 bottom-3 " aria-hidden="true"></i>
@@ -21,9 +25,14 @@
             
         </form>
 
-        <div class="text-sm p-3">
-            <div class="flex items-center gap-8">
-                <a href="{% url 'home' %}">
+        <div class="text-sm mb-2 absolute right-2 top-3 xl:static md:static xl:m-0 md:m-0 xl:p-3">
+            <div class="flex items-center w-full gap-2 xl:gap-8 lg:gap-4">
+
+                <a class="ml-6 xl:hidden md:hidden" id="mobile_search_icon">
+                    <i class="fa fa-search text-2xl cursor-pointer " id="mobile_search_icon" aria-hidden="true"></i>
+                </a>
+
+                <a href="{% url 'home' %}" class="ml-6 xl:m-0 md:m-0">
                     <i class="fa fa-home text-3xl" data-tooltip-target="tooltip-home" data-tooltip-placement="bottom" aria-hidden="true"></i>
                 </a>
                 
@@ -77,6 +86,7 @@
                 <div class="ml-6">
                     <i class="fa fa-comments-o text-2xl cursor-pointer" aria-hidden="true" data-tooltip-target="tooltip-message" data-tooltip-placement="bottom"></i>
                 </div>
+                
             </div>
             
 
@@ -123,7 +133,7 @@
         </div>
         
     </div>
-    <div class="relative place-self-end self-center">
+    <div class="relative flex hidden xl:block xl:col-start-5 xl:col-end-5  xl:place-self-end xl:self-center xl:w-max md:w-full block">
         <div class="text-2xl cursor-pointer  flex items-center justify-end gap-3 hover:border-[1px] border-gray-600 w-[220px] p-2" id="profile">
             <h1 class="text-right"> {{ request.user.username }}</h1>
             <div id="profile-menu" class="hidden absolute top-10 right-0 bg-gray-200  rounded-md shadow-xl py-2 pb-4">
@@ -169,11 +179,45 @@
     
     
 </header>
+<div class="fixed top-0 bottom-0 -left-[100%] w-[250px] bg-gray-300 h-full z-50 p-2 ease-in-out duration-300" id="menu">
+    <a href="{% url 'home' %}" class="text-4xl pt-10">PostBook</a>
+    <i class="fa fa-times text-xl cursor-pointer hover: absolute top-3 right-5" id="menu_close" aria-hidden="true"></i>
+    <ul class="text-lg">
+        <li>Home</li>
+        <li>Notifications</li>
+        <li>Friend Requests</li>
+        <li>Messages</li>
+    </ul>
+</div>
+
+<div class="hidden fixed top-0 bottom-0 right-0 left-0 bg-gray-200 z-50 m-0 p-0 ease-in-out duration-300 " id="search">
+    
+    <div class="flex flex-col items-center  w-full p-2 pl-10 mr-4">
+        <i class="fa fa-arrow-left absolute top-3 left-1 cursor-pointer hover:bg-gray-400 text-2xl rounded-full w-8 h-8 text-center" aria-hidden="true" id="close_search"></i>
+        <div class="flex relative mx-2 w-full">
+            <i class="fa fa-search absolute left-2 z-50 top-3 bottom-3 " aria-hidden="true"></i>
+            <input type="text" name="search" placeholder="Search Postbook " class="pl-7 w-full rounded-full font-sans hover:bg-white/75 " id="search_input" />
+            
+        </div>
+    </div>
+    <div class=" w-full pl-7 bg-gray-400 top-[3.1em]  py-4 border-t-[1px] border-gray-200" id="search_menu">
+        Search Suggestions
+    </div>
+    
+</div>
+
 
 <script type="text/javascript">
     let profile_div = document.getElementById('profile')
     let notif_btn = document.getElementById('notif_btn')
     let notif_menu = document.getElementById('notif_menu')
+    let menu = document.getElementById('menu')
+    let side_menu_btn = document.getElementById('side_menu')
+    let menu_close_btn = document.getElementById('menu_close')
+
+    let search = document.getElementById('search')
+    let mobile_search_icon = document.getElementById('mobile_search_icon')
+    let close_search = document.getElementById('close_search')
 
     notif_btn.addEventListener('click', function(e){
         if (notif_menu.classList.contains('hidden')){
@@ -181,6 +225,25 @@
         }else{
             notif_menu.classList.add('hidden')
         }
+    })
+
+    side_menu_btn.addEventListener('click', function(e){
+        menu.classList.remove('-left-[100%]')
+        menu.classList.add('left-0')
+    })
+
+    menu_close_btn.addEventListener('click', function(e){
+        menu.classList.add('-left-[100%]')
+        menu.classList.remove('left-0')
+    })
+
+    close_search.addEventListener('click', function(e){
+        search.classList.add('hidden')
+        document.getElementsByTagName('body').classList.add('overflow-hidden')
+    })
+
+    mobile_search_icon.addEventListener('click', function(e){
+        search.classList.remove('hidden')
     })
 
     profile_div.addEventListener('click', function(e) {
