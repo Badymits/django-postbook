@@ -179,14 +179,38 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
     
     
 </header>
-<div class="fixed top-0 bottom-0 -left-[100%] w-[250px] bg-gray-300 h-full z-50 p-2 ease-in-out duration-300" id="menu">
-    <a href="{% url 'home' %}" class="text-4xl pt-10">PostBook</a>
-    <i class="fa fa-times text-xl cursor-pointer hover: absolute top-3 right-5" id="menu_close" aria-hidden="true"></i>
+<div class="fixed top-0 bottom-0 -left-[100%] xl:hidden w-[250px] bg-gray-300 h-full z-50  ease-in-out duration-300" id="menu">
+    <a href="{% url 'home' %}" class="text-4xl border-b mb-6 border-black w-full block p-[9.5px]">PostBook</a>
+    <i class="fa fa-times text-xl cursor-pointer hover: absolute top-3 right-2 p-2" id="menu_close" aria-hidden="true"></i>
     <ul class="text-lg">
-        <li>Home</li>
-        <li>Notifications</li>
-        <li>Friend Requests</li>
-        <li>Messages</li>
+        <li class="cursor-pointer w-full hover:bg-gray-300 mb-4">
+            <a href="{% url 'user' request.user.id 'posts' %}" class="flex flex-col items-center justify-center text-center gap-2 w-full p-2">
+
+                <div class="w-[150px] h-[150px] bg-red-200 rounded-[50%] relative overflow-hidden">
+                    <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                    <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                </div>
+                <p class=" rounded-full bg-blue-300 relative">
+                    
+                </p>
+                <div class="">
+                    <p class="text-sm font-thin text-gray-500">View Profile</p>
+                    <p class="text-[25px]">u/{{ request.user.username }}</p>
+                </div>
+            </a>
+        </li>   
+        <li class="cursor-pointer w-full hover:bg-gray-300 h-[60px] border-t-[1px] border-black">
+            <a href="{% url 'settings' 'account' %}" class="flex items-center p-3 pl-4 gap-2">
+                <i class="fa fa-cog" aria-hidden="true"></i>
+                Settings
+            </a>
+        </li>
+        <li class="cursor-pointer w-full hover:bg-gray-300 h-[60px] border-y-[1px] border-black">
+            <a href="{% url 'logout' %}" class=" flex items-center p-3 pl-4 gap-2">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                <p>Logout</p>
+            </a>
+        </li>
     </ul>
 </div>
 
@@ -217,7 +241,7 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
 
     let search = document.getElementById('search')
     let mobile_search_icon = document.getElementById('mobile_search_icon')
-    let close_search = document.getElementById('close_search')
+    let close_search = document.getElementById('close_search')  
 
     notif_btn.addEventListener('click', function(e){
         if (notif_menu.classList.contains('hidden')){
@@ -239,7 +263,6 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
 
     close_search.addEventListener('click', function(e){
         search.classList.add('hidden')
-        document.getElementsByTagName('body').classList.add('overflow-hidden')
     })
 
     mobile_search_icon.addEventListener('click', function(e){
