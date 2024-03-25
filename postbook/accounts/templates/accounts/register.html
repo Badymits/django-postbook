@@ -9,16 +9,16 @@
     <title>PostBook</title>
 </head>
 <body>
-    <section class="bg-gray-400 h-[100vh] max-w-full relative flex items-center px-2">
-        <div class="bg-white h-[80vh] w-full mx-2 xl:w-[50%]  md:w-[80%] m-0 block mx-auto rounded-lg">
-            <h1 class="text-center text-5xl font-thin uppercase">Register</h1>
+    <section class="bg-gray-400 h-screen max-w-full relative flex items-center px-2">
+        <div class="bg-white w-full mx-2 xl:w-[50%]  md:w-[80%] m-0 block mx-auto rounded-lg p-2">
+            <h1 class="text-center text-sm xl:text-5xl md:text-4xl font-thin uppercase ">Register</h1>
             {{ form.non_field_errors }}
             <div >
                 <form action="{% url 'register' %}" method="post" class="flex flex-col items-center justify-center
-                 w-[75%] xl:w-[60%] md:w-[80%] mx-auto h-[45em]">
+                 xl:w-[70%] md:w-[80%] mx-auto p-2 xl:text-lg text-sm">
                     {% csrf_token %}
                     {% for field in reg_form %}
-                        <div class="w-full text-left my-2 text-lg">
+                        <div class="w-full text-left my-2  xl:text-lg">
                             <label for="">{{ field.label }}</label>
                             {{ field }}
                             {{ field.errors }}
