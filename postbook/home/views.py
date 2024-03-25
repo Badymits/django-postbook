@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from datetime import datetime
 import jsonpickle
 from accounts.models import Account
 from .models import Post, Comment, LikeModel, DislikeModel, SavedPostsModel, Notification
@@ -312,7 +313,7 @@ def createComment(request, id):
                 'comment_date': comment.date_posted,
                 'comment_level': comment.comment_level,
                 'has_profile_pic': True if comment.user.profile_pic else False,
-                'img_path': f'http://127.0.0.1:8000{comment.user.profile_pic.url}',
+                'img_path': f'http://127.0.0.1:8000{comment.user.profile_pic.url}' if comment.user.profile_pic else "http://127.0.0.1:8000/static/images/profile/images/xianyun.jpg", # refer to default if empty
                 'server_message': 'Comment Made!',
             })
         else:
