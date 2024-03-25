@@ -3,9 +3,16 @@
 
 {% block content %}
 
-    <section class="grid grid-cols-5 gap-6  w-full">
-        <div class="col-start-2 col-end-4 h-[70vh]">
-            <h1 class="text-xl">Create a post</h1>
+    <section class="grid xl:grid-cols-5 md:grid-cols-7 gap-4">
+        <div class="col-start-1 col-end-7 md:col-start-2 md:col-end-7 xl:col-start-2 xl:col-end-4 mx-2 xl:m-0 h-[70vh] text-sm md:text-lg xl:text-xl">
+            
+            <div class="flex items-center gap-2">
+                <a href="{{ request.META.HTTP_REFERER }}">
+                    <i class="fa fa-long-arrow-left cursor-pointer hover:bg-gray-300 text-2xl rounded-full w-8 h-8  text-center" aria-hidden="true" id="close_search"></i>
+                </a>
+                <h1 class="">Create a post</h1>
+            </div>
+            
 
             <hr class="border-solid border-black my-2">
 
@@ -16,28 +23,28 @@
                 <input type="hidden" name="user" value="{{ request.user.id }}">
                 
                 <div class="pt-4">
-                    <ul class="flex items-center justify-between  w-full bg-gray-200 h-[50px]  text-center rounded-xl leading-12">
-                        <li class="w-[250px] flex justify-center items-center text-xl cursor-pointer hover:bg-gray-400 hover:rounded-lg h-full border-r-[1px] border-gray-500"
+                    <ul class="flex items-center justify-between  w-full bg-gray-200 h-[35px] md:h-[40px] xl:h-[50px]  text-center rounded-xl leading-12">
+                        <li class="w-full xl:w-[250px] flex justify-center items-center cursor-pointer hover:bg-gray-400 hover:rounded-l-lg h-full border-r-[1px] border-gray-500"
                             onclick="openForm(event, 'post')"
                         >
                             <p >Post</p>
                         </li>
-                        <li class="w-[250px] flex justify-center items-center  text-xl cursor-pointer hover:bg-gray-400 h-full border-r-[1px] border-gray-500"
+                        <li class="w-full xl:w-[250px] flex justify-center items-center  cursor-pointer hover:bg-gray-400 h-full border-r-[1px] border-gray-500"
                             onclick="openForm(event, 'image')"
                         >
                             <p >Image</p>
                         </li>
-                        <li class="w-[250px] flex justify-center items-center  text-xl cursor-pointer hover:bg-gray-400 h-full"
+                        <li class="w-full xl:w-[250px] flex justify-center items-center  cursor-pointer hover:bg-gray-400 hover:rounded-r-lg h-full border-gray-500"
                             onclick="openForm(event, 'url')"
                         >
                             <p >Link</p>
                         </li>
                     </ul>
-                    <input type="text" name="title" placeholder="Title" class="w-full my-4 h-[40px] text-2xl pl-4 border-2 border-gray-200" required>
+                    <input type="text" name="title" placeholder="Title" class="w-full my-4 h-[30px] md:h-[35px] xl:h-[40px] font-semibold pl-4 border-2 border-gray-200" required>
                     
                     <div id="post" class="tabcontent">
                         <textarea name="body" id="" cols="30" rows="10" placeholder="Text here..." 
-                            class="w-full my-4 text-2xl p-4 resize-none border-2 border-gray-200"
+                            class="w-full my-4 text-lg xl:text-2xl p-4 resize-none border-2 border-gray-200"
                         ></textarea>
                         
                     </div>
@@ -59,13 +66,13 @@
                 </div>
                 
                 
-                <button type="submit" class="float-right bg-gray-300 w-[100px] rounded-full py-2 text-xl
+                <button type="submit" class="float-right bg-gray-300 w-[100px] rounded-full py-2 text-xl font-light
                 hover:bg-gray-200">Post</button>
 
             </form>
         </div>
 
-        <div class="bg-gray-200 border-[1px] border-gray-400 rounded-lg p-4">
+        <div class="bg-gray-100 h-[400px] lg:h-[500px] w-[300px] lg:w-[400px] rounded-lg p-4 hidden xl:block border-[1px] border-gray-400 rounded-lg p-4">
             <h1>Rules for posting to PostBook</h1>
             <ul>
                 <li>1. Don't be an asshole</li>
@@ -82,7 +89,7 @@
         var i, tab_id, tab_content, tab_link;
         
         function openForm(event, formType){
-            console.log(formType)
+
             tab_id = document.getElementById(formType)
             tab_content = document.getElementsByClassName('tabcontent')
 
