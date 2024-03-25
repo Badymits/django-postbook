@@ -87,7 +87,7 @@ class Comment(SoftDeleteModel):
     user                = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     body                = models.CharField(max_length=955)
     image               = models.ImageField(default='images', blank=True, null=True)
-    date_posted         = models.DateField(auto_now_add=True, null=True)
+    date_posted         = models.DateTimeField(auto_now_add=True, null=True)
     comment_level       = models.IntegerField(null=True, blank=True)
     is_edited           = models.BooleanField(default=False, null=True, blank=True)
     
