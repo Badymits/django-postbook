@@ -5,7 +5,7 @@
     <!-- recursive approach to display nested replies -->
         <div class="mb-6 pl-[2em]">
             <div class="border-l-[2px] border-gray-400" id="comment_thread">
-                <div class="flex items-center gap-2 relative pl-2">
+                <div class="flex items-center gap-2 relative pl-2 text-xs">
                 
                     <div class="w-10 h-10 rounded-[50%] relative overflow-hidden">
                         <img src="{{ reply.get_photo_url }}" alt="{{ reply.user.username }}"  class="h-full w-full object-cover"/>
@@ -20,7 +20,7 @@
                     <p class=" text-gray-500 comment_date" id="comment_date"> {{ reply.date_posted|naturaltime }}</p>
 
                     {% if reply.is_edited and reply.is_deleted == False %}
-                        <p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>
+                        <p class="text-gray-500" id="comment_edit_flag"> (edited) </p>
                     {% endif %}
                     <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if reply.is_deleted == True %} pointer-events-none {% endif %}">
                         <p class="hover:bg-gray-400 cursor-pointer rounded-md" id="comment_menu" >...</p>

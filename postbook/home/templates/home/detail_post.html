@@ -4,8 +4,8 @@
 
 {% block content %}
 
-    <section class="grid grid-cols-5 gap-2">
-        <div class="col-start-2 col-end-4 pb-[20em]">
+    <section class="grid xl:grid-cols-5 md:grid-cols-7 gap-2">
+        <div class="col-start-1 col-end-7 md:col-start-2 md:col-end-7 xl:col-start-2 xl:col-end-4 mx-2 pb-[20em]">
             
             <input type="hidden" value="{{ request.user.username }}" id="user">
             <input type="hidden" value="{{ post.user.username }}" id="post_user">
@@ -40,10 +40,16 @@
                             <div class="tooltip-arrow" data-popper-arrow></div>
                         </div>
                     {% endif %}
-                    <p class="text-md pb-3 text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
 
+                    <div class="flex items-center gap-2">
+                        <a href="{{ request.META.HTTP_REFERER }}">
+                            <i class="fa fa-long-arrow-left cursor-pointer hover:bg-gray-300 text-2xl rounded-full w-8 h-8  text-center" aria-hidden="true" id="close_search"></i>
+                        </a>
+                        
+                        <p class="text-md text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
+                    </div>
+                    
                     <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
-
                     {% if post.image %}
                         <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[550px] max-w-[550px] mx-auto my-6">
                     {% endif %}
@@ -107,7 +113,7 @@
                         {% for comment in comments %}
                         <div class="p-2 mb-5" id="comment_container">
                             <div class="border-l-[2px] border-gray-400 " id="comment_thread">
-                                <div class="flex items-center gap-2 relative pl-2">
+                                <div class="flex items-center gap-2 relative pl-2 text-xs">
                                 
                                     <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
                                         <img src="{{ comment.get_photo_url }}" alt="{{ comment.user.username }}"  class="h-full w-full object-cover"/>
@@ -122,7 +128,7 @@
                                     <p class="text-gray-500 comment_date" id="comment_date">{{ comment.date_posted|naturaltime }}</p>
 
                                     {% if comment.is_edited and comment.is_deleted == False %}
-                                        <p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>
+                                        <p class="text-gray-500" id="comment_edit_flag"> (edited) </p>
                                     {% endif %}
 
                                     <div class="absolute right-0 w-7 text-center text-2xl top-0 {% if comment.is_deleted == True %} pointer-events-none {% endif %}">
@@ -216,7 +222,7 @@
             
         </div>
         <div class="">
-            <div class="bg-gray-100 rounded-xl p-4 fixed h-[500px] w-[400px]">
+            <div class="fixed bg-gray-100 h-[400px] lg:h-[500px] w-[300px] lg:w-[400px] rounded-lg p-4 hidden xl:block">
                 <h1>Rules for commenting to each posts</h1>
                 <ul>
                     <li>1. Don't be an asshole</li>
@@ -341,7 +347,7 @@
             let comment_report = document.createElement('button')
 
             border_container.setAttribute('class', 'border-l-[2px] border-gray-400 pb-4')
-            user_details.setAttribute('class', 'flex items-center gap-2 relative pl-2')
+            user_details.setAttribute('class', 'flex items-center gap-2 relative pl-2 text-xs')
             if (user_dp){
                 
                 img_wrapper.setAttribute('class', 'w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden')
