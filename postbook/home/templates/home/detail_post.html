@@ -51,7 +51,10 @@
                     
                     <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
                     {% if post.image %}
-                        <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[550px] max-w-[550px] mx-auto my-6">
+                        <div class=" overflow-hidden">
+                            <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[300px] max-w-[300px] md:max-h-[475px] md:max-w-[475px] xl:max-h-[520px] xl:max-w-[520px] mx-auto my-6">
+                        </div>
+                        
                     {% endif %}
 
                     {% if post.body %}
@@ -348,27 +351,19 @@
 
             border_container.setAttribute('class', 'border-l-[2px] border-gray-400 pb-4')
             user_details.setAttribute('class', 'flex items-center gap-2 relative pl-2 text-xs')
-            if (user_dp){
-                
-                img_wrapper.setAttribute('class', 'w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden')
-                img_span.setAttribute('class', 'w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full')
+            img_wrapper.setAttribute('class', 'w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden')
+            img_span.setAttribute('class', 'w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full')
 
-                profile_pic = document.createElement('img')
-                profile_pic.setAttribute('class', 'h-full w-full object-cover')
+            profile_pic = document.createElement('img')
+            profile_pic.setAttribute('class', 'h-full w-full object-cover')
 
-                img_wrapper.appendChild(profile_pic)
-                img_wrapper.appendChild(img_span)
+            img_wrapper.appendChild(profile_pic)
+            img_wrapper.appendChild(img_span)
 
-                profile_pic.src = img_path
-                profile_pic.alt = users_name
+            profile_pic.src = img_path
+            profile_pic.alt = users_name
 
-                user_details.appendChild(img_wrapper)
-            } else {
-                console.log('FALSE', user_dp)
-                profile_pic = document.createElement('p')
-                profile_pic.setAttribute('class', 'w-10 h-10 rounded-full bg-blue-300')
-                user_details.appendChild(profile_pic)
-            }
+            user_details.appendChild(img_wrapper)
             
             username.setAttribute('class', 'text-lg hover:underline cursor-pointer')
             span_separator.setAttribute('class', 'w-1 h-1 bg-gray-500 rounded-full')
@@ -1206,10 +1201,10 @@
                 reply_section_div.id = 'reply_section_div'
                 
                 if (level == 1){
-                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 ml-[2.5em] border-l-[2px] border-gray-400')
+                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 pt-5 ml-[2.8em]  mb-[2em] border-l-[2px] border-gray-400')
                 } else if (level > 1) {
                     
-                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 ml-[2em] border-l-[2px] border-gray-400')
+                    reply_section_div.setAttribute('class', 'pl-[2em] px-2 pt-5 ml-[2.8em] mb-[2em] border-l-[2px] border-gray-400')
                 }
                 
                 reply_section_div.append(reply_div)

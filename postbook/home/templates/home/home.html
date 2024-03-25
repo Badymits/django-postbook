@@ -16,7 +16,7 @@
                     <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
                 </a>
                 
-                <input type="text" class="w-full h-[40px] rounded-lg" placeholder="Create Post" onclick='createPostUrl()'>
+                <input type="text" class="w-full h-[40px] rounded-lg" placeholder="Create Post" data-tooltip-target="tooltip-create" data-tooltip-placement="bottom" onclick='createPostUrl()'>
 
                 <div class="text-2xl px-1 cursor-pointer hover:bg-gray-400" >
                     <i class="fa fa-file-image-o" aria-hidden="true"></i>
@@ -25,6 +25,14 @@
                 <div class="text-2xl px-1 cursor-pointer hover:bg-gray-400">
                     <i class="fa fa-link" aria-hidden="true"></i>
                 </div>
+
+                <div id="tooltip-create" role="tooltip" class="absolute z-10 
+                    invisible px-3 py-2 text-xs font-medium text-white 
+                    transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm 
+                    opacity-0 tooltip dark:bg-gray-700 xl:hidden">
+                        Click to create Post
+                <div class="tooltip-arrow" data-popper-arrow></div>
+            </div>
             </div>
             <div class="pt-2">
                 {% if posts %}
@@ -73,17 +81,17 @@
                             <div class="py-4 w-full" id="post_container">
                                 <div class="px-3" id="post-div">
                                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}" class="post_id">
-                                    <p class="text-4xl pb-2" id="post_title">{{ post.title }}</p>
-                                    <p class="text-sm font-thin">Posted by: <a href="{% url 'user' post.user.id 'posts'  %}" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|naturaltime }}</p>
+                                    <p class=" text-3xl xl:text-4xl pb-2" id="post_title">{{ post.title }}</p>
+                                    <p class=" text-xs xl:text-sm font-thin">Posted by: <a href="{% url 'user' post.user.id 'posts'  %}" class="hover:underline"> {{ post.user.username }} </a> {{ post.date_posted|naturaltime }}</p>
                                     
                                     {% if post.image %}
 
-                                        <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[350px] max-w-[350px] mx-auto my-4">
+                                        <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[200px] max-w-[200px] md:max-h-[275px] md:max-w-[275px] xl:max-h-[350px] xl:max-w-[350px] mx-auto my-4">
 
                                     {% endif %}
 
                                     {% if post.body %}
-                                        <p class="pt-3 mb-2">{{ post.body }}</p>
+                                        <p class="pt-3 mb-2 text-sm xl:text-base">{{ post.body }}</p>
                                     {% endif %}
                                 </div>
                     
