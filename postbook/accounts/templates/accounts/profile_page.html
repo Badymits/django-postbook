@@ -3,26 +3,35 @@
 {% load static %}
 {% block content %}
 
-    <section class="grid grid-cols-5 gap-2">
-        <div class="col-start-2 col-end-4">
-            <div class="flex items-center gap-3">
-                <input type="hidden" value="{{ request.user.username }}" id="user">
-                <div class="h-[170px] w-[170px] bg-red-200 rounded-[50%] relative overflow-hidden">
-                    <img src="{{ user.get_user_photo_url }}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+    <section class="grid xl:grid-cols-5 md:grid-cols-7 gap-2">
+        <div class="col-start-1 col-end-7 md:col-start-2 md:col-end-7 xl:col-start-2 xl:col-end-4 mx-2 overflow-hidden">
+
+            <div class="flex flex-col">
+                <div class="bg-blue-400 h-[150px] xl:hidden">
+                    <img src="{% if user.banner_pic %} {{ user.get_user_banner_url }} {% else %} {% static '/images/images/download.jpg' %} {% endif %}" 
+                    alt="{{ user.username }}" class="h-full w-full bg-contain object-cover">
                 </div>
                 
-                <div>
-                    <p class="text-3xl">{{ user.username }}</p>
-                    <p class="text-xl">{{ user.username }}</p>
+                <div class="flex items-center gap-3 max-h-[60px] mb-[30px] xl:max-h-[160px] xl:mb-0">
+                    <input type="hidden" value="{{ request.user.username }}" id="user">
+                    <div class="h-[120px] w-[120px] md:h-[150px] md:w-[150px] xl:h-[170px] xl:w-[170px] rounded-[50%] relative overflow-hidden">
+                        <img src="{{ user.get_user_photo_url }}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                    </div>
+                    
+                    <div>
+                        <p class="text-3xl">{{ user.username }}</p>
+                        <p class="text-xl">{{ user.username }}</p>
+                    </div>
+                    
                 </div>
-                
             </div>
-            <div class=" mt-10 w-full border-b-[1px] border-gray-300 pb-3" id="">
-                <ul class="flex {% if request.user == user %} justify-between {% else %} justify-start {% endif %} items-center h-[40px]" id="profile_menu">
+            
+            <div class=" mt-10 border-b-[1px] border-gray-300 pb-3" id="">
+                <ul class="flex {% if request.user == user %}  {% else %} justify-start {% endif %} items-center h-[40px] gap-4 overflow-x-auto" id="profile_menu">
 
                     <a href="{% url 'user' user.id 'posts' %}" data-profile-tab="posts" id="tab_a_elem">
                         <li data-profile-tab="posts" 
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/posts/' in request.path %} active-tab {% endif %}" 
+                            class="px-6 text-center cursor-pointer hover:underline {% if '/posts/' in request.path %} active-tab {% endif %}" 
                             id="profile_tab">
                             Posts
                         </li>
@@ -31,7 +40,7 @@
                     
                     <a href="{% url 'user' user.id 'comments' %}" data-profile-tab="comments" id="tab_a_elem">
                         <li data-profile-tab="comments"
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/comments/' in request.path %} active-tab {% endif %}"  
+                            class="px-6 text-center cursor-pointer hover:underline {% if '/comments/' in request.path %} active-tab {% endif %}"  
                             id="profile_tab">
                             Comments
                         </li>
@@ -40,7 +49,7 @@
                     {% if request.user == user %}
                         <a href="{% url 'user' user.id 'saved' %}" data-profile-tab="saved" id="tab_a_elem">
                             <li data-profile-tab="saved" 
-                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/saved/' in request.path %} active-tab {% endif %}"  
+                                class="px-6 text-center cursor-pointer hover:underline {% if '/saved/' in request.path %} active-tab {% endif %}"  
                                 id="profile_tab">
                                 Saved
                             </li>
@@ -49,7 +58,7 @@
 
                         <a href="{% url 'user' user.id 'upvoted' %}" data-profile-tab="upvoted" id="tab_a_elem">
                             <li data-profile-tab="upvoted" 
-                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/upvoted/' in request.path %} active-tab {% endif %}"  
+                                class="px-6 text-center cursor-pointer hover:underline {% if '/upvoted/' in request.path %} active-tab {% endif %}"  
                                 id="profile_tab">
                                 Upvotes
                             </li>
@@ -58,7 +67,7 @@
 
                         <a href="{% url 'user' user.id 'downvoted' %}" data-profile-tab="downvoted" id="tab_a_elem">
                             <li data-profile-tab="downvoted" 
-                                class="w-[100px] text-center cursor-pointer hover:underline {% if '/downvoted/' in request.path %} active-tab {% endif %}"  
+                                class="px-6 text-center cursor-pointer hover:underline {% if '/downvoted/' in request.path %} active-tab {% endif %}"  
                                 id="profile_tab">
                                 Downvotes
                             </li>
@@ -67,7 +76,7 @@
 
                     <a href="{% url 'user' user.id 'groups' %}" data-profile-tab="groups" id="tab_a_elem">
                         <li data-profile-tab="groups" 
-                            class="w-[100px] text-center cursor-pointer hover:underline {% if '/groups/' in request.path %} active-tab {% endif %}" 
+                            class="px-6 text-center cursor-pointer hover:underline {% if '/groups/' in request.path %} active-tab {% endif %}" 
                             id="profile_tab">
                             Groups
                         </li>
@@ -120,7 +129,7 @@
             
         </div>
         <div class="">
-            <div class="fixed bg-gray-100  w-[400px] rounded-md">
+            <div class="fixed bg-gray-100 w-[300px] lg:w-[350px] rounded-lg  hidden xl:block">
                 
                 <div class="rounded-t-lg w-full h-[150px] relative overflow-hidden">
                     <img src="{% if user.banner_pic %} {{ user.get_user_banner_url }} {% else %} {% static '/images/images/download.jpg' %} {% endif %}" alt="{{ user.username }}" class="w-full h-full object-cover">
@@ -141,7 +150,7 @@
 
                     <!-- add and condition to check if they aren't friends yet -->
                     {% if request.user != user %}
-                        <button class="z-50 p-2 w-[100px] bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full"> 
+                        <button class="z-50 p-2 px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full"> 
                             <i class="fa fa-plus-circle pr-1" aria-hidden="true"></i>
                             Add Friend 
                         </button>
