@@ -95,19 +95,19 @@
                                     {% endif %}
                                 </div>
                     
-                                <div class="h-[50px] flex items-center justify-start pt-5 text-md relative border-t-[1px] border-gray-500" id="post_actions">
+                                <div class="h-[50px] flex items-center justify-start pt-5 text-xs md:max-xl:text-base relative border-t-[1px] border-gray-500" id="post_actions">
                                 
-                                    <div class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 ">
+                                    <div class="hover:bg-gray-300 flex items-center justify-center ml-2 xl:mx-2 gap-1 py-4 ">
                                         <i class="fa fa-comments-o" aria-hidden="true"></i>
                                         <p>{{ post.comment_set.all|length }} {{ post.comment_set.count|pluralize:"comment,comments" }}</p>
                                     </div>
         
-                                    <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-3 block" id="share_post_btn" value="{{ post.id }}" data-post-id="{{ post.id }}">
+                                    <button class="hover:bg-gray-300 flex items-center justify-center xl:mx-2 gap-1 py-4 px-3 block" id="share_post_btn" value="{{ post.id }}" data-post-id="{{ post.id }}">
                                         <i class="fa fa-share-square-o" aria-hidden="true" id="share_post_btn" data-post-id="{{ post.id }}"></i>
                                         <p id="share_post_btn" data-post-id="{{ post.id }}">Share post</p>
                                     </button>
         
-                                    <button class="hover:bg-gray-300 flex items-center justify-center mx-2 gap-1 py-4 px-2 block" id="save_post_btn_parent" value="{{ post.id }}" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
+                                    <button class="hover:bg-gray-300 flex items-center justify-center xl:mx-2 gap-1 py-4 px-2 block" id="save_post_btn_parent" value="{{ post.id }}" data-post-id="{{ post.id }}" data-user="{{ request.user }}">
 
                                         <!-- wrapping the if condition within the text/p element will interfere with the event delegation. It wont detect this element. -->
                                         {% is_saved post.id request.user as post_saved %}
