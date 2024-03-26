@@ -19,31 +19,26 @@
                     
                     
                 </div>
-                <div>
-                    
-                </div>
                     
                 <div class="pl-[3.5em] py-2 " id="comment_body_div">
-                    <div class="flex items-center text-sm mb-2">
+                    <div class="flex flex-col xl:flex-row items-start xl:items-center text-xs xl:text-sm mb-2">
                         {% if comment.is_reply %}
-                            <p class=""> 
+                            <p class="flex items-center mb-1 xl:m-0"> 
                                 <a href="{% url 'user' comment.user.id 'posts' %}" class="text-gray-500 hover:underline"> {{ comment.user.username }} </a>
-
+                                &nbsp;
                                 is replying to 
-
+                                &nbsp;
                                 <a href="{% url 'user' comment.get_reply.user.id 'posts' %}" class="text-gray-500 hover:underline"> {{ comment.get_reply.user.username }} </a>
                             </p>
-
+                            <p class="xl:pl-2" id="comment_date">commented {{ comment.date_posted|timesince }} ago</p> 
+                            <!-- putting the comment date below the if statement was the original placement. But had to be duplicated to fit the needs of this flexbox -->
                         {% else %}
-
-                            
                             <p class=""> 
                                 <a href="{% url 'user' comment.user.id 'posts'  %}" class="text-gray-500 hover:underline">{{ comment.user.username }}</a>  
-
-                            
                             </p>
+                            <p class="xl:pl-2" id="comment_date">commented {{ comment.date_posted|timesince }} ago</p>
                         {% endif %}
-                        <p class="pl-2" id="comment_date">commented {{ comment.date_posted|timesince }} ago</p>
+                        
                     </div>
                     
                     <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
