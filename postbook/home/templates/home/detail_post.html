@@ -52,7 +52,7 @@
                     <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
                     {% if post.image %}
                         <div class=" overflow-hidden">
-                            <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[300px] max-w-[300px] md:max-h-[470px] md:max-w-[470px] xl:max-h-[490px] xl:max-w-[490px] mx-auto my-6">
+                            <img src="{{ post.image.url }}" alt="{{ post.image }}" class="bg-contain my-6">
                         </div>
                         
                     {% endif %}
