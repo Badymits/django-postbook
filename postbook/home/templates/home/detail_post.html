@@ -42,7 +42,7 @@
                     {% endif %}
 
                     <div class="flex items-center gap-2">
-                        <a href="{{ request.META.HTTP_REFERER }}">
+                        <a href="{% url 'home' %}">
                             <i class="fa fa-long-arrow-left cursor-pointer hover:bg-gray-300 text-2xl rounded-full w-8 h-8  text-center" aria-hidden="true" id="close_search"></i>
                         </a>
                         
@@ -52,7 +52,7 @@
                     <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
                     {% if post.image %}
                         <div class=" overflow-hidden">
-                            <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[300px] max-w-[300px] md:max-h-[475px] md:max-w-[475px] xl:max-h-[520px] xl:max-w-[520px] mx-auto my-6">
+                            <img src="{{ post.image.url }}" alt="{{ post.image }}" class="object-fit max-h-[300px] max-w-[300px] md:max-h-[470px] md:max-w-[470px] xl:max-h-[490px] xl:max-w-[490px] mx-auto my-6">
                         </div>
                         
                     {% endif %}
