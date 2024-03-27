@@ -46,7 +46,7 @@
                             <i class="fa fa-long-arrow-left cursor-pointer hover:bg-gray-300 text-2xl rounded-full w-8 h-8  text-center" aria-hidden="true" id="close_search"></i>
                         </a>
                         
-                        <p class="text-md text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
+                        <p class="text-xs md:max-xl:text-base text-gray-500">Posted by: <a href="{% url 'user' post.user.id 'posts' %}" class="hover:underline">{{ post.user.username }}</a> {{ post.date_posted|naturaltime }}</p>
                     </div>
                     
                     <p class="text-4xl my-2 leading-7" id="post_title">{{ post.title }}</p>
@@ -100,15 +100,15 @@
                     </div>
             </div>
             <div class="p-4 bg-gray-200 rounded-xl">
-                <p>Comment as <a href="{% url 'user' request.user.id 'posts' %}" class="text-blue-600 hover:underline cursor-pointer ">{{ request.user.username }}</a></p>
+                <p class="text-sm md:max-xl:text-base">Comment as <a href="{% url 'user' request.user.id 'posts' %}" class="text-blue-600 hover:underline cursor-pointer ">{{ request.user.username }}</a></p>
                 <form action="" method="post" id="comment_form">
                     {% csrf_token %}
                     <input type="hidden" name="user" id="user" value="{{ request.user }}">
                     <input type="hidden" name="post_id" id="post_id" value="{{ post.id }}">
                     <textarea name="body" id="body" cols="30" rows="6" placeholder="Text here..." 
-                    class="w-full my-4 text-lg p-4 resize-none border-2 border-gray-200" required
+                    class="w-full my-4 text-sm md:max-xl:text-lg p-4 resize-none border-2 border-gray-200" required
                     ></textarea>
-                    <button type="submit" class="float-right bg-white w-[150px] rounded-full py-1 hover:bg-gray-100">Comment</button>
+                    <button type="submit" class="float-right bg-white w-[110px] md:max-xl:w-[150px] text-sm md:max-xl:text-base rounded-full py-1 hover:bg-gray-100">Comment</button>
                 </form>
 
                 <div id="comment-section" class="pt-[50px]">
@@ -155,12 +155,12 @@
                                     {% else %}
                                         <!-- to be used when canceling a comment that is being edited, to store og value -->
                                         <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
-                                        <p id="comment_body" >{{ comment.body }}</p>
+                                        <p class="text-sm md:max-xl:text-base" id="comment_body" >{{ comment.body }}</p>
                                     {% endif %}
                                 </div>
                         
-                                <div class="mb-[3.3em] relative pl-[3px] {% if comment.is_deleted == True %} pointer-events-none {% endif %}" id="comment_actions">                          
-                                    <button class="flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
+                                <div class="text-xs md:max-xl:text-base mb-[3.3em] relative pl-[3px] {% if comment.is_deleted == True %} pointer-events-none {% endif %}" id="comment_actions">                          
+                                    <button class="flex items-center gap-2 absolute top-5 left-[25px] md:max-xl:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
                                         {% commentLike comment.id request.user as liked %}
                                         {% if liked %}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"  data-option="like"
@@ -177,7 +177,7 @@
                                         {% endif %}
                                         <p id="comment_like_count">{% getCommentVoteCount comment request.user 'like' %}</p>
                                     </button>
-                                    <button class="flex items-center gap-2 absolute top-5 left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_dislike_btn_parent">
+                                    <button class="flex items-center gap-2 absolute top-5 left-[105px] md:max-xl:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_dislike_btn_parent">
                                         {% commentDislike comment.id request.user as disliked %}
                                         {% if disliked %}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
@@ -195,7 +195,7 @@
                                         <p id="comment_dislike_count">{% getCommentVoteCount comment request.user 'dislike'  %}</p>
                                     </button>
 
-                                    <button class="absolute top-5 left-[210px] hover:bg-gray-400 px-2 py-2 rounded-md" 
+                                    <button class="absolute top-5 left-[190px] md:max-xl:left-[210px] hover:bg-gray-400 px-2 py-2 rounded-md" 
                                         id="comment_reply" 
                                         value="{{ comment.id }}" 
                                         data-level="{{ comment.comment_level }}">
@@ -436,10 +436,10 @@
             let reply = document.createElement('button')
             let space = document.createElement('br')
 
-            comment_actions.setAttribute('class', 'mb-[3.5em] relative pl-[3px]')
+            comment_actions.setAttribute('class', 'text-xs md:max-xl:text-base mb-[3.3em] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
 
-            like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
+            like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[25px] md:max-xl:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
             like_btn.setAttribute('id', 'comment_like_btn_parent')
 
             let like_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
@@ -467,7 +467,7 @@
             
             console.log('like svg: ', like_svg)
 
-            dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
+            dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[105px] md:max-xl:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
             dislike_btn.setAttribute('id', 'comment_dislike_btn_parent')
 
             let dislike_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
@@ -493,7 +493,7 @@
             dislike_btn.appendChild(dislike_svg)
             dislike_btn.appendChild(dislike_count)
 
-            reply.setAttribute('class', 'absolute top-5 left-[230px] hover:bg-gray-400  px-2 py-2 rounded-md')
+            reply.setAttribute('class', 'absolute top-5 left-[190px] md:max-xl:left-[210px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
 
             reply.setAttribute('data-level', level )
@@ -1009,7 +1009,7 @@
             save_comment_btn.innerHTML = "Save edit"
             save_comment_btn.id = "save_btn"
             save_comment_btn.setAttribute('class', 
-                'float-right bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
+                'float-right bg-blue-600 w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100'
             )
 
             const cancel_btn = document.createElement('button')
