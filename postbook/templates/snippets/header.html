@@ -38,7 +38,7 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
                 
                 <div class="ml-6 relative">
                     <i class="fa fa-bell text-2xl cursor-pointer" id="notif_btn" aria-hidden="true" data-tooltip-target="tooltip-notif" data-tooltip-placement="bottom"></i>
-                    <div class="hidden absolute top-9 right-0 w-[400px] bg-gray-100 shadow-md rounded-lg text-lg" id="notif_menu">
+                    <div class="hidden notif md:max-xl:notif_menu absolute top-9 right-0 w-[400px] bg-gray-100 shadow-md rounded-lg text-lg">
                         <!-- place number of unread notifications -->
                         <!-- on login, if there are any unread notifications, show a popup message below the icon saying "you have x notifications" -->
                         <div class="p-3 border-b-[1px] border-gray-600 flex items-center justify-between">
@@ -60,8 +60,8 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
                                     </div>
                                     
                                     <div class="">
-                                        <p class="text-sm">Post title: <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span> {{ notif.date_added|naturaltime }} </p>
-                                        <p class="text-md">{{ notif.message }}</p>
+                                        <p class="text-xs md:max-xl:text-sm">Post title: <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span> {{ notif.date_added|naturaltime }} </p>
+                                        <p class="text-xs md:max-xl:text-base">{{ notif.message }}</p>
                                     </div> 
                                 </div>
                             {% endfor %}
@@ -235,25 +235,83 @@ gap-2 justify-items-stretch items-center px-10 fixed w-screen z-50 border-b-[1px
     
 </div>
 
+<div class="hidden notif_menu md:max-xl:notif_none fixed top-0 bottom-0 right-0 left-0 bg-gray-200 z-50 m-0 p-0 ease-in-out duration-300 " id="notifications">
+    <div class="p-3 border-b-[1px] border-gray-600 flex items-center">
+        <i class="fa fa-arrow-left cursor-pointer hover:bg-gray-400 text-2xl rounded-full w-8 h-8 text-center" aria-hidden="true" id="close_notif_menu"></i>
+        Notifications
+        <a href="{% url 'settings' 'account' %}">
+            <i class="fa fa-cog absolute top-5 right-2" aria-hidden="true" data-tooltip-target="tooltip-settings" data-tooltip-placement="bottom"></i>   
+        </a>
+         
+    </div>
+
+    <!-- put for loop here -->
+    {% if notifications %}
+
+        {% for notif in notifications|slice:":3" %}
+            <div class="p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-300 {% if notif.is_read == False %} bg-blue-200  {% endif %}">
+                <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                    <img src="{{ notif.sender.get_user_photo_url}}" alt="{{ notif.sender.username }}"  class="h-full w-full object-cover"/>
+                    <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                </div>
+                
+                <div class="">
+                    <p class="text-xs md:max-xl:text-sm">Post title: <span class="w-1 h-1 bg-gray-500 rounded-full">&nbsp;</span> {{ notif.date_added|naturaltime }} </p>
+                    <p class="text-xs md:max-xl:text-base">{{ notif.message }}</p>
+                </div> 
+            </div>
+        {% endfor %}
+
+    {% else %}
+
+        <p class="text-center p-5">You have 0 notifications</p>
+    {% endif %}
+    
+    
+    <div class="bg-gray-400">
+        <a href="" class="block text-center m-auto h-[50px] flex justify-center items-center hover:underline text-white">See All ({{ notifications.receiver.count }})</a>
+    </div>
+</div>
+
 
 <script type="text/javascript">
     let profile_div = document.getElementById('profile')
     let notif_btn = document.getElementById('notif_btn')
-    let notif_menu = document.getElementById('notif_menu')
+    let notif_menu = document.getElementsByClassName('notif_menu')
+    let notif = document.getElementsByClassName('notif')
     let menu = document.getElementById('menu')
     let side_menu_btn = document.getElementById('side_menu')
     let menu_close_btn = document.getElementById('menu_close')
+    let close_notif_menu = document.getElementById('close_notif_menu')
+
+    console.log(notif_menu[0].classList)
+    console.log(notif[0].classList)
 
     let search = document.getElementById('search')
     let mobile_search_icon = document.getElementById('mobile_search_icon')
     let close_search = document.getElementById('close_search')  
 
     notif_btn.addEventListener('click', function(e){
-        if (notif_menu.classList.contains('hidden')){
-            notif_menu.classList.remove('hidden')
-        }else{
-            notif_menu.classList.add('hidden')
+
+        // this means on a MD screen
+        if (window.innerWidth <=768){
+            if (notif_menu[0].classList.contains('hidden')){
+                notif_menu[0].classList.remove('hidden')
+            }else{
+                notif_menu[0].classList.add('hidden')
+            }
         }
+        else {
+            if (notif[0].classList.contains('hidden')){
+                notif[0].classList.remove('hidden')
+            }else{
+                notif[0].classList.add('hidden')
+            }
+        }  
+    })
+
+    close_notif_menu.addEventListener('click', function(e){
+        notif_menu[0].classList.add('hidden')
     })
 
     side_menu_btn.addEventListener('click', function(e){
