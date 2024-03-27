@@ -4,7 +4,7 @@
 {% block content %}
 
     <section class="grid xl:grid-cols-5 md:grid-cols-7 gap-2">
-        <div class="col-start-1 col-end-7 md:col-start-2 md:col-end-7 xl:col-start-2 xl:col-end-4 mx-2 overflow-hidden">
+        <div class="col-start-1 col-end-7 md:col-start-2 md:col-end-7 xl:col-start-2 xl:col-end-4 mx-2 overflow-hidden relative">
 
             <div class="flex flex-col">
                 <div class="bg-blue-400 h-[150px] xl:hidden">
@@ -24,6 +24,87 @@
                     </div>
                     
                 </div>
+            </div>
+
+            <div class="block xl:hidden w-full p-2 bg-gray-400 mt-5 duration-300 ease-in-out h-[60px] overflow-hidden text-white rounded-md cursor-pointer relative" id="about_user">
+                <h1 class="pl-2 pt-2">About</h1>
+                <i class="fa fa-arrow-circle-o-down absolute right-5 top-4 text-xl duration-300 ease-in-out rotate-0" aria-hidden="true" id="about_user_btn"></i>
+                <div class="mt-5 p-2 overflow-hidden">
+
+                    {% if user.bio %}
+                        <p class="my-2 font-light break-words">{{ user.bio }}</p>
+                    {% endif %}
+
+                    <!-- add and condition to check if they aren't friends yet -->
+                    {% if request.user != user %}
+                    <div class="flex flex-col pb-2 sm:flex-row gap-3">
+                        <button class="w-[150px] p-2 px-3 sm:px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs sm:my-4 font-semibold rounded-full"> 
+                            <i class="fa fa-plus-circle pr-1" aria-hidden="true"></i>
+                            Add Friend 
+                        </button>
+                        <button class="w-[150px] p-2 px-3 sm:px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs sm:my-4 font-semibold rounded-full">
+                            <i class="fa fa-comments-o pr-1" aria-hidden="true"></i>
+                            Message
+                        </button>
+                    </div>
+                       
+                    {% endif %}
+                    <div class="flex items-center w-full mt-4 ">
+                        <div>
+                            <h1 class="text-gray-700 xl:text-gray-500">
+                                <p class="text-white xl:text-black">69</p>
+                                Friends
+                            </h1>
+                            <h1 class="text-gray-700 xl:text-gray-500 mt-4">
+                                <p class="text-white xl:text-black">{{ user.date_joined }}</p> 
+                                Date joined
+                            </h1>
+                        </div>
+                        <div class="pl-[3em]">
+                            <h1 class="text-gray-700 xl:text-gray-500">
+                                <p class="text-white xl:text-black">1,000</p> 
+                                Karma
+                            </h1>
+                            <h1 class="text-gray-700 xl:text-gray-500 mt-4">
+                                <p class="text-white xl:text-black">Wala</p>
+                                May Pake 
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+                <hr class="border-[1px] border-gray-300 m-3">
+                {% if request.user == user %}
+                    <div class="mt-4 p-2">
+                        <h1 class="text-white">SETTINGS</h1>
+
+                        <div class="flex items-center mt-7 relative">
+                            <div class="w-10 h-10 bg-red-200 rounded-[50%] relative overflow-hidden">
+                                <img src="{{ request.user.get_user_photo_url}}" alt="{{ user.username }}"  class="h-full w-full object-cover"/>
+                                <span class="w-2 h-2 absolute right-1 bottom-0 bg-green-300 rounded-full"></span>
+                            </div>
+
+                            <div class="text-xs md:text-sm pl-3">
+                                <h1>Profile</h1>
+                                <p class="text-gray-700">Customize your profile</p>
+                            </div>
+
+                            <a href="{% url 'settings' 'profile' %}" class="block w-[90px] md:w-[120px] text-center absolute right-0 bg-gray-700 hover:bg-gray-300 hover:underline font-medium text-xs md:text-sm p-3 rounded-full">Edit Profile</a>
+                        </div>
+
+                        <div class="flex items-center mt-7 relative">
+                            <i class="fa fa-align-right bg-gray-300 w-8 h-8 rounded-full p-5 flex items-center justify-center" aria-hidden="true" ></i>
+
+                            <div class="text-xs md:text-sm pl-3">
+                                <h1>Bio</h1>
+                                <p class="text-gray-700">Give a description about you</p>
+                            </div>
+
+                            <a href="{% url 'settings' 'profile' %}" class="block w-[90px] md:w-[120px] text-center absolute right-0 bg-gray-700 hover:bg-gray-300 hover:underline font-medium text-xs md:text-sm p-3 rounded-full">Edit Bio</a>
+                        </div>
+                        
+                    </div>
+                    <hr class="border-[1px] border-gray-300 m-3">
+                {% endif %}
             </div>
             
             <div class=" mt-10 border-b-[1px] border-gray-300 pb-3" id="">
@@ -150,9 +231,13 @@
 
                     <!-- add and condition to check if they aren't friends yet -->
                     {% if request.user != user %}
-                        <button class="z-50 p-2 px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full"> 
+                        <button class="w-[150px] p-2 px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full"> 
                             <i class="fa fa-plus-circle pr-1" aria-hidden="true"></i>
                             Add Friend 
+                        </button>
+                        <button class="w-[150px] p-2 px-6 bg-blue-600 hover:bg-blue-700 text-white block text-xs my-4 font-semibold rounded-full">
+                            <i class="fa fa-comments-o pr-1" aria-hidden="true"></i>
+                            Message
                         </button>
                     {% endif %}
                     <div class="flex items-center w-full mt-4 ">
@@ -227,6 +312,29 @@
 
     <script type="text/javascript">
         
+        let about_user = document.getElementById('about_user')
+        let about_user_btn = document.getElementById('about_user_btn')
+
+        about_user.addEventListener('click', function(e){
+            if (about_user.classList.contains('h-[60px]')){
+
+                about_user_btn.classList.remove('rotate-0')
+                about_user_btn.classList.add('rotate-180')
+
+                about_user.classList.remove('h-[60px]')
+                about_user.className += '{% if request.user == user %} h-[500px] {% else %} h-[310px] {% endif %}'
+            } else {
+                about_user_btn.classList.remove('rotate-180')
+                about_user_btn.classList.add('rotate-0')
+
+                about_user.classList.remove('h-[500px]') 
+                about_user.classList.remove('h-[310px]') 
+
+                about_user.classList.add('h-[60px]')
+            }
+
+        })
+
         const user = document.getElementById('user').value
         if (document.getElementById('websocket').value !== '/auth/user/2/comments/'){
             const post_user = document.getElementById('post_user').value
