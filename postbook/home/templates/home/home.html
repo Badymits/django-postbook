@@ -95,7 +95,7 @@
                                     {% endif %}
                                 </div>
                     
-                                <div class="h-[50px] flex items-center justify-start pt-5 text-xs md:max-xl:text-base relative border-t-[1px] border-gray-500" id="post_actions">
+                                <div class="h-[50px] flex items-center justify-start pt-5 text-xs md:text-base relative border-t-[1px] border-gray-500" id="post_actions">
                                 
                                     <div class="hover:bg-gray-300 flex items-center justify-center ml-2 xl:mx-2 gap-1 py-4 ">
                                         <i class="fa fa-comments-o" aria-hidden="true"></i>
@@ -161,7 +161,7 @@
             {% for message in messages %}
                 <div class="{% if message.extra_tags != 'home' %} hidden {% endif %}
 
-                    fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px]
+                    fixed left-0 right-0 top-15 mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base
                     
                     {% if message.tags == 'home info'  %} bg-blue-200 
                     {% elif message.tags == 'home error' %} bg-red-200 
@@ -179,7 +179,11 @@
         {% endif %}
         
         <!-- for saving/unsaving posts -->
-        <div class="hidden fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md border-[1px] border-black" id="home_message_notif">
+        <div class="hidden 
+
+        fixed left-0 right-0 top-15 mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base
+        
+        bg-blue-200 flex items-center rounded-md border-[1px] border-black" id="home_message_notif">
             <p id="home_message_text" class="p-1">{{ message }}</p>
             <i  id="home_message_close"
                 class="fa fa-times text-xl cursor-pointer absolute right-3
