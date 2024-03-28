@@ -9,8 +9,8 @@
     <title>PostBook</title>
 </head>
 <body>
-    <section class="bg-gray-400 h-screen max-w-full relative flex items-center px-2">
-        <div class="bg-white w-full mx-2 xl:w-[50%]  md:w-[80%] m-0 block mx-auto rounded-lg p-2">
+    <section class="bg-gray-400 h-screen max-w-full flex items-center px-2">
+        <div class="bg-white w-full mx-2 xl:w-[50%]  md:w-[100%] m-0 block mx-auto rounded-lg p-2">
             <h1 class="text-center text-sm xl:text-5xl md:text-4xl font-thin uppercase ">Register</h1>
             {{ form.non_field_errors }}
             <div >
@@ -38,9 +38,12 @@
         {% if messages %}
             {% for message in messages %}
                 <div class="{% if message.extra_tags != 'register' %} hidden {% endif %} 
-                    fixed left-[35%] right-[35%] top-[2em] mx-auto  h-[50px] w-[500px] bg-red-400 flex items-center rounded-md border-[1px] border-red-700" 
+
+                    fixed left-0 right-0 top-[12px] md:top-[10px] xl:top-[5px] mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base  mx-2 
+                    
+                    bg-red-400 flex items-center rounded-md border-[1px] border-red-700" 
                     id="home_message_notif">
-                    <p id="home_message_text" class="p-1 text-center w-full text-2xl text-black">{{ message }}</p>
+                    <p id="home_message_text" class="p-1 text-center w-full text-black">{{ message }}</p>
 
                 </div>
 
