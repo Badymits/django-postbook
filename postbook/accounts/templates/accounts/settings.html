@@ -93,13 +93,14 @@
         </div>
         {% if messages %}
             {% for message in messages %}
-                <div class="{% if message.extra_tags != 'settings' %} hidden {% endif %} 
-                    fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] 
+                <div class="{% if message.extra_tags != 'settings' %} hidden {% endif %}
+                    z-[100]
+                    fixed left-0 right-0 top-15 mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base 
                     {% if message.tags == 'settings success' %} bg-green-200
                     {% elif message.tags == 'settings error' %} bg-red-200
                     {% else %} bg-blue-200
                     {% endif %} 
-                    flex items-center rounded-md border-[1px] border-black" 
+                    flex items-center rounded-md border-[1px] border-black " 
 
                     id="settings_message_notif">
                     <p id="settings_message_text" class="p-1">{{ message }}</p>
