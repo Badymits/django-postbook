@@ -2,8 +2,13 @@
 <div class="w-full md:w-[70%] h-full">
 
     <div class=" p-3 border-b-[1px] border-gray-600 flex items-center md:hidden">
+        <!-- figure this out -->
+        <a href="{{ request.META.HTTP_REFERER|escape }}">
+            
+        </a>
         <i class="fa fa-arrow-left cursor-pointer hover:bg-gray-400 text-2xl rounded-full w-8 h-8 text-center" aria-hidden="true" id="close_settings"></i>
-        Customize Profile
+            Customize Profile
+        
     </div>
     <h1 class="text-2xl hidden md:block">Customize Profile</h1>
     <form action="{% url 'edit-profile' user.id %}" method="post" class="relative mx-2 md:mx-0 "  enctype="multipart/form-data">
