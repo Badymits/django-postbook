@@ -242,7 +242,8 @@
             this uses the same html template below for the messages passed thru context vars -->
         {% if messages  %}
             {% for message in messages %}
-                <div class="fixed left-[35%] right-[35%] top-15 mx-auto block h-[50px] w-[500px] bg-blue-200 flex items-center rounded-md" id="detail_message_notif">
+                <div class="fixed left-0 right-0 top-15 mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base 
+                bg-blue-200 flex items-center rounded-md" id="detail_message_notif">
                     <p id="detail_message_text" class="p-1">{{ message }}</p>
                     <i  id="detail_message_close"
                         class="fa fa-times text-xl cursor-pointer absolute right-3
@@ -254,7 +255,8 @@
         {% endif %}
     
         <!-- for the comments -->
-        <div class="hidden fixed left-[35%] right-[35%] bottom-5 mx-auto block h-[50px] w-[500px] bg-green-200 flex items-center rounded-md" id="comment_message_notif">
+        <div class="hidden fixed left-0 right-0 top-15 mx-auto block h-[50px] max-w-[300px] md:max-w-[500px] text-sm md:text-base 
+        bg-green-200 flex items-center rounded-md" id="comment_message_notif">
             <p id="comment_message_text" class="p-1"></p>
             <i  id="comment_message_close"
                 class="fa fa-times text-xl cursor-pointer absolute right-3
