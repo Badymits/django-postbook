@@ -111,7 +111,7 @@ class NotifConsumer(AsyncWebsocketConsumer):
             await self.send(text_data=json.dumps({
                 'message': event['message'],
                 'comment_body': event['comment_body'],
-                'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}",
+                'img_path': f"http://127.0.0.1:8000{event['sender'].profile_pic.url}" if event['sender'].profile_pic else 'http://127.0.0.1:8000/static/images/profile/images/xianyun.jpg',
                 'notif_type': 'comment_reply'
             }))
         
