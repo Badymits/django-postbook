@@ -155,12 +155,12 @@
                                     {% else %}
                                         <!-- to be used when canceling a comment that is being edited, to store og value -->
                                         <input type="hidden" id="comment_text_prev" value="{{ comment.body }}">
-                                        <p class="text-sm md:text-lg xl:text-lg" id="comment_body" >{{ comment.body }}</p>
+                                        <p class="text-sm md:text-lg xl:text-lg" id="comment_body" data-comment-id="{{ comment.id }}">{{ comment.body }}</p>
                                     {% endif %}
                                 </div>
                         
                                 <div class="text-xs md:text-base mb-[3.3em] relative pl-[3px] {% if comment.is_deleted == True %} pointer-events-none {% endif %}" id="comment_actions">                          
-                                    <button class="flex items-center gap-2 absolute top-5 left-[25px] md:max-xl:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
+                                    <button class="flex items-center gap-2 absolute top-5 left-[25px] md:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_like_btn_parent">
                                         {% commentLike comment.id request.user as liked %}
                                         {% if liked %}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"  data-option="like"
@@ -177,7 +177,7 @@
                                         {% endif %}
                                         <p id="comment_like_count">{% getCommentVoteCount comment request.user 'like' %}</p>
                                     </button>
-                                    <button class="flex items-center gap-2 absolute top-5 left-[105px] md:max-xl:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_dislike_btn_parent">
+                                    <button class="flex items-center gap-2 absolute top-5 left-[85px] md:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md" id="comment_dislike_btn_parent">
                                         {% commentDislike comment.id request.user as disliked %}
                                         {% if disliked %}
                                         <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" data-option="dislike"
@@ -195,7 +195,7 @@
                                         <p id="comment_dislike_count">{% getCommentVoteCount comment request.user 'dislike'  %}</p>
                                     </button>
 
-                                    <button class="absolute top-5 left-[190px] md:max-xl:left-[210px] hover:bg-gray-400 px-2 py-2 rounded-md" 
+                                    <button class="absolute top-5 left-[160px] md:left-[210px] hover:bg-gray-400 px-2 py-2 rounded-md" 
                                         id="comment_reply" 
                                         value="{{ comment.id }}" 
                                         data-level="{{ comment.comment_level }}">
@@ -206,17 +206,19 @@
                                 <br>
                                 
 
-                                <div class="pl-[14px]" id="comment_replies">
+                                <div class="pl-[6px] md:pl-[0.5em]" id="comment_replies">
                                     {% include 'home/nested_template.html' with replies=comment.get_replies %}                                
                                 </div>
-                                <div class="hidden md:hidden fixed top-0 bottom-0 right-0 left-0 bg-gray-100 z-50 m-0 p-0" id="reply_div">
-                                    <div class="flex justify-between items-center p-3">
+                                <div class="hidden md:hidden fixed top-0 bottom-0 right-0 left-0 bg-gray-100 z-50 m-0 p-0"  id="reply_div">
+                                    <div class="flex flex-col justify-center items-start p-3">
                                         <h1 class="flex">
                                             Replying to <p class="text-blue-600 ml-1" id="main_comment_user"> (main comment reply username) </p>
-                                        </h1>                                    
+                                        </h1>
+                                        <!-- add the body of the main comment that the user is replying to -->
+                                        <p class="text-gray-500" id="main_comment_body"> (main comment body) </p>
                                     </div>
                                     
-                        
+                                    
                                     <div class="mx-2">
                                         <input type="hidden" value="" id="target_user">
                                         <input type="hidden" value="" id="main_comment_id">
@@ -448,15 +450,15 @@
             body_details.setAttribute('class', 'pl-[3.5em] py-2')
             body_text_hidden.setAttribute('hidden', 'hidden')
             body_text_hidden.setAttribute('id', 'comment_text_prev')
+            body_text.setAttribute('class', 'text-sm md:text-lg xl:text-lg')
             body_text.setAttribute('id', 'comment_body')
+            body_text.setAttribute('data-comment-id', comment_id)
             
             body_text_hidden.value = body
             body_text.innerHTML = body
 
             body_details.appendChild(body_text_hidden)
             body_details.appendChild(body_text)
-
-
 
             let comment_actions = document.createElement('div')
             let like_btn = document.createElement('button')
@@ -471,7 +473,7 @@
             comment_actions.setAttribute('class', 'text-xs md:max-xl:text-base mb-[3.3em] relative pl-[3px]')
             comment_actions.setAttribute('id', 'comment_actions')
 
-            like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[25px] md:max-xl:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
+            like_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[25px] md:left-[45px] hover:bg-gray-300  px-2 py-2 rounded-md')
             like_btn.setAttribute('id', 'comment_like_btn_parent')
 
             let like_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
@@ -499,7 +501,7 @@
             
             console.log('like svg: ', like_svg)
 
-            dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[105px] md:max-xl:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
+            dislike_btn.setAttribute('class', 'flex items-center gap-2 absolute top-5 left-[85px] md:left-[125px] hover:bg-gray-300  px-2 py-2 rounded-md')
             dislike_btn.setAttribute('id', 'comment_dislike_btn_parent')
 
             let dislike_svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
@@ -525,7 +527,7 @@
             dislike_btn.appendChild(dislike_svg)
             dislike_btn.appendChild(dislike_count)
 
-            reply.setAttribute('class', 'absolute top-5 left-[190px] md:max-xl:left-[210px] hover:bg-gray-400  px-2 py-2 rounded-md')
+            reply.setAttribute('class', 'absolute top-5 left-[160px] md:left-[210px] hover:bg-gray-400  px-2 py-2 rounded-md')
             reply.setAttribute('id', 'comment_reply')
 
             reply.setAttribute('data-level', level )
@@ -540,8 +542,106 @@
             comment_actions.appendChild(reply)
 
             let comment_replies = document.createElement('div')
-            comment_replies.setAttribute('class', 'pl-[3em]')
+            comment_replies.setAttribute('class', 'mb-6 pl-4 md:pl-[2em]')
             comment_replies.id ='comment_replies'
+
+            let reply_div = document.createElement('div')
+            reply_div.setAttribute('class', 'hidden md:hidden fixed top-0 bottom-0 right-0 left-0 bg-gray-100 z-50 m-0 p-0')
+            reply_div.setAttribute('id', 'reply_div')
+
+            let reply_div_info = document.createElement('div')
+            reply_div_info.setAttribute('class', 'flex justify-between items-center p-3')
+            
+            let reply_header = document.createElement('h1')
+            reply_header.setAttribute('class', 'flex')
+            reply_header.innerHTML = 'Replying to <p class="text-blue-600 ml-1" id="main_comment_user"> (main comment reply username) </p>'
+
+            let reply_body = document.createElement('p')
+            reply_body.setAttribute('class', 'text-gray-500')
+            reply_body.setAttribute('id', 'main_comment_body')
+            reply_body.innerHTML = "(main comment body)"
+
+            reply_div_info.appendChild(reply_header)
+            //reply_div_info.appendChild(reply_body)
+            reply_div.appendChild(reply_div_info)
+
+            let reply_actions = document.createElement('div')
+            reply_actions.setAttribute('class', 'mx-2')
+
+            let target_user_reply = document.createElement('input')
+            target_user_reply.type = 'hidden'
+            target_user_reply.id = 'target_user'
+
+            let main_comment_reply = document.createElement('input')
+            main_comment_reply.type = 'hidden'
+            main_comment_reply.id = 'main_comment_id'
+
+            let reply_textarea = document.createElement('textarea')
+            reply_textarea.setAttribute('class', 'w-full p-2')
+            reply_textarea.placeholder = 'Text here...'
+            reply_textarea.id = "body"
+            reply_textarea.cols = 30
+            reply_textarea.rows = 10
+            reply_textarea.required = true
+
+            let save_reply_btn = document.createElement('button')
+            save_reply_btn.setAttribute('class', 'float-right bg-blue-600 w-[90px] h-[30px] rounded-full mb-[10px] text-white text-center text-sm hover:bg-gray-100 hover:text-black')
+            save_reply_btn.id = 'reply_comment_btn_mobile' 
+            save_reply_btn.innerHTML = "Reply"
+
+            let cancel_reply_btn = document.createElement('button')
+            cancel_reply_btn.setAttribute('class', 'float-right mr-5 bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100 hover:text-black')
+            cancel_reply_btn.id = "cancel_reply_btn_mobile"
+            cancel_reply_btn.innerHTML = 'Cancel'
+
+            reply_actions.appendChild(target_user_reply)
+            reply_actions.appendChild(main_comment_reply)
+            reply_actions.appendChild(reply_textarea)
+            reply_actions.appendChild(save_reply_btn)
+            reply_actions.appendChild(cancel_reply_btn)
+
+            reply_div.append(reply_actions)
+
+            let mobile_edit_template = document.createElement('div')
+            mobile_edit_template.setAttribute('class', 'hidden md:hidden fixed top-0 bottom-0 right-0 left-0 bg-gray-100 z-50 m-0 p-0')
+            mobile_edit_template.id = "edit_comment_template_mobile"
+
+            let edit_header = document.createElement('h1')
+            edit_header.setAttribute('class', 'p-3')
+            edit_header.innerHTML = "Editing Comment"
+
+            let edit_actions = document.createElement('div')
+            edit_actions.setAttribute('class', 'mx-2')
+            
+            let comment_old_value = document.createElement('input')
+            comment_old_value.type = "hidden"
+            comment_old_value.id = "comment_old_value"
+            
+            let edit_textarea = document.createElement('textarea')
+            edit_textarea.setAttribute('class', 'w-full p-2')
+            edit_textarea.placeholder ='Text here...'
+            edit_textarea.id = "body"
+            edit_textarea.cols = 30
+            edit_textarea.rows = 10
+            edit_textarea.required = true
+
+            let save_edit_btn = document.createElement('button')
+            save_edit_btn.setAttribute('class', 'float-right bg-blue-600 w-[90px] h-[30px] rounded-full mb-[10px] text-white text-center text-sm hover:bg-gray-100 hover:text-black')
+            save_edit_btn.id = 'save_edit_btn_mobile' 
+            save_edit_btn.innerHTML = "Save"
+
+            let cancel_edit_btn = document.createElement('button')
+            cancel_edit_btn.setAttribute('class', 'float-right mr-5 bg-white w-[90px] h-[30px] rounded-full mb-[10px] text-black text-center text-sm hover:bg-gray-100 hover:text-black')
+            cancel_edit_btn.id = "cancel_edit_btn_mobile"
+            cancel_edit_btn.innerHTML = 'Cancel'
+
+            edit_actions.appendChild(comment_old_value)
+            edit_actions.appendChild(edit_textarea)
+            edit_actions.appendChild(save_edit_btn)
+            edit_actions.appendChild(cancel_edit_btn)
+
+            mobile_edit_template.appendChild(edit_header)
+            mobile_edit_template.appendChild(edit_actions)
 
             if (level === 1){
                 console.log('LEVEL 1')
@@ -552,6 +652,8 @@
                 border_container.appendChild(comment_actions)
                 border_container.appendChild(space)
                 border_container.appendChild(comment_replies)
+                border_container.appendChild(reply_div)
+                border_container.appendChild(mobile_edit_template)
 
                 custom_container.append(border_container)
                 comment_container.prepend(custom_container)
@@ -568,13 +670,15 @@
 
             } else if (level >= 2) {
                 console.log('LEVEL 2 NA BOI')
-                custom_container.setAttribute('class', 'px-2 mb-6 pl-[2.8em]')
+                custom_container.setAttribute('class', 'mb-6 pl-[2em]')
 
                 border_container.appendChild(user_details)
                 border_container.appendChild(body_details)
                 border_container.appendChild(comment_actions)
                 border_container.appendChild(space)
                 border_container.appendChild(comment_replies)
+                border_container.appendChild(reply_div)
+                border_container.appendChild(mobile_edit_template)
 
                 custom_container.append(border_container)
                 
@@ -657,10 +761,10 @@
             if (e.target.id === 'save_btn'){
                 // traversing the dom to go to its parent element
                 const parent = e.target.parentElement // the comment body div
-                console.log(parent)
+                
                 // pass in the event along with the hidden input with the comment's ID
                 let is_mobile = false
-                saveEditedComment(e, parent.querySelector('#comment_id').value, is_mobile)
+                saveEditedComment(e, parent.querySelector('#comment_id').value, is_mobile, parent.getAttribute('data-comment-id'))
             }
 
             if (e.target.id === 'save_edit_btn_mobile'){
@@ -671,9 +775,9 @@
 
                 console.log(parent.parentElement)
                 console.log(parent.parentElement.previousElementSibling.previousElementSibling)
-                console.log(e.target.value)
+
                 // thefirst param refers to the edit_comment_template div
-                saveEditedComment(parent, comment_id, is_mobile)
+                saveEditedComment(parent, comment_id, is_mobile, comment_id)
                 document.getElementById('edit_comment_template_mobile').classList.add('hidden')
             }
 
@@ -696,18 +800,17 @@
                 let comment_level = first_div.querySelector('#comment_reply').getAttribute('data-level')
 
                 let is_mobile = false
-                if (window.innerWidth > 768 ){
+                if (window.innerWidth >= 768 ){
 
                     replyCommentTemplate(second_div, e.target.value, comment_level, is_mobile, '')
-                } else{
+                } else {
                     is_mobile = true
+                    console.log('open template: ', document.getElementById('reply_div'))
+                    document.getElementById('reply_div').classList.remove('hidden')
                     replyCommentTemplate(second_div, e.target.value, comment_level, is_mobile, third_div.querySelector('#comment_user').innerHTML)
                 }
                 
-            }
-
-            if (e.target.id === 'mobile_reply_template_close'){
-                document.getElementById('reply_div').classList.add('hidden')
+                
             }
 
             if (e.target.id === 'cancel_edit_btn_mobile'){
@@ -728,15 +831,22 @@
                 let reply_section_div = third_div.querySelector('#reply_section_div')
                 let indiv_reply = reply_section_div.querySelector('#reply_div')
 
-                cancelReplyComment(reply_section_div)
+                if (window.innerWidth >= 768){
+                    cancelReplyComment(reply_section_div , false)    
+                }
+                
             }
 
             if (e.target.id === 'cancel_reply_btn_mobile'){
+                const reply_div = document.getElementById('reply_div')
                 document.getElementById('reply_div').classList.add('hidden')
                 
                 const reply_section_div = e.target.parentElement.parentElement.parentElement
                 
-                cancelReplyComment(reply_section_div)
+                if (window.innerWidth < 768){
+                    cancelReplyComment(reply_section_div, true)
+                }
+                
             }
 
             // saving the reply comment to the db
@@ -769,7 +879,7 @@
 
                 const main_comment = parent.querySelector('#main_comment_id').value
                 saveReplyComment(parent, main_comment, reply_section.parentElement, parent_thread.parentElement, target_user)
-                document.getElementById('reply_div').classList.add('hidden')
+                
             }
 
             // post votes handling
@@ -844,6 +954,7 @@
             }
 
         })
+
 
         function updateCommentVote(option, comment_id, svg, parent, comment_user, comment_body){
             console.log(parent)
@@ -1046,18 +1157,22 @@
         } 
 
         function createNestedComment(comment, reply_section, parent_thread, body, target_user){
+
             const child = reply_section.querySelector('#reply_div')
             reply_section.removeChild(child)
             
             parent_thread.removeChild(reply_section) // removing the reply textarea template
             parent_thread.append(comment)
             console.log(target_user)
-            notifSocket.send(JSON.stringify({
-                'notif_type': 'comment_reply',
-                'target_user': target_user,
-                'message': `${user} replied to your comment`,
-                'comment_body': body,
-            }))
+            if (target_user !== user){
+                notifSocket.send(JSON.stringify({
+                    'notif_type': 'comment_reply',
+                    'target_user': target_user,
+                    'message': `${user} replied to your comment`,
+                    'comment_body': body,
+                }))
+            }
+            
         }
 
         // to be used for the delete functio where we place the csrf token to the request headers
@@ -1134,12 +1249,16 @@
         }
 
 
-        function saveEditedComment(e, id, is_mobile){
+        function saveEditedComment(e, id, is_mobile, comment_id){
             if (is_mobile){
                 console.log(e.parentElement)
                 const new_comment = e.querySelector('#body').value
-                const comment_body = e.parentElement.querySelector('#comment_body')
-                const hidden_comment = e.parentElement.querySelector('#comment_text_prev')
+                
+                let comment_body = document.querySelector(`[data-comment-id="${comment_id}"]`)
+                console.log(comment_body.parentElement)
+                let comment_date = comment_body.parentElement.previousElementSibling.querySelector('#comment_date')
+                console.log(comment_date.parentElement)
+                
                 const comment_old_value = e.parentElement.querySelector('#comment_old_value').value
                 $.ajax({
                     type: 'POST',
@@ -1149,8 +1268,11 @@
                         csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                     }, success: function(res){
                         
-                        $(comment_date).after(`<p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>`)
-
+                        if (comment_date.parentElement.querySelector('#comment_edit_flag') === undefined || 
+                        comment_date.parentElement.querySelector('#comment_edit_flag') === null){
+                            $(comment_date).after(`<p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>`)
+                        }
+                        
                         comment_message_notif.classList.remove('hidden')
                         comment_message_notif.classList.remove('bg-green-200')
                         comment_message_notif.classList.add('bg-blue-200')
@@ -1158,7 +1280,7 @@
                         comment_message_notif.querySelector('#comment_message_text').innerHTML = res.server_message
 
                         comment_body.innerHTML = res.comment
-                        hidden_comment.value = res.comment
+                        
                         e.parentElement.querySelector('#hidden_comment_body').removeChild(comment_body)
                     },error: function(err){
                         alert('Edit Comment unsuccessful')
@@ -1191,9 +1313,12 @@
                     },
                     success: function(res){
                         console.log(res)
-    
-                        $(comment_date).after(`<p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>`)
-    
+                        
+                        if (comment_date.parentElement.querySelector('#comment_edit_flag') === undefined || 
+                        comment_date.parentElement.querySelector('#comment_edit_flag') === null){
+                            $(comment_date).after(`<p class="text-gray-500 text-sm" id="comment_edit_flag"> (edited) </p>`)
+                        }
+            
                         comment_message_notif.classList.remove('hidden')
                         comment_message_notif.classList.remove('bg-green-200')
                         comment_message_notif.classList.add('bg-blue-200')
@@ -1274,6 +1399,7 @@
 
                     // setting the inner html to deleted to let users know its status
                     comment_target.innerHTML = "[Deleted]"
+                    comment_target.style.fontWeight = 'bold'
 
                     // deleted comments cannot be liked/disliked or replied to
                     comment_like.disabled = true
@@ -1291,29 +1417,39 @@
         }
 
         // whenever users click to comment on another comment, this will be the template 
-        function replyCommentTemplate(e, id, level, is_mobile, target_user){
+        function replyCommentTemplate(trgt, id, level, is_mobile, target_user){
             // the comment_container
-            let comment_div_target = e
+            let comment_div_target = trgt
+            
             if (is_mobile){
-                const mobile_reply_template = document.getElementById('reply_div')
-                mobile_reply_template.classList.remove('hidden')
-
-                mobile_reply_template.querySelector('#main_comment_user').innerHTML = e.querySelector("#comment_user").innerHTML
+                console.log('trgt: ', trgt)
+                const mobile_reply_template = document.getElementById('reply_div');
+                
+                mobile_reply_template.querySelector('#main_comment_user').innerHTML = trgt.querySelector("#comment_user").innerHTML
                 mobile_reply_template.querySelector('#main_comment_id').value = id
+                mobile_reply_template.querySelector('#main_comment_body').innerHTML = trgt.querySelector('#comment_body').innerHTML
+                console.log(mobile_reply_template.querySelector('#main_comment_body').innerHTML)
                 mobile_reply_template.querySelector('#target_user').value = target_user
 
                 const reply_section_div = document.createElement('div')
                 reply_section_div.id = 'reply_section_div'
                 reply_section_div.append(mobile_reply_template)
+                console.log(mobile_reply_template)
 
                 reply_section_div.setAttribute('class', 'pl-[2em] px-2 pt-5 ml-[2.8em] mb-[2em] border-l-[2px] border-gray-400')
                 $(reply_section_div).insertAfter(comment_div_target.querySelector('#comment_actions'))
+                mobile_reply_template.querySelector('#main_comment_body').innerHTML = ""
                 
+                window.addEventListener('resize', function(){
+                    if (window.innerWidth >= 768){
+                        replyCommentTemplate(trgt, id, level, false, target_user)
+                    }
+                }, {once: true})
             } else {
                 
-                const comment_replies =  e.querySelector('#comment_replies')
-
+                const comment_replies =  trgt.querySelector('#comment_replies')
                 const reply_div = document.createElement('div')
+                
                 reply_div.id = "reply_div"
                 
                 const hidden_input = document.createElement('input')
@@ -1350,7 +1486,7 @@
                 reply_div.appendChild(reply_input_save)
                 reply_div.appendChild(reply_input_cancel)
 
-                if (e.querySelector('#reply_section_div') === null || e.querySelector('#reply_section_div') === undefined) { 
+                if (trgt.querySelector('#reply_section_div') === null || trgt.querySelector('#reply_section_div') === undefined) { 
                     //create reply section div
                     const reply_section_div = document.createElement('div')
                     reply_section_div.id = 'reply_section_div'
@@ -1365,23 +1501,30 @@
                     reply_section_div.append(reply_div)
                     
                     $(reply_section_div).insertAfter(comment_div_target.querySelector('#comment_actions'))
+                    
                 } else {
-                    e.append(reply_div)
+                    trgt.append(reply_div)
     
-                    comment_div_target.appendChild(e)
+                    comment_div_target.appendChild(trgt)
                 }
-            }
+            }  
             
-            
-            
-
-            
-              
+             
         }
 
-        function cancelReplyComment(e){
+        function cancelReplyComment(e, is_mobile){
             let parent = e.parentElement
+            const reply_div = e.querySelector('#reply_div')
+
+            // without this block, clicking on the reply btn 6 times would cause the reply div to be removed completely from the dom
+            // so to prevent that, we just have to add this block
+            if (is_mobile){
+                const edit_comment_template_mobile = parent.querySelector('#edit_comment_template_mobile')
+                $(edit_comment_template_mobile).before(reply_div)
+            }
+        
             parent.removeChild(e)
+            
         }
         
     </script>
